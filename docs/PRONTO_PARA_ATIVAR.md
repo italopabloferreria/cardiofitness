@@ -12,7 +12,9 @@ Implementado e conectado: painel RH, login Google validado, e-mail/senha habilit
 - Publicar na Vercel com variáveis privadas configuradas e APP_URL/retorno Supabase do domínio definitivo.
 - Revisar OAuth Google em Testing antes da operação contínua (token Forms pode expirar em sete dias).
 
-Validação: TypeScript, build de produção e 85 testes aprovados em 08/10/2026. Na interface autenticada, entrada por teclado confirmou cálculo de dois meses. Nenhuma resposta privada ou avaliação de teste enviada; banco sem ciclos/avaliações fictícias. Exportações e normalização testadas com fixtures locais; sincronização real ainda exige primeiro ciclo e identidades confirmadas.
+Validação: TypeScript, build de produção e 102 testes aprovados em 08/10/2026. Na interface autenticada, entrada por teclado confirmou cálculo de dois meses. Nenhuma resposta privada ou avaliação de teste enviada; banco sem ciclos/avaliações fictícias. Exportações e normalização testadas com fixtures locais; sincronização real ainda exige primeiro ciclo e identidades confirmadas.
 
 
 Senha: tela Minha conta e bloqueio de primeiro acesso implementados; migração aplicada. Senha provisória ainda não definida nem marca obrigatória ativada. Ver docs/LOGIN.md antes de entregar acesso ao RH.
+
+Entrega GitHub: versão local preparada para main do repositório privado italopabloferreria/cardiofitness. Colagem de links por ciclo e validação link/ID da API implementadas. Banco auditado sem demonstrações; login Google novamente confirmado após salvar callback. Ver SUPABASE_VERIFICADO.md.

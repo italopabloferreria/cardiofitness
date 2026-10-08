@@ -1,0 +1,6 @@
+{
+  "framework": "nextjs",
+  "env": {
+    "APP_DEMO_MODE": "false"
+  }
+}

@@ -47,3 +47,8 @@ Se já houver histórico e aparecerem respostas rejeitadas, a nova sincronizaç�
 Google login validado; Supabase conectado e cadastro importado; leitura dos metadados dos Forms validada. Ainda faltam alinhamento das listas dos Forms ao PDF, primeiro ciclo, publicação da coleta e uma sincronização real conferida. Os Forms clonados permanecem rascunhos. Nenhuma resposta real foi enviada como teste pelo agente.
 
 Minha conta permite alterar senha do sistema, independente do Gmail. A infraestrutura de troca obrigatória da provisória existe, mas a senha provisória e a marca de primeiro acesso ainda não foram ativadas na conta real.
+
+
+## Colar o link no ciclo
+
+No editor Vincular formulário ao ciclo, colar o link de preenchimento ou de edição. Os dois formulários já conferidos preenchem ID e mapeamento automaticamente. Para outro formulário, informar também link/ID de edição e usar Ler perguntas; esse passo consulta a conta institucional pela API. Selecionar identificação e perguntas de nota antes de sincronizar. Link público desconhecido sozinho permite guardar rascunho, não autoriza nem identifica o formulário na API. A conta institucional precisa ter permissão de leitura nesse formulário.

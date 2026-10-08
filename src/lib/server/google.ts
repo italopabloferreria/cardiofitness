@@ -2,6 +2,7 @@ import 'server-only';
 import type { Evaluation, FormMetadata } from '@/lib/types';
 import { ApiError } from './http';
 import { formIdSchema } from './validation';
+import { resolveFormLink } from '../form-link';
 
 export async function googleCall<T>(action: () => Promise<T>): Promise<T> {
   try { return await action(); }
@@ -13,6 +14,13 @@ export function assertSyncReady(evaluation: Evaluation) {
 }
 export function validateMetadataMapping(evaluation: Evaluation, metadata: FormMetadata) {
   assertSyncReady(evaluation);
+  let linkMatches=false;
+  try {
+    const selected=resolveFormLink(evaluation.googleFormUrl);
+    const actual=resolveFormLink(metadata.responderUri);
+    linkMatches=metadata.id===evaluation.googleFormId && (selected.googleFormId ? selected.googleFormId===metadata.id : selected.url===actual.url);
+  } catch { /* Invalid links never authorize synchronization. */ }
+  if (!linkMatches) throw new ApiError(409, 'O link de coleta não corresponde ao formulário lido pela API. Use Ler perguntas e confira o vínculo antes de sincronizar.');
   const { mapping } = evaluation;
   const allIds = [...mapping.respondentQuestionIds, ...mapping.subjectQuestionIds, ...mapping.departmentQuestionIds];
   if (allIds.some(id => !metadata.questions.some(q => q.id === id)))

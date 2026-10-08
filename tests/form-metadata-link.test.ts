@@ -1,0 +1,11 @@
+import { expect, it, vi } from 'vitest';
+vi.mock('server-only',()=>({}));
+import {validateMetadataMapping} from '../src/lib/server/google';
+import {PROVIDED_FORMS} from '../src/lib/form-presets';
+import type {Evaluation,FormMetadata} from '../src/lib/types';
+const preset=PROVIDED_FORMS[0];
+const evaluation={id:'test',cycleId:'test',name:preset.name,kind:preset.kind,googleFormId:preset.googleFormId,googleFormUrl:preset.url,expectedResponses:null,mapping:preset.mapping,lastSyncedAt:null,syncMessage:null} as Evaluation;
+const metadata={id:preset.googleFormId,title:preset.name,responderUri:preset.url,collectsEmail:false,questions:[...new Set([...preset.mapping.respondentQuestionIds,...preset.mapping.subjectQuestionIds,...preset.mapping.departmentQuestionIds])].map(id=>({id,title:id,numeric:false,section:'',min:0,max:0})).concat(preset.mapping.scoreQuestions.map(q=>({...q,numeric:true,section:''})))} satisfies FormMetadata;
+it('link compartilhado confere com identidade real da API',()=>{expect(()=>validateMetadataMapping({...evaluation,googleFormUrl:preset.url+'?usp=header'},metadata)).not.toThrow();});
+it('bloqueia vínculo entre link de equipe e ID de líderes',()=>{expect(()=>validateMetadataMapping({...evaluation,googleFormUrl:PROVIDED_FORMS[1].url},metadata)).toThrow('não corresponde');});
+it('bloqueia resposta de metadados de outro ID',()=>{expect(()=>validateMetadataMapping(evaluation,{...metadata,id:PROVIDED_FORMS[1].googleFormId})).toThrow('não corresponde');});

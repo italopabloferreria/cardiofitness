@@ -102,5 +102,20 @@
     "temporaryPasswordSet": false,
     "mandatoryFlagActivated": false,
     "pending": "Usuário define senha temporária individual no Supabase; em seguida executar exigir-troca-senha-rh.sql. Senha existente preservada."
+  },
+  "audit20261008": {
+    "employees": 33,
+    "leaders": 5,
+    "linkedStaff": 28,
+    "cycles": 0,
+    "evaluations": 0,
+    "responses": 0,
+    "rhUsers": 1,
+    "rlsTables": 5,
+    "passwordPolicies": 4,
+    "anonEmployeeSelect": false,
+    "formsMetadataReadVerified": true,
+    "googleLoginRetested": true,
+    "demoImported": false
   }
 }
