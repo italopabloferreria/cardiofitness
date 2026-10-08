@@ -20,7 +20,7 @@ IDs de edição confirmados pela Forms API e correspondências em src/lib/form-p
 
 Não reaplicar schema base, não recriar projeto e não executar importação automática ao publicar. O deploy aponta ao mesmo Supabase, conserva cadastros e usa RLS da conta autenticada. As credenciais privadas precisam ser configuradas na Vercel, fora do Git.
 
-Pendente: listas de coleta alinhadas ao PDF oficial, publicação dos Forms, primeiro ciclo, sincronização real; domínio e callbacks de produção; revisão OAuth Testing. Auditoria do banco não representa conclusão dessas etapas. Senha provisória/flag ainda não ativadas.
+Pendente: listas de coleta alinhadas ao PDF oficial, publicação dos Forms, primeiro ciclo, sincronização real; revisão OAuth Testing e entrega real de recuperação. Auditoria do banco não representa conclusão dessas etapas. Responsável confirmou alteração manual da senha.
 
 Login Google revalidado nesta entrega após salvar novamente o callback exato no cliente Google: retorno ao painel e leitura dos 33 cadastros pelo RH confirmados.
-Validação do código: 106 testes e build de produção aprovados.
+Validação do código: 138 testes e build de produção aprovados.

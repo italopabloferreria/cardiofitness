@@ -24,7 +24,7 @@ export const formIdSchema = z.string().trim().min(20).max(200).regex(/^[a-zA-Z0-
 const questionIds = z.array(text(100)).max(100).refine(ids => new Set(ids).size === ids.length);
 export const mappingSchema = z.object({
   respondentQuestionIds: questionIds, subjectQuestionIds: questionIds, departmentQuestionIds: questionIds,
-  scoreQuestions: z.array(z.object({ id: text(100), title: text(500), min: z.number().int().min(1).max(4), max: z.number().int().min(1).max(4) }).strict()
+  scoreQuestions: z.array(z.object({ id: text(100), title: text(500), min: z.literal(1), max: z.literal(4) }).strict()
     .refine(q => q.min < q.max, 'Escala inválida.')).max(200),
 }).strict()
   .refine(m => new Set(m.scoreQuestions.map(q => q.id)).size === m.scoreQuestions.length, 'Perguntas repetidas.')
@@ -72,3 +72,15 @@ export const passwordSchema = z.object({
   newPassword: z.string().min(12).refine(value => new TextEncoder().encode(value).length <= 72),
   confirmation: z.string().min(12).max(72),
 }).strict().refine(value => value.newPassword === value.confirmation && value.newPassword !== value.currentPassword);
+
+export const recoveryRequestSchema = z.object({ email: z.email().max(254) }).strict();
+const recoveryPasswordFields = {
+  newPassword: z.string().min(12).refine(value => new TextEncoder().encode(value).length <= 72),
+  confirmation: z.string().min(12).max(72),
+};
+export const recoveryCodeSchema = z.string().min(1).max(4096).regex(/^[a-zA-Z0-9_-]+$/);
+export const recoveryConfirmSchema = z.union([z.object({
+  email: z.email().max(254), token: z.string().regex(/^\d{6,10}$/),
+  ...recoveryPasswordFields,
+}).strict(), z.object({ code: recoveryCodeSchema, ...recoveryPasswordFields }).strict()])
+  .refine(value => value.newPassword === value.confirmation);

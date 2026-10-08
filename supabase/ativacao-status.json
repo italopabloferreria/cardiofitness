@@ -17,7 +17,8 @@
     "demoImported": false,
     "passwordLoginManuallyVerified": false,
     "firstCycleCollectionVerified": false,
-    "verifiedOn": "2026-10-08"
+    "verifiedOn": "2026-10-08",
+    "passwordChangeReportedByOwner": true
   },
   "schema": "supabase/schemas/01_cardiofitness.sql",
   "verification": {
@@ -39,14 +40,15 @@
     "manualLoginVerified": false,
     "googleLoginActivationFlag": "GOOGLE_LOGIN_ENABLED",
     "googleLoginVerified": true,
-    "googleLoginCallback": "http://127.0.0.1:3000/auth/callback"
+    "googleLoginCallback": "http://127.0.0.1:3000/auth/callback",
+    "passwordRecoveryImplemented": true,
+    "passwordRecoveryDeliveryVerified": false,
+    "recoveryRedirectsConfigured": true
   },
   "pending": [
-    "Verify authenticated login and Google question mapping",
-    "Review OAuth production readiness",
-    "Vercel deployment",
-    "Verify email/password login manually",
-    "RH to activate first bimonthly cycle in panel; align collection identification to the authoritative RH PDF before response association"
+    "RH homologar primeiro ciclo, identificação Forms, sincronização e relatórios reais",
+    "Conferir entrega de e-mail de recuperação; configurar SMTP antes de ampliar destinatários",
+    "Revisar OAuth em Testing para operação contínua"
   ],
   "realEmployeeDataImported": true,
   "verifiedOn": "2026-10-08",
@@ -110,8 +112,9 @@
     "settingsScreenImplemented": true,
     "serverAndRlsGateImplemented": true,
     "temporaryPasswordSet": false,
-    "mandatoryFlagActivated": false,
-    "pending": "Usuário define senha temporária individual no Supabase; em seguida executar exigir-troca-senha-rh.sql. Senha existente preservada."
+    "mandatoryFlagActivated": null,
+    "pending": "Senha manual preservada; login por senha não reexecutado pelo agente.",
+    "ownerReportedManualPasswordChange": true
   },
   "audit20261008": {
     "employees": 33,
@@ -130,9 +133,10 @@
   },
   "integrityAudit": {
     "applied": true,
-    "auditComplete": false,
-    "testsPassed": 106,
+    "auditComplete": true,
+    "testsPassed": 138,
     "migration": "supabase/schemas/03_integrity_audit.sql",
-    "passwordRecoveryImplemented": false
+    "passwordRecoveryImplemented": true,
+    "passwordRecoveryDeliveryVerified": false
   }
 }
