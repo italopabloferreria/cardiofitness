@@ -29,3 +29,13 @@ Segredos excluídos do GitHub e pacote fonte. Produção usa o mesmo Supabase do
 - Google: aplicativo permanece em Testing; autorização Forms pode expirar após sete dias. Revisar publicação OAuth e autorização antes do uso contínuo. Login Google e autorização de leitura Forms são fluxos distintos.
 
 Fontes oficiais: [recuperação de senha](https://supabase.com/docs/guides/auth/passwords), [e-mail e SMTP](https://supabase.com/docs/guides/auth/auth-smtp), [limites de envio](https://supabase.com/docs/guides/auth/rate-limits).
+
+## Teste real da integração — 08/10/2026
+
+Executado em produção, com dois cadastros fictícios, ciclo separado e cópia do formulário de líderes na conta institucional. Os formulários originais não foram alterados. Uma resposta enviada pelo Google Forms foi importada pela API e vinculada ao colaborador respondente e líder avaliados corretos.
+
+Notas: 1, 2, 3, 4, 3, 4, 4. Resultado: sete notas, média 3,00, uma resposta de uma esperada, participação 100%. Segunda sincronização manteve somente uma resposta. Prévia de relatórios apresentou a pessoa e média corretas. Download PDF/Excel não foi confirmado nesta execução: a tentativa de captura do download PDF excedeu o tempo de espera.
+
+Após autorização explícita, transação removeu somente a resposta, avaliação, ciclo e dois cadastros fictícios. Comparação integral antes/depois confirmou preservação dos 33 cadastros oficiais e dos demais ciclos. Resultado final do Supabase: 33 pessoas, zero cadastros de teste, ciclo Novembro 2026 preservado e zero avaliações do formulário de teste. Cópia Google Forms movida para a lixeira, recuperável por 30 dias.
+
+Evidências locais: Cardiofitness_Teste_Resultado.png e Cardiofitness_Teste_Limpeza.png, na pasta outputs. Teste técnico de integração concluído; homologação com a primeira coleta real do RH, recebimento real de recuperação de senha e revisão OAuth para operação contínua permanecem pendentes.
