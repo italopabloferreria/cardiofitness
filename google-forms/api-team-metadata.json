@@ -1,0 +1,1185 @@
+{
+  "formId": "1ugPS-wx1YVdOHYXXH-xbKCkSQk1ZhMF9g1h80n0X4hU",
+  "info": {
+    "title": "Avaliação | Autoavaliação e Equipe",
+    "documentTitle": "Avaliação | Autoavaliação e Equipe"
+  },
+  "settings": {
+    "emailCollectionType": "DO_NOT_COLLECT"
+  },
+  "revisionId": "00000168",
+  "responderUri": "https://docs.google.com/forms/d/e/1FAIpQLSeoKb2fBDMF0te3XNKtp22Gy_oZifnCTER3sSOVvuarDOs-sQ/viewform",
+  "items": [
+    {
+      "itemId": "6afabdcb",
+      "title": "Qual o seu setor?",
+      "questionItem": {
+        "question": {
+          "questionId": "12f8f9bd",
+          "required": true,
+          "choiceQuestion": {
+            "type": "DROP_DOWN",
+            "options": [
+              {
+                "value": "Faturamento",
+                "goToSectionId": "6f913b1b"
+              },
+              {
+                "value": "Central/Resultado de Exames",
+                "goToSectionId": "31a81cca"
+              },
+              {
+                "value": "Recepção",
+                "goToSectionId": "53f51e1c"
+              },
+              {
+                "value": "Técnicas de Exame/Corredor/Triagem",
+                "goToSectionId": "6a7ad3aa"
+              },
+              {
+                "value": "Limpeza",
+                "goToSectionId": "6112e940"
+              },
+              {
+                "value": "Resultado de Exame",
+                "goToSectionId": "6f913b1b"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "6f913b1b",
+      "pageBreakItem": {},
+      "title": "Faturamento"
+    },
+    {
+      "itemId": "0af092f0",
+      "title": "Qual o seu nome?",
+      "questionItem": {
+        "question": {
+          "questionId": "26043e5f",
+          "required": true,
+          "choiceQuestion": {
+            "type": "DROP_DOWN",
+            "options": [
+              {
+                "value": "Ana"
+              },
+              {
+                "value": "Bruna"
+              },
+              {
+                "value": "Rayane"
+              },
+              {
+                "value": "Sabrina"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "1db78889",
+      "title": "Quem você irá avaliar??",
+      "questionItem": {
+        "question": {
+          "questionId": "4bbe8fe9",
+          "required": true,
+          "choiceQuestion": {
+            "type": "DROP_DOWN",
+            "options": [
+              {
+                "value": "Ana"
+              },
+              {
+                "value": "Bruna"
+              },
+              {
+                "value": "Rayane"
+              },
+              {
+                "value": "Sabrina"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "6c1265d4",
+      "textItem": {},
+      "title": "Desempenho"
+    },
+    {
+      "itemId": "64c5a0c8",
+      "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+      "questionItem": {
+        "question": {
+          "questionId": "0f032f04",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "51fffb10",
+      "title": "O funcionário tem conhecimento amplo dos convênios que fatura/autoriza?",
+      "questionItem": {
+        "question": {
+          "questionId": "54986001",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "77508f0c",
+      "textItem": {},
+      "title": "Trabalho em Equipe"
+    },
+    {
+      "itemId": "35addfaa",
+      "title": "Passa as informações necessárias para seu grupo de trabalho?",
+      "questionItem": {
+        "question": {
+          "questionId": "389ee820",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "73b69c29",
+      "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+      "questionItem": {
+        "question": {
+          "questionId": "0ca8df14",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "7a7f8d01",
+      "textItem": {},
+      "title": "Ferramenta"
+    },
+    {
+      "itemId": "167bc0d6",
+      "title": "O funcionário tem domínio do software MedWare?",
+      "questionItem": {
+        "question": {
+          "questionId": "2d3521ff",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "06c2be53",
+      "title": "O funcionário tem domínio dos sites dos convênios que fatura/autoriza?",
+      "questionItem": {
+        "question": {
+          "questionId": "042adbdd",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "4e864e85",
+      "textItem": {},
+      "title": "Cultura"
+    },
+    {
+      "itemId": "0213778d",
+      "title": "O funcionário reflete os valores da empresa?",
+      "questionItem": {
+        "question": {
+          "questionId": "565f9bbd",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "78080c20",
+      "textItem": {},
+      "title": "Feedback"
+    },
+    {
+      "itemId": "38e50f54",
+      "title": "Dê um feedback para o seu colega ou para você!!",
+      "questionItem": {
+        "question": {
+          "questionId": "4dc76ab5",
+          "required": true,
+          "textQuestion": {
+            "paragraph": true
+          }
+        }
+      }
+    },
+    {
+      "itemId": "58096a34",
+      "title": "Você já avaliou todos os envolvidos, inclusive você?",
+      "questionItem": {
+        "question": {
+          "questionId": "0bf27be7",
+          "required": true,
+          "choiceQuestion": {
+            "type": "RADIO",
+            "options": [
+              {
+                "value": "Sim",
+                "goToSectionId": "489fb344"
+              },
+              {
+                "value": "Não",
+                "goToSectionId": "77dca299"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "31a81cca",
+      "pageBreakItem": {},
+      "title": "Central/Resultado"
+    },
+    {
+      "itemId": "718df397",
+      "title": "Qual o seu nome?",
+      "questionItem": {
+        "question": {
+          "questionId": "49e74424",
+          "required": true,
+          "choiceQuestion": {
+            "type": "DROP_DOWN",
+            "options": [
+              {
+                "value": "Rute"
+              },
+              {
+                "value": "Hellen Silva"
+              },
+              {
+                "value": "Alice"
+              },
+              {
+                "value": "Joelson"
+              },
+              {
+                "value": "Emanuele"
+              },
+              {
+                "value": "Luciana"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "7f9ebea7",
+      "title": "Quem você irá avaliar??",
+      "questionItem": {
+        "question": {
+          "questionId": "118d174b",
+          "required": true,
+          "choiceQuestion": {
+            "type": "DROP_DOWN",
+            "options": [
+              {
+                "value": "Rute"
+              },
+              {
+                "value": "Hellen Silva"
+              },
+              {
+                "value": "Alice"
+              },
+              {
+                "value": "Joelson"
+              },
+              {
+                "value": "Emanuele"
+              },
+              {
+                "value": "Luciana"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "3e2616fb",
+      "textItem": {},
+      "title": "Desempenho"
+    },
+    {
+      "itemId": "6a7a680b",
+      "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+      "questionItem": {
+        "question": {
+          "questionId": "3abc980d",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "5d782c96",
+      "title": "O funcionário tem conhecimento dos convênios credenciados, consultas, exames e respectivos valores?",
+      "questionItem": {
+        "question": {
+          "questionId": "6ac81b86",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "1b82498b",
+      "textItem": {},
+      "title": "Trabalho em Equipe"
+    },
+    {
+      "itemId": "6b6a3d12",
+      "title": "Passa as informações necessárias para seu grupo de trabalho?",
+      "questionItem": {
+        "question": {
+          "questionId": "6a675705",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "1a867989",
+      "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+      "questionItem": {
+        "question": {
+          "questionId": "548cb1ce",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "41536461",
+      "textItem": {},
+      "title": "Ferramenta"
+    },
+    {
+      "itemId": "3031a014",
+      "title": "O funcionário tem domínio do software MedWare?",
+      "questionItem": {
+        "question": {
+          "questionId": "314bb69e",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "0feb4af2",
+      "title": "O funcionário tem domínio do software da Fasterisks?",
+      "questionItem": {
+        "question": {
+          "questionId": "03165716",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "4b579536",
+      "textItem": {},
+      "title": "Cultura"
+    },
+    {
+      "itemId": "46872f96",
+      "title": "O funcionário reflete os valores da empresa?",
+      "questionItem": {
+        "question": {
+          "questionId": "1adea9b5",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "15dcd551",
+      "textItem": {},
+      "title": "Feedback"
+    },
+    {
+      "itemId": "7df68464",
+      "title": "Dê um feedback para o seu colega ou para você!!",
+      "questionItem": {
+        "question": {
+          "questionId": "1d8bffb3",
+          "required": true,
+          "textQuestion": {
+            "paragraph": true
+          }
+        }
+      }
+    },
+    {
+      "itemId": "6503c82e",
+      "title": "Você já avaliou todos os envolvidos, inclusive você?",
+      "questionItem": {
+        "question": {
+          "questionId": "5645f8e6",
+          "required": true,
+          "choiceQuestion": {
+            "type": "RADIO",
+            "options": [
+              {
+                "value": "Sim",
+                "goToSectionId": "489fb344"
+              },
+              {
+                "value": "Não",
+                "goToSectionId": "77dca299"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "53f51e1c",
+      "pageBreakItem": {},
+      "title": "Recepção/Triagem"
+    },
+    {
+      "itemId": "1b038c1c",
+      "title": "Qual o seu nome?",
+      "questionItem": {
+        "question": {
+          "questionId": "55615372",
+          "required": true,
+          "choiceQuestion": {
+            "type": "DROP_DOWN",
+            "options": [
+              {
+                "value": "Dayane Mares"
+              },
+              {
+                "value": "Gabriel"
+              },
+              {
+                "value": "Lucas"
+              },
+              {
+                "value": "Jaqueline"
+              },
+              {
+                "value": "Thiago"
+              },
+              {
+                "value": "Ana Karoline"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "53497119",
+      "title": "Quem você irá avaliar??",
+      "questionItem": {
+        "question": {
+          "questionId": "53c8115b",
+          "required": true,
+          "choiceQuestion": {
+            "type": "DROP_DOWN",
+            "options": [
+              {
+                "value": "Dayane Mares"
+              },
+              {
+                "value": "Gabriel"
+              },
+              {
+                "value": "Lucas"
+              },
+              {
+                "value": "Jaqueline"
+              },
+              {
+                "value": "Ana Karoline"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "5d713ba6",
+      "textItem": {},
+      "title": "Desempenho"
+    },
+    {
+      "itemId": "0536baab",
+      "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+      "questionItem": {
+        "question": {
+          "questionId": "2c75f714",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "2bc61f44",
+      "title": "O funcionário tem conhecimento dos convênios credenciados, consultas, exames e respectivos valores? ////// O funcionário tem conhecimento técnico dos exames da empresa?",
+      "questionItem": {
+        "question": {
+          "questionId": "42f7ca35",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "379ea941",
+      "textItem": {},
+      "title": "Trabalho em Equipe"
+    },
+    {
+      "itemId": "5eaddebf",
+      "title": "Passa as informações necessárias para seu grupo de trabalho?",
+      "questionItem": {
+        "question": {
+          "questionId": "27a2a673",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "49bfe177",
+      "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+      "questionItem": {
+        "question": {
+          "questionId": "231f32a9",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "47ea9e2d",
+      "textItem": {},
+      "title": "Ferramenta"
+    },
+    {
+      "itemId": "321db862",
+      "title": "O funcionário tem domínio do software MedWare?",
+      "questionItem": {
+        "question": {
+          "questionId": "20e9c5bb",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "330e605b",
+      "textItem": {},
+      "title": "Cultura"
+    },
+    {
+      "itemId": "4b941cdd",
+      "title": "O funcionário reflete os valores da empresa?",
+      "questionItem": {
+        "question": {
+          "questionId": "6d31a858",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "056d20d5",
+      "textItem": {},
+      "title": "Feedback"
+    },
+    {
+      "itemId": "4860dcf6",
+      "title": "Dê um feedback para o seu colega ou para você!!",
+      "questionItem": {
+        "question": {
+          "questionId": "73adf9ef",
+          "required": true,
+          "textQuestion": {
+            "paragraph": true
+          }
+        }
+      }
+    },
+    {
+      "itemId": "36906f1b",
+      "title": "Você já avaliou todos os envolvidos, inclusive você?",
+      "questionItem": {
+        "question": {
+          "questionId": "5d78241b",
+          "required": true,
+          "choiceQuestion": {
+            "type": "RADIO",
+            "options": [
+              {
+                "value": "Sim",
+                "goToSectionId": "489fb344"
+              },
+              {
+                "value": "Não",
+                "goToSectionId": "77dca299"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "6a7ad3aa",
+      "pageBreakItem": {},
+      "title": "Técnicas de Exame/Corredor"
+    },
+    {
+      "itemId": "55820310",
+      "title": "Qual o seu nome?",
+      "questionItem": {
+        "question": {
+          "questionId": "1a023f2f",
+          "required": true,
+          "choiceQuestion": {
+            "type": "DROP_DOWN",
+            "options": [
+              {
+                "value": "Sulami"
+              },
+              {
+                "value": "Renilda"
+              },
+              {
+                "value": "Roni"
+              },
+              {
+                "value": "Eliane"
+              },
+              {
+                "value": "Luzia"
+              },
+              {
+                "value": "Daiane Ramos"
+              },
+              {
+                "value": "Júlia"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "7070c1a8",
+      "title": "Quem você irá avaliar?",
+      "questionItem": {
+        "question": {
+          "questionId": "2d0b8252",
+          "required": true,
+          "choiceQuestion": {
+            "type": "DROP_DOWN",
+            "options": [
+              {
+                "value": "Eliane"
+              },
+              {
+                "value": "Daiane Ramos"
+              },
+              {
+                "value": "Luzia"
+              },
+              {
+                "value": "Renilda"
+              },
+              {
+                "value": "Roni"
+              },
+              {
+                "value": "Sulami"
+              },
+              {
+                "value": "Júlia"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "3ead98ee",
+      "textItem": {},
+      "title": "Desempenho"
+    },
+    {
+      "itemId": "42cbcba1",
+      "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+      "questionItem": {
+        "question": {
+          "questionId": "16a798ff",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "3e0fe508",
+      "title": "O funcionário tem conhecimento técnico dos exames da empresa?",
+      "questionItem": {
+        "question": {
+          "questionId": "0676c922",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "37569fd2",
+      "textItem": {},
+      "title": "Trabalho em Equipe"
+    },
+    {
+      "itemId": "3d16cbeb",
+      "title": "Passa as informações necessárias para seu grupo de trabalho?",
+      "questionItem": {
+        "question": {
+          "questionId": "719564ff",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "025be627",
+      "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+      "questionItem": {
+        "question": {
+          "questionId": "0a20911f",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "6d4afe50",
+      "textItem": {},
+      "title": "Ferramenta"
+    },
+    {
+      "itemId": "390f363b",
+      "title": "O funcionário tem domínio do software MedWare?",
+      "questionItem": {
+        "question": {
+          "questionId": "28922ee6",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "6d22f20b",
+      "textItem": {},
+      "title": "Cultura"
+    },
+    {
+      "itemId": "5e2bee16",
+      "title": "O funcionário reflete os valores da empresa?",
+      "questionItem": {
+        "question": {
+          "questionId": "3247601e",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "330929ff",
+      "textItem": {},
+      "title": "Feedback"
+    },
+    {
+      "itemId": "629fbecb",
+      "title": "Dê um feedback para o seu colega ou para você!!",
+      "questionItem": {
+        "question": {
+          "questionId": "27f0058f",
+          "required": true,
+          "textQuestion": {
+            "paragraph": true
+          }
+        }
+      }
+    },
+    {
+      "itemId": "229025b1",
+      "title": "Você já avaliou todos os envolvidos, inclusive você?",
+      "questionItem": {
+        "question": {
+          "questionId": "76995300",
+          "required": true,
+          "choiceQuestion": {
+            "type": "RADIO",
+            "options": [
+              {
+                "value": "Sim",
+                "goToSectionId": "489fb344"
+              },
+              {
+                "value": "Não",
+                "goToSectionId": "77dca299"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "6112e940",
+      "pageBreakItem": {},
+      "title": "Limpeza"
+    },
+    {
+      "itemId": "0b84438e",
+      "title": "Qual o seu nome?",
+      "questionItem": {
+        "question": {
+          "questionId": "203c49f1",
+          "required": true,
+          "choiceQuestion": {
+            "type": "DROP_DOWN",
+            "options": [
+              {
+                "value": "Maria da Luz"
+              },
+              {
+                "value": "Maria Socorro"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "207ac489",
+      "title": "Quem você irá avaliar?",
+      "questionItem": {
+        "question": {
+          "questionId": "41eb6ab5",
+          "required": true,
+          "choiceQuestion": {
+            "type": "DROP_DOWN",
+            "options": [
+              {
+                "value": "Maria da Luz"
+              },
+              {
+                "value": "Maria Socorro"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "7a095c35",
+      "textItem": {},
+      "title": "Desempenho"
+    },
+    {
+      "itemId": "1ed8ac02",
+      "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+      "questionItem": {
+        "question": {
+          "questionId": "609372fe",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "59f38192",
+      "title": "O funcionário tem desempenhado bem sua função?",
+      "questionItem": {
+        "question": {
+          "questionId": "225797fb",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "4f8ed813",
+      "textItem": {},
+      "title": "Trabalho em Equipe"
+    },
+    {
+      "itemId": "117a87d7",
+      "title": "Passa as informações necessárias para seu grupo de trabalho?",
+      "questionItem": {
+        "question": {
+          "questionId": "34d557b0",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "28a058e8",
+      "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+      "questionItem": {
+        "question": {
+          "questionId": "3bc8422c",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "24f6503d",
+      "textItem": {},
+      "title": "Cultura"
+    },
+    {
+      "itemId": "341b85c9",
+      "title": "O funcionário reflete os valores da empresa?",
+      "questionItem": {
+        "question": {
+          "questionId": "493bb990",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4,
+            "lowLabel": "Abaixo do esperado",
+            "highLabel": "Alto desempenho"
+          }
+        }
+      }
+    },
+    {
+      "itemId": "064c89e2",
+      "textItem": {},
+      "title": "Feedback"
+    },
+    {
+      "itemId": "4a302f44",
+      "title": "Dê um feedback para o seu colega ou para você!!",
+      "questionItem": {
+        "question": {
+          "questionId": "21001ebe",
+          "required": true,
+          "textQuestion": {
+            "paragraph": true
+          }
+        }
+      }
+    },
+    {
+      "itemId": "062cd791",
+      "title": "Você já avaliou todos os envolvidos, inclusive você?",
+      "questionItem": {
+        "question": {
+          "questionId": "135dffb6",
+          "required": true,
+          "choiceQuestion": {
+            "type": "RADIO",
+            "options": [
+              {
+                "value": "Sim",
+                "goToSectionId": "489fb344"
+              },
+              {
+                "value": "Não",
+                "goToSectionId": "77dca299"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "77dca299",
+      "pageBreakItem": {},
+      "title": "Você ainda deve responder o formulário",
+      "description": "Clique em enviar formulário novamente, para repetir o mesmo processo"
+    },
+    {
+      "itemId": "489fb344",
+      "pageBreakItem": {},
+      "title": "Agradecemos sua participação!"
+    }
+  ],
+  "publishSettings": {
+    "publishState": {}
+  }
+}

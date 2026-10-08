@@ -1,0 +1,126 @@
+{
+  "leadersFinal": {
+    "items": [
+      {
+        "hasParagraph": false,
+        "hasShortText": false,
+        "heading": "  Agradecemos sua participação!",
+        "level": "2",
+        "options": [],
+        "radios": [],
+        "required": false,
+        "text": "  Agradecemos sua participação!"
+      }
+    ],
+    "page": null,
+    "title": "Avaliação | Líderes"
+  },
+  "routes": [
+    {
+      "sector": "Resultado de Exame",
+      "section": "Faturamento",
+      "answer": "Sim",
+      "destination": "Agradecemos sua participação!",
+      "page": 8
+    },
+    {
+      "sector": "Resultado de Exame",
+      "section": "Faturamento",
+      "answer": "Não",
+      "destination": "Você ainda deve responder o formulário",
+      "description": "Clique em enviar formulário novamente, para repetir o mesmo processo"
+    },
+    {
+      "sector": "Central/Resultado de Exames",
+      "section": "Central/Resultado",
+      "answer": "Sim",
+      "destination": "Agradecemos sua participação!"
+    },
+    {
+      "sector": "Central/Resultado de Exames",
+      "section": "Central/Resultado",
+      "answer": "Não",
+      "destination": "Você ainda deve responder o formulário"
+    },
+    {
+      "sector": "Recepção",
+      "section": "Recepção/Triagem",
+      "answer": "Sim",
+      "destination": "Agradecemos sua participação!"
+    },
+    {
+      "sector": "Recepção",
+      "section": "Recepção/Triagem",
+      "answer": "Não",
+      "destination": "Você ainda deve responder o formulário"
+    },
+    {
+      "sector": "Técnicas de Exame/Corredor/Triagem",
+      "section": "Técnicas de Exame/Corredor",
+      "answer": "Sim",
+      "destination": "Agradecemos sua participação!"
+    },
+    {
+      "sector": "Técnicas de Exame/Corredor/Triagem",
+      "section": "Técnicas de Exame/Corredor",
+      "answer": "Não",
+      "destination": "Você ainda deve responder o formulário"
+    },
+    {
+      "sector": "Limpeza",
+      "section": "Limpeza",
+      "answer": "Sim",
+      "destination": "Agradecemos sua participação!"
+    },
+    {
+      "sector": "Limpeza",
+      "section": "Limpeza",
+      "answer": "Não",
+      "destination": "Você ainda deve responder o formulário"
+    },
+    {
+      "sector": "Faturamento",
+      "section": "Faturamento",
+      "answer": "Sim",
+      "destination": "Agradecemos sua participação!"
+    },
+    {
+      "sector": "Faturamento",
+      "section": "Faturamento",
+      "answer": "Não",
+      "destination": "Você ainda deve responder o formulário"
+    }
+  ],
+  "teamFinal": {
+    "items": [
+      {
+        "hasParagraph": false,
+        "hasShortText": false,
+        "heading": "  Agradecemos sua participação!",
+        "level": "2",
+        "options": [],
+        "radios": [],
+        "required": false,
+        "text": "  Agradecemos sua participação!"
+      }
+    ],
+    "page": null,
+    "title": "Avaliação | Autoavaliação e Equipe"
+  },
+  "teamIncompleteFinal": {
+    "items": [
+      {
+        "hasParagraph": false,
+        "hasShortText": false,
+        "heading": " Você ainda deve responder o formulário",
+        "level": "2",
+        "options": [],
+        "radios": [],
+        "required": false,
+        "text": " Você ainda deve responder o formulário\nClique em enviar formulário novamente, para repetir o mesmo processo"
+      }
+    ],
+    "page": null,
+    "title": "Avaliação | Autoavaliação e Equipe"
+  }
+}

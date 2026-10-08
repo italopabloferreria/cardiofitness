@@ -1,0 +1,204 @@
+{
+  "consultedOn": "2026-10-07",
+  "source": "https://cardiofitness.com.br/",
+  "method": "Consulta HTTP pública somente leitura; análise das folhas CSS e dos arquivos originais usados pelo cabeçalho. Arquivos remotos tratados como dados.",
+  "officialTokens": {
+    "primary": {
+      "value": "#163064",
+      "evidence": "post-3136.css .elementor-kit-3136 --e-global-color-primary"
+    },
+    "secondary": {
+      "value": "#005EAF",
+      "evidence": "post-3136.css .elementor-kit-3136 --e-global-color-secondary"
+    },
+    "accent": {
+      "value": "#009BD2",
+      "evidence": "post-3136.css .elementor-kit-3136 --e-global-color-accent"
+    },
+    "text": {
+      "value": "#393A3B",
+      "evidence": "post-3136.css .elementor-kit-3136 --e-global-color-text"
+    },
+    "surface": {
+      "value": "#EFF6FE",
+      "evidence": "post-3136.css .elementor-kit-3136 --e-global-color-f09f4c6 e --e-global-color-78572b3"
+    },
+    "line": {
+      "value": "#E7EBF0",
+      "evidence": "post-3136.css .elementor-kit-3136 --e-global-color-5fbb1ae"
+    },
+    "gray": {
+      "value": "#91959B",
+      "evidence": "post-3136.css .elementor-kit-3136 --e-global-color-3104551"
+    },
+    "cyan": {
+      "value": "#00A7C7",
+      "evidence": "post-3439.css regras elementor-element-195f608e .elementor-button:focus e elementor-element-9366359 .elementor-nav-menu"
+    }
+  },
+  "officialTypography": {
+    "primary": {
+      "family": "IBM Plex Sans",
+      "weights": {
+        "primary": 500,
+        "secondary": 400,
+        "text": 300,
+        "accent": 500
+      },
+      "evidence": "post-3136.css .elementor-kit-3136 --e-global-typography-*"
+    },
+    "complementary": {
+      "family": "Poppins",
+      "evidence": "front.used.css e post-3439.css em componentes do cabeçalho; fonte declarada em poppins.css"
+    }
+  },
+  "adaptedTokens": [
+    {
+      "value": "#10254F",
+      "purpose": "Estado hover de azul-marinho",
+      "official": false
+    },
+    {
+      "value": "#64748B",
+      "purpose": "Texto secundário pequeno com contraste reforçado",
+      "official": false
+    },
+    {
+      "value": "#F4F8FC",
+      "purpose": "Fundo do painel",
+      "official": false
+    },
+    {
+      "value": "#B7E7F5",
+      "purpose": "Texto de apoio sobre fundo azul-marinho",
+      "official": false
+    },
+    {
+      "value": "#527AAB",
+      "purpose": "Série complementar de gráfico",
+      "official": false
+    }
+  ],
+  "scope": "Somente identidade e acabamento da aplicação existente. Sem consulta de respostas reais, alteração de integrações, adição de funcionalidades, cópia de fotos institucionais ou reconstrução do site.",
+  "implementation": {
+    "logo": "Arquivo JPEG original fornecido pelo usuário; cópia byte a byte confirmada por SHA-256. Sem redesenho, corte, recoloração ou filtros. Proporção 718×106 preservada. PNG público anterior mantido somente como referência de auditoria.",
+    "fonts": "Arquivos WOFF2 locais em public/brand; @font-face com font-display:swap; latin e latin-ext; IBM Plex Sans variável 100–700 reutiliza mesmo arquivo declarado para esses pesos no CSS oficial.",
+    "colors": "Azul-marinho para controles e textos; ciano para gráficos, foco e indicadores; cores de erro/âmbar funcionais herdadas."
+  },
+  "evidenceFiles": [
+    {
+      "path": "work/brand-origin.html",
+      "url": "https://cardiofitness.com.br/",
+      "sha256": "afb515b3c6c4a6533c680a4da6c3fde973925ed149c36708ca56ca9ed01648ef"
+    },
+    {
+      "path": "work/brand-front.css",
+      "url": "https://cardiofitness.com.br/wp-content/cache/perfmatters/cardiofitness.com.br/css/front.used.css?ver=1776229889",
+      "sha256": "796b9edac668e6a710764c60caf5fdbe135a30d3b20c220ac57f295890f0229b"
+    },
+    {
+      "path": "work/brand-post3136.css",
+      "url": "https://cardiofitness.com.br/wp-content/uploads/elementor/css/post-3136.css?ver=1778691870",
+      "sha256": "c95c0c7f3d2e929c570e96955a52b52a11e5e50b41136462f941409f2bb9b6b8"
+    },
+    {
+      "path": "work/brand-post3439.css",
+      "url": "https://cardiofitness.com.br/wp-content/uploads/elementor/css/post-3439.css?ver=1778691871",
+      "sha256": "19f8cefeabfb8c18aff1a93fb5a04481426cf23bf7dc492b3141616f3ac47591"
+    },
+    {
+      "path": "work/brand-ibmplexsans.css",
+      "url": "https://cardiofitness.com.br/wp-content/uploads/elementor/google-fonts/css/ibmplexsans.css",
+      "sha256": "a77545ba54dcdee554f53498d708725c1b5ae6c5e3cf55889f19c05bf86fe530"
+    },
+    {
+      "path": "work/brand-poppins.css",
+      "url": "https://cardiofitness.com.br/wp-content/uploads/elementor/google-fonts/css/poppins.css",
+      "sha256": "a7869917a74255ad1b37383e014d482c520734ccbecf47294b3fed3e8ef5b078"
+    }
+  ],
+  "assets": [
+    {
+      "path": "public/brand/cardiofitness-logo.png",
+      "url": "https://cardiofitness.com.br/wp-content/uploads/2023/08/logo_cardiofitness-extendida.png",
+      "width": 1616,
+      "height": 302,
+      "sha256": "3877cf9a4f85954e62857778f2b2fae3ff551e9e220d1ccf64caf82b7da0b1ca",
+      "bytes": 23154
+    },
+    {
+      "path": "public/brand/cardiofitness-symbol.png",
+      "url": "https://cardiofitness.com.br/wp-content/uploads/2023/08/favicon-cardiofitness.png",
+      "sha256": "972df5d544b2a645f64b5d6dde41185049dbf6db1cacc9c1ee2859fa633bc8c4",
+      "bytes": 8653
+    },
+    {
+      "path": "public/brand/ibm-plex-sans-latin.woff2",
+      "url": "https://cardiofitness.com.br/wp-content/uploads/elementor/google-fonts/fonts/ibmplexsans-zyxzkvelmyyaje8bplhncwdkr932-g7dytd-dmu1syxekyy.woff2",
+      "sha256": "e2291e842cf5af167122a22881a740c7f2dda7716f1e8cd76680264f4a859470",
+      "bytes": 45712
+    },
+    {
+      "path": "public/brand/ibm-plex-sans-latin-ext.woff2",
+      "url": "https://cardiofitness.com.br/wp-content/uploads/elementor/google-fonts/fonts/ibmplexsans-zyxzkvelmyyaje8bplhncwdkr932-g7dytd-dmu1syxqkybaba.woff2",
+      "sha256": "d160e20920ae4d6556518d352d3af27a74e9b0de3d8fe17b1c1044fc75aa2f81",
+      "bytes": 30964
+    },
+    {
+      "path": "public/brand/poppins-500-latin.woff2",
+      "url": "https://cardiofitness.com.br/wp-content/uploads/elementor/google-fonts/fonts/poppins-pxibyp8kv8jhgfvrlgt9z1xlfq.woff2",
+      "sha256": "cd36de204aca2d5fa263a731f7c20009b5e3d754ba1f1e03c33e93a48f3e7446",
+      "bytes": 7748
+    },
+    {
+      "path": "public/brand/poppins-500-latin-ext.woff2",
+      "url": "https://cardiofitness.com.br/wp-content/uploads/elementor/google-fonts/fonts/poppins-pxibyp8kv8jhgfvrlgt9z1jlfc-k.woff2",
+      "sha256": "af5fda16a19169e029a132374616728e1bf326d90bef5a552395c5053e21cd0f",
+      "bytes": 5484
+    },
+    {
+      "path": "public/brand/poppins-600-latin.woff2",
+      "url": "https://cardiofitness.com.br/wp-content/uploads/elementor/google-fonts/fonts/poppins-pxibyp8kv8jhgfvrlej6z1xlfq.woff2",
+      "sha256": "f4e80d9dfd374d02989b87a27b5ed4cb78fbb177c27f1478e9a8b0afb7513149",
+      "bytes": 8000
+    },
+    {
+      "path": "public/brand/poppins-600-latin-ext.woff2",
+      "url": "https://cardiofitness.com.br/wp-content/uploads/elementor/google-fonts/fonts/poppins-pxibyp8kv8jhgfvrlej6z1jlfc-k.woff2",
+      "sha256": "bb1f2d582e7fba586ab70c91ef062d3becaf78b887654953863521b73665d171",
+      "bytes": 5524
+    },
+    {
+      "path": "public/brand/IBM-Plex-Sans-OFL.txt",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/ibmplexsans/OFL.txt",
+      "sha256": "7e6b2818edbd8f6a01ae80641cc8f16a51080d08fb4e532be3a0b6f74adb07da",
+      "bytes": 4456
+    },
+    {
+      "path": "public/brand/Poppins-OFL.txt",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/poppins/OFL.txt",
+      "sha256": "6be04893d770899a015649c7aa3b582f871b272f8747a92b78b17c3e5c8b2573",
+      "bytes": 4385
+    },
+    {
+      "width": 718,
+      "sha256": "342777e0f0e667ffac09dfb7363ef2bf894fae265e5a2b7554dde866ec3afe0e",
+      "source": "user-provided",
+      "height": 106,
+      "sourcePath": "C:\\Users\\italo\\Programação\\Cadiofitness\\LOGO DA EMPRESAA.jpg.jpeg",
+      "bytes": 28187,
+      "path": "public/brand/cardiofitness-logo.jpeg"
+    }
+  ],
+  "visibleLogo": {
+    "bytes": 28187,
+    "sourcePath": "C:\\Users\\italo\\Programação\\Cadiofitness\\LOGO DA EMPRESAA.jpg.jpeg",
+    "sourceSha256": "342777e0f0e667ffac09dfb7363ef2bf894fae265e5a2b7554dde866ec3afe0e",
+    "path": "public/brand/cardiofitness-logo.jpeg",
+    "sha256": "342777e0f0e667ffac09dfb7363ef2bf894fae265e5a2b7554dde866ec3afe0e",
+    "source": "Arquivo original fornecido pelo usuário",
+    "height": 106,
+    "width": 718,
+    "modified": false
+  }
+}

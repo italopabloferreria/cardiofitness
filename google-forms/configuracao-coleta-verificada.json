@@ -1,0 +1,87 @@
+{
+  "definedAt": "2026-10-08",
+  "authorizedBy": "Ítalo: certo, pode definir",
+  "originalPrivateSettingsCopied": false,
+  "published": false,
+  "apiActivated": false,
+  "forms": [
+    {
+      "key": "leaders",
+      "id": "1crkqvvjyDrSUu7C0SHhS0le7_x89CPPQEJCAIY8BTso",
+      "emailMode": "Não coletar",
+      "confirmation": "Sua avaliação foi registrada. Obrigado pela participação!",
+      "confirmationVerified": true,
+      "settings": [
+        {
+          "checked": false,
+          "label": "Permitir a edição das respostas. As respostas podem ser alteradas após o envio."
+        },
+        {
+          "checked": false,
+          "label": "Limitar a 1 resposta. Os participantes precisarão fazer login no Google."
+        },
+        {
+          "checked": true,
+          "label": "Mostrar barra de progresso"
+        },
+        {
+          "checked": false,
+          "label": "Embaralhar a ordem das perguntas"
+        },
+        {
+          "checked": true,
+          "label": "Mostrar link para enviar outra resposta"
+        },
+        {
+          "checked": false,
+          "label": "Ver o resumo dos resultados"
+        },
+        {
+          "checked": false,
+          "label": "Desativar o salvamento automático para todos os participantes. Os participantes vão perder as respostas preenchidas se o navegador fechar ou atualizar."
+        }
+      ],
+      "editorAccess": "Restrito; somente cadiofit@gmail.com proprietária",
+      "participantAccess": "Qualquer pessoa com o link; coleta depende de publicação"
+    },
+    {
+      "key": "team",
+      "id": "1ugPS-wx1YVdOHYXXH-xbKCkSQk1ZhMF9g1h80n0X4hU",
+      "emailMode": "Não coletar",
+      "confirmation": "Sua avaliação foi registrada. Se ainda houver pessoas a avaliar, clique em \"Enviar outra resposta\" e repita o processo.",
+      "confirmationVerified": true,
+      "settings": [
+        {
+          "checked": false,
+          "label": "Permitir a edição das respostas. As respostas podem ser alteradas após o envio."
+        },
+        {
+          "checked": false,
+          "label": "Limitar a 1 resposta. Os participantes precisarão fazer login no Google."
+        },
+        {
+          "checked": true,
+          "label": "Mostrar barra de progresso"
+        },
+        {
+          "checked": false,
+          "label": "Embaralhar a ordem das perguntas"
+        },
+        {
+          "checked": true,
+          "label": "Mostrar link para enviar outra resposta"
+        },
+        {
+          "checked": false,
+          "label": "Ver o resumo dos resultados"
+        },
+        {
+          "checked": false,
+          "label": "Desativar o salvamento automático para todos os participantes. Os participantes vão perder as respostas preenchidas se o navegador fechar ou atualizar."
+        }
+      ],
+      "editorAccess": "Restrito; somente cadiofit@gmail.com proprietária",
+      "participantAccess": "Qualquer pessoa com o link; coleta depende de publicação"
+    }
+  ]
+}

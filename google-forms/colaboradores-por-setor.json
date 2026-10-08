@@ -1,0 +1,109 @@
+{
+  "source": {
+    "path": "C:\\Users\\italo\\Programação\\Cadiofitness\\TODOS OS COLABORADORES POR SETORES DA EMPRESA.pdf",
+    "sha256": "7d2010ebf6f66a716093fa0161e1fd6f57faa1602470914fe9779a59511456d7",
+    "pages": 1,
+    "reviewedOn": "2026-10-08",
+    "extraction": "pdfplumber tabela + renderização Poppler; página inteira inspecionada visualmente"
+  },
+  "status": "RH_PDF_CONFIRMED_AUTHORITATIVE_IMPORTED",
+  "counts": {
+    "sectors": 6,
+    "employeeRows": 28,
+    "distinctLeaderLabels": 5
+  },
+  "sectors": [
+    {
+      "sector": "FATURAMENTO E AUXILIARES DE FATURAMENTO",
+      "leaderAsWritten": "LIDIA VIANA",
+      "employeesAsWritten": [
+        "ANA KAROLINA RIBEIRO ALVES VIANA",
+        "BRUNA ALVES BARBOSA",
+        "RAYANE",
+        "YASMIN",
+        "adriele"
+      ],
+      "sourcePage": 1,
+      "comparisonFormSection": "faturamento",
+      "comparisonNote": "Correspondência de tema do setor apenas; nomes e vínculos não associados automaticamente."
+    },
+    {
+      "sector": "COPEIRAS",
+      "leaderAsWritten": "CLEUMA",
+      "employeesAsWritten": [
+        "MARIA DO SOCORRO"
+      ],
+      "sourcePage": 1,
+      "comparisonFormSection": null,
+      "comparisonNote": "Sem seção diretamente correspondente no blueprint; não associar por suposição."
+    },
+    {
+      "sector": "CENTRAL E RESULTADOS DE EXAMES",
+      "leaderAsWritten": "GABRIEL",
+      "employeesAsWritten": [
+        "Hellen Silva Rodrigues",
+        "LUCIANA",
+        "Rute dos Santos Silva",
+        "JOELSON",
+        "paulo"
+      ],
+      "sourcePage": 1,
+      "comparisonFormSection": "central-resultado",
+      "comparisonNote": "Correspondência de tema do setor apenas; nomes e vínculos não associados automaticamente."
+    },
+    {
+      "sector": "TÉCNICAS E CORREDOR",
+      "leaderAsWritten": "CLEUMA",
+      "employeesAsWritten": [
+        "DAIANE RAMOS DOS SANTOS",
+        "Eliane Batista de Souza",
+        "Luzia de Moraes Castro",
+        "MARIA SULAMI RIBEIRO DE ANDRADE",
+        "Onizete Vieira da Silva-",
+        "Renilda Maria Pereira da Silva",
+        "Solange Borges Pimentel",
+        "luiza",
+        "sara"
+      ],
+      "sourcePage": 1,
+      "comparisonFormSection": "tecnicas-de-exame-corredor",
+      "comparisonNote": "Correspondência de tema do setor apenas; nomes e vínculos não associados automaticamente."
+    },
+    {
+      "sector": "RECEPÇÃO E TRIAGEM",
+      "leaderAsWritten": "WELISSON",
+      "employeesAsWritten": [
+        "LUCAS DOS SANTOS REIS",
+        "Jaqueline Alves Ribeiro",
+        "DAYANE MARES",
+        "JULIA SANTOS",
+        "KEZIA",
+        "MARIA LUIZA 2.",
+        "BRENO"
+      ],
+      "sourcePage": 1,
+      "comparisonFormSection": "recepcao-triagem",
+      "comparisonNote": "Correspondência de tema do setor apenas; nomes e vínculos não associados automaticamente."
+    },
+    {
+      "sector": "ADM",
+      "leaderAsWritten": "MARIA",
+      "employeesAsWritten": [
+        "ana carolina reis"
+      ],
+      "sourcePage": 1,
+      "comparisonFormSection": null,
+      "comparisonNote": "Sem seção diretamente correspondente no blueprint; não associar por suposição."
+    }
+  ],
+  "limits": [
+    "Nomes preservados como escritos, inclusive minúsculas, abreviações, hífen final em Onizete Vieira da Silva- e sufixo MARIA LUIZA 2..",
+    "Título de setores com acentos confirmado visualmente porque a extração do PDF perde alguns glifos.",
+    "Nenhum e-mail, ID, status, cargo além das lideranças ou alias confiável consta no documento.",
+    "Correspondências com nomes abreviados do Forms são hipóteses para revisão, não vínculos automáticos.",
+    "PDF não define lógica de páginas, seções finais ou rotas Sim/Não dos formulários.",
+    "PDF confirmado como fonte oficial em 08/10/2026; listas antigas dos Forms não prevalecem sobre o cadastro."
+  ],
+  "importedOn": "2026-10-08",
+  "authorityConfirmedBy": "Ítalo, orientação direta: desconsiderar listas do Forms e considerar PDF enviado pelo RH"
+}

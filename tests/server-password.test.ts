@@ -1,0 +1,13 @@
+import { beforeEach, expect, it, vi } from 'vitest';
+const mocks=vi.hoisted(()=>({requireRh:vi.fn(),updateUser:vi.fn(),rpc:vi.fn()}));
+vi.mock('../src/lib/server/supabase',()=>({requireRh:mocks.requireRh}));
+import {POST} from '../src/app/api/auth/password/route';
+const origin='http://127.0.0.1:3000';
+const input={currentPassword:'temporary-test',newPassword:'personal-test-password',confirmation:'personal-test-password'};
+const call=(body:unknown=input,requestOrigin=origin)=>POST(new Request(`${origin}/api/auth/password`,{method:'POST',headers:{origin:requestOrigin,'content-type':'application/json'},body:JSON.stringify(body)}));
+beforeEach(()=>{vi.resetAllMocks();process.env.APP_URL=origin;mocks.requireRh.mockResolvedValue({client:{auth:{updateUser:mocks.updateUser},rpc:mocks.rpc}});mocks.updateUser.mockResolvedValue({error:null});mocks.rpc.mockResolvedValue({data:false,error:null});});
+it('valida origem antes de acessar conta',async()=>{expect((await call(input,'https://external.invalid')).status).toBe(403);expect(mocks.requireRh).not.toHaveBeenCalled();});
+it.each([{...input,newPassword:'admin123',confirmation:'admin123'},{...input,confirmation:'mismatch'},{...input,currentPassword:input.newPassword}])('rejeita senha fraca, confirmação e reutilização',async body=>{expect((await call(body)).status).toBe(400);expect(mocks.updateUser).not.toHaveBeenCalled();});
+it('exige senha atual e verifica liberação no banco',async()=>{expect((await call()).status).toBe(200);expect(mocks.requireRh).toHaveBeenCalledWith(true);expect(mocks.updateUser).toHaveBeenCalledWith({password:input.newPassword,current_password:input.currentPassword});expect(mocks.rpc).toHaveBeenCalledWith('password_change_required');});
+it('erro do provedor não revela credenciais',async()=>{mocks.updateUser.mockResolvedValue({error:{message:'secret upstream'}});const response=await call();expect(response.status).toBe(400);expect(JSON.stringify(await response.json())).not.toContain('secret upstream');expect(mocks.rpc).not.toHaveBeenCalled();});
+it('falha fechada se banco não confirmar remoção da restrição',async()=>{mocks.rpc.mockResolvedValue({data:true,error:null});expect((await call()).status).toBe(503);});

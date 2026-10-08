@@ -1,0 +1,312 @@
+{
+  "formId": "1crkqvvjyDrSUu7C0SHhS0le7_x89CPPQEJCAIY8BTso",
+  "info": {
+    "title": "Avaliação | Líderes",
+    "documentTitle": "Avaliação | Líderes"
+  },
+  "settings": {
+    "emailCollectionType": "DO_NOT_COLLECT"
+  },
+  "revisionId": "00000047",
+  "responderUri": "https://docs.google.com/forms/d/e/1FAIpQLScI5us346mhyabPreE4ly7CXXZYBn5wwYBbXj6HJOGHErDpYQ/viewform",
+  "items": [
+    {
+      "itemId": "56696239",
+      "title": "Qual o seu nome?",
+      "questionItem": {
+        "question": {
+          "questionId": "53288552",
+          "required": true,
+          "choiceQuestion": {
+            "type": "DROP_DOWN",
+            "options": [
+              {
+                "value": "Ana Karolina"
+              },
+              {
+                "value": "Ana Karoline"
+              },
+              {
+                "value": "Bruna"
+              },
+              {
+                "value": "Gabriel"
+              },
+              {
+                "value": "Lucas"
+              },
+              {
+                "value": "Joelson"
+              },
+              {
+                "value": "Rute"
+              },
+              {
+                "value": "João"
+              },
+              {
+                "value": "Daiane Ramos"
+              },
+              {
+                "value": "Renilda"
+              },
+              {
+                "value": "Dayane Mares"
+              },
+              {
+                "value": "Sulami"
+              },
+              {
+                "value": "Roni"
+              },
+              {
+                "value": "Eliane"
+              },
+              {
+                "value": "Luzia"
+              },
+              {
+                "value": "Solange"
+              },
+              {
+                "value": "Helen Silva"
+              },
+              {
+                "value": "Jaqueline"
+              },
+              {
+                "value": "Júlia"
+              },
+              {
+                "value": "Alice"
+              },
+              {
+                "value": "Sabrina"
+              },
+              {
+                "value": "Rayane"
+              },
+              {
+                "value": "Luciana"
+              },
+              {
+                "value": "Thiago"
+              },
+              {
+                "value": "Emanuele"
+              },
+              {
+                "value": "Maria da Luz"
+              },
+              {
+                "value": "Maria Socorro"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "225307d6",
+      "title": "Qual o seu setor?",
+      "questionItem": {
+        "question": {
+          "questionId": "7c309a7d",
+          "required": true,
+          "choiceQuestion": {
+            "type": "DROP_DOWN",
+            "options": [
+              {
+                "value": "Faturamento"
+              },
+              {
+                "value": "Central"
+              },
+              {
+                "value": "Recepção"
+              },
+              {
+                "value": "Técnicas de Exame/Corredor/Triagem"
+              },
+              {
+                "value": "Limpeza"
+              },
+              {
+                "value": "Entrega de Exames"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "4aae1cbb",
+      "title": "Qual é a Líder responsável pelo seu setor?",
+      "questionItem": {
+        "question": {
+          "questionId": "32c80244",
+          "required": true,
+          "choiceQuestion": {
+            "type": "DROP_DOWN",
+            "options": [
+              {
+                "value": "Lídia"
+              },
+              {
+                "value": "Cleuma"
+              },
+              {
+                "value": "Welisson"
+              },
+              {
+                "value": "Natacha"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "itemId": "39f50997",
+      "pageBreakItem": {},
+      "title": "Líderes"
+    },
+    {
+      "itemId": "6b671808",
+      "textItem": {},
+      "title": "Desempenho"
+    },
+    {
+      "itemId": "35067793",
+      "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+      "questionItem": {
+        "question": {
+          "questionId": "1860caa3",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4
+          }
+        }
+      }
+    },
+    {
+      "itemId": "77c93622",
+      "title": "O funcionário tem desempenhado bem sua função?",
+      "questionItem": {
+        "question": {
+          "questionId": "08d6ea80",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4
+          }
+        }
+      }
+    },
+    {
+      "itemId": "1bcd3339",
+      "textItem": {},
+      "title": "Trabalho em Equipe"
+    },
+    {
+      "itemId": "28d131b5",
+      "title": "Passa as informações necessárias para seu grupo de trabalho?",
+      "questionItem": {
+        "question": {
+          "questionId": "3321e5a8",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4
+          }
+        }
+      }
+    },
+    {
+      "itemId": "76c6b029",
+      "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+      "questionItem": {
+        "question": {
+          "questionId": "43bd2532",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4
+          }
+        }
+      }
+    },
+    {
+      "itemId": "716a7f5e",
+      "textItem": {},
+      "title": "Liderança"
+    },
+    {
+      "itemId": "5618b538",
+      "title": "Consegue influenciar os demais colaboradores e motivá-los a participar das atividades propostas?",
+      "questionItem": {
+        "question": {
+          "questionId": "3bcd842e",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4
+          }
+        }
+      }
+    },
+    {
+      "itemId": "3b6904fa",
+      "title": "Entende a diversidade de personalidades e consegue despertar o melhor de cada uma?",
+      "questionItem": {
+        "question": {
+          "questionId": "485e3858",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4
+          }
+        }
+      }
+    },
+    {
+      "itemId": "7c72636f",
+      "textItem": {},
+      "title": "Cultura"
+    },
+    {
+      "itemId": "7237e267",
+      "title": "O funcionário reflete os valores da empresa?",
+      "questionItem": {
+        "question": {
+          "questionId": "580fe4fc",
+          "required": true,
+          "scaleQuestion": {
+            "low": 1,
+            "high": 4
+          }
+        }
+      }
+    },
+    {
+      "itemId": "21c5700f",
+      "title": "Deixe um feedbacks para seu líder?",
+      "questionItem": {
+        "question": {
+          "questionId": "3c3e864a",
+          "required": true,
+          "textQuestion": {}
+        }
+      }
+    },
+    {
+      "itemId": "09598b8a",
+      "pageBreakItem": {},
+      "title": "Agradecemos sua participação!"
+    }
+  ],
+  "publishSettings": {
+    "publishState": {}
+  }
+}

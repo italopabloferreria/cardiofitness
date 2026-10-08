@@ -1,0 +1,20 @@
+project_id = "cardiofitness-avaliacoes"
+
+[api]
+enabled = true
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db.migrations]
+enabled = true
+schema_paths = ["./schemas/*.sql"]
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:3000"
+enable_signup = false
+
+[auth.email]
+enable_signup = false
+enable_confirmations = true

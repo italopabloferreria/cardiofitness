@@ -1,0 +1,577 @@
+[
+  {
+    "title": "Avaliação | Líderes",
+    "scale": [
+      1,
+      4
+    ],
+    "questions": [
+      {
+        "title": "Qual o seu nome?",
+        "section": "Identificação",
+        "publicType": 3,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Qual o seu setor?",
+        "section": "Identificação",
+        "publicType": 3,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Qual é a Líder responsável pelo seu setor?",
+        "section": "Identificação",
+        "publicType": 3,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+        "section": "Líderes",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário tem desempenhado bem sua função?",
+        "section": "Líderes",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Passa as informações necessárias para seu grupo de trabalho?",
+        "section": "Líderes",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+        "section": "Líderes",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Consegue influenciar os demais colaboradores e motivá-los a participar das atividades propostas?",
+        "section": "Líderes",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Entende a diversidade de personalidades e consegue despertar o melhor de cada uma?",
+        "section": "Líderes",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário reflete os valores da empresa?",
+        "section": "Líderes",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Deixe um feedbacks para seu líder?",
+        "section": "Líderes",
+        "publicType": 0,
+        "numericScale": null,
+        "excludedFromDashboard": true
+      }
+    ],
+    "source": "Public form schema only; no responses or staff option lists collected for delivery."
+  },
+  {
+    "title": "Avaliação | Autoavaliação e Equipe",
+    "scale": [
+      1,
+      4
+    ],
+    "questions": [
+      {
+        "title": "Qual o seu setor?",
+        "section": "Identificação",
+        "publicType": 3,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Qual o seu nome?",
+        "section": "Faturamento",
+        "publicType": 3,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Quem você irá avaliar??",
+        "section": "Faturamento",
+        "publicType": 3,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+        "section": "Faturamento",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário tem conhecimento amplo dos convênios que fatura/autoriza?",
+        "section": "Faturamento",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Passa as informações necessárias para seu grupo de trabalho?",
+        "section": "Faturamento",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+        "section": "Faturamento",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário tem domínio do software MedWare?",
+        "section": "Faturamento",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário tem domínio dos sites dos convênios que fatura/autoriza?",
+        "section": "Faturamento",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário reflete os valores da empresa?",
+        "section": "Faturamento",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Dê um feedback para o seu colega ou para você!!",
+        "section": "Faturamento",
+        "publicType": 1,
+        "numericScale": null,
+        "excludedFromDashboard": true
+      },
+      {
+        "title": "Você já avaliou todos os envolvidos, inclusive você?",
+        "section": "Faturamento",
+        "publicType": 2,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Qual o seu nome?",
+        "section": "Central/Resultado",
+        "publicType": 3,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Quem você irá avaliar??",
+        "section": "Central/Resultado",
+        "publicType": 3,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+        "section": "Central/Resultado",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário tem conhecimento dos convênios credenciados, consultas, exames e respectivos valores?",
+        "section": "Central/Resultado",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Passa as informações necessárias para seu grupo de trabalho?",
+        "section": "Central/Resultado",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+        "section": "Central/Resultado",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário tem domínio do software MedWare?",
+        "section": "Central/Resultado",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário tem domínio do software da Fasterisks?",
+        "section": "Central/Resultado",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário reflete os valores da empresa?",
+        "section": "Central/Resultado",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Dê um feedback para o seu colega ou para você!!",
+        "section": "Central/Resultado",
+        "publicType": 1,
+        "numericScale": null,
+        "excludedFromDashboard": true
+      },
+      {
+        "title": "Você já avaliou todos os envolvidos, inclusive você?",
+        "section": "Central/Resultado",
+        "publicType": 2,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Qual o seu nome?",
+        "section": "Recepção/Triagem",
+        "publicType": 3,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Quem você irá avaliar??",
+        "section": "Recepção/Triagem",
+        "publicType": 3,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+        "section": "Recepção/Triagem",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário tem conhecimento dos convênios credenciados, consultas, exames e respectivos valores? ////// O funcionário tem conhecimento técnico dos exames da empresa?",
+        "section": "Recepção/Triagem",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Passa as informações necessárias para seu grupo de trabalho?",
+        "section": "Recepção/Triagem",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+        "section": "Recepção/Triagem",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário tem domínio do software MedWare?",
+        "section": "Recepção/Triagem",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário reflete os valores da empresa?",
+        "section": "Recepção/Triagem",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Dê um feedback para o seu colega ou para você!!",
+        "section": "Recepção/Triagem",
+        "publicType": 1,
+        "numericScale": null,
+        "excludedFromDashboard": true
+      },
+      {
+        "title": "Você já avaliou todos os envolvidos, inclusive você?",
+        "section": "Recepção/Triagem",
+        "publicType": 2,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Qual o seu nome?",
+        "section": "Técnicas de Exame/Corredor",
+        "publicType": 3,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Quem você irá avaliar?",
+        "section": "Técnicas de Exame/Corredor",
+        "publicType": 3,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+        "section": "Técnicas de Exame/Corredor",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário tem conhecimento técnico dos exames da empresa?",
+        "section": "Técnicas de Exame/Corredor",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Passa as informações necessárias para seu grupo de trabalho?",
+        "section": "Técnicas de Exame/Corredor",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+        "section": "Técnicas de Exame/Corredor",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário tem domínio do software MedWare?",
+        "section": "Técnicas de Exame/Corredor",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário reflete os valores da empresa?",
+        "section": "Técnicas de Exame/Corredor",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Dê um feedback para o seu colega ou para você!!",
+        "section": "Técnicas de Exame/Corredor",
+        "publicType": 1,
+        "numericScale": null,
+        "excludedFromDashboard": true
+      },
+      {
+        "title": "Você já avaliou todos os envolvidos, inclusive você?",
+        "section": "Técnicas de Exame/Corredor",
+        "publicType": 2,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Qual o seu nome?",
+        "section": "Limpeza",
+        "publicType": 3,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Quem você irá avaliar?",
+        "section": "Limpeza",
+        "publicType": 3,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+        "section": "Limpeza",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário tem desempenhado bem sua função?",
+        "section": "Limpeza",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Passa as informações necessárias para seu grupo de trabalho?",
+        "section": "Limpeza",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+        "section": "Limpeza",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "O funcionário reflete os valores da empresa?",
+        "section": "Limpeza",
+        "publicType": 5,
+        "numericScale": [
+          1,
+          4
+        ],
+        "excludedFromDashboard": false
+      },
+      {
+        "title": "Dê um feedback para o seu colega ou para você!!",
+        "section": "Limpeza",
+        "publicType": 1,
+        "numericScale": null,
+        "excludedFromDashboard": true
+      },
+      {
+        "title": "Você já avaliou todos os envolvidos, inclusive você?",
+        "section": "Limpeza",
+        "publicType": 2,
+        "numericScale": null,
+        "excludedFromDashboard": false
+      }
+    ],
+    "source": "Public form schema only; no responses or staff option lists collected for delivery."
+  }
+]

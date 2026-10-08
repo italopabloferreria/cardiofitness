@@ -1,0 +1,106 @@
+{
+  "accountEmail": "cadiofit@gmail.com",
+  "accountCreated": true,
+  "projectCreated": true,
+  "schemaApplied": true,
+  "projectRef": "crqzpadgqbjszywfeuip",
+  "projectUrl": "https://crqzpadgqbjszywfeuip.supabase.co",
+  "dashboardUrl": "https://supabase.com/dashboard/project/crqzpadgqbjszywfeuip",
+  "region": "sa-east-1",
+  "plan": "Free",
+  "status": "GOOGLE_LOGIN_AND_FORMS_CONNECTED_CYCLE_SETUP_PENDING",
+  "schema": "supabase/schemas/01_cardiofitness.sql",
+  "verification": {
+    "tables": 5,
+    "rlsEnabledOnAll": true,
+    "anonymousSelectOnAny": false,
+    "policyPerTable": 1,
+    "advisorFindings": "Four informational unused indexes on empty tables"
+  },
+  "applicationAuth": {
+    "publicSignupEnabled": false,
+    "anonymousSigninEnabled": false,
+    "emailConfirmationRequired": true,
+    "rhUsersProvisioned": true,
+    "authorizedEmail": "cadiofit@gmail.com",
+    "emailPasswordLoginImplemented": true,
+    "googleLoginImplemented": true,
+    "googleProviderEnabled": true,
+    "manualLoginVerified": false,
+    "googleLoginActivationFlag": "GOOGLE_LOGIN_ENABLED",
+    "googleLoginVerified": true,
+    "googleLoginCallback": "http://127.0.0.1:3000/auth/callback"
+  },
+  "pending": [
+    "Verify authenticated login and Google question mapping",
+    "Review OAuth production readiness",
+    "Vercel deployment",
+    "Verify email/password login manually",
+    "RH to activate first bimonthly cycle in panel; align collection identification to the authoritative RH PDF before response association"
+  ],
+  "realEmployeeDataImported": true,
+  "verifiedOn": "2026-10-08",
+  "applicationConnection": {
+    "configured": true,
+    "mode": "live",
+    "keyType": "existing publishable key",
+    "secretKeyUsed": false,
+    "anonymousBootstrapHttpStatus": 401,
+    "anonymousEmployeeReadHttpStatus": 401
+  },
+  "googleIntegration": {
+    "projectId": "cardiofitness-avaliacoes",
+    "projectNumber": "90432433582",
+    "formsApiEnabled": true,
+    "oauthClientCreated": true,
+    "clientName": "Cardiofitness Sistema RH Local",
+    "redirectUri": "http://127.0.0.1:42813/oauth2callback",
+    "publishingStatus": "Testing",
+    "scopes": [
+      "forms.body.readonly",
+      "forms.responses.readonly"
+    ],
+    "clientSecretConfigured": true,
+    "refreshTokenConfigured": true,
+    "responsesRead": false,
+    "testUserConfigured": true,
+    "clientSecretValidated": true,
+    "lastOAuthError": null,
+    "formMetadataRead": true
+  },
+  "employeeImport": {
+    "source": "TODOS OS COLABORADORES POR SETORES DA EMPRESA.pdf",
+    "employeeRows": 28,
+    "leaderRows": 5,
+    "totalRecords": 33,
+    "employeesWithLeader": 28,
+    "formAliasesConfirmed": false,
+    "initialActiveStatus": true,
+    "verifiedOn": "2026-10-08",
+    "authoritativeSource": "RH_PDF",
+    "businessConfirmed": true,
+    "oldFormsListsAuthoritative": false
+  },
+  "formsMapping": {
+    "prepared": true,
+    "leadershipScoreQuestions": 7,
+    "teamScoreQuestions": 31,
+    "teamIdentificationSections": 5,
+    "appliedToCycle": false,
+    "identityAliasesConfirmed": false
+  },
+  "cycleConfiguration": {
+    "frequency": "bimonthly",
+    "endDateSuggestedAutomatically": true,
+    "rhChoosesStartDate": true,
+    "firstCycleCreated": false
+  },
+  "passwordFirstAccess": {
+    "migrationApplied": true,
+    "settingsScreenImplemented": true,
+    "serverAndRlsGateImplemented": true,
+    "temporaryPasswordSet": false,
+    "mandatoryFlagActivated": false,
+    "pending": "Usuário define senha temporária individual no Supabase; em seguida executar exigir-troca-senha-rh.sql. Senha existente preservada."
+  }
+}

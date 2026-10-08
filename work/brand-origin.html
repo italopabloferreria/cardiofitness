@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><script>if(navigator.userAgent.match(/MSIE|Internet Explorer/i)||navigator.userAgent.match(/Trident\/7\..*?rv:11/i)){var href=document.location.href;if(!href.match(/[?&]nowprocket/)){if(href.indexOf("?")==-1){if(href.indexOf("#")==-1){document.location.href=href+"?nowprocket=1"}else{document.location.href=href.replace("#","?nowprocket=1#")}}else{if(href.indexOf("#")==-1){document.location.href=href+"&nowprocket=1"}else{document.location.href=href.replace("#","&nowprocket=1#")}}}}</script><script>class RocketLazyLoadScripts{constructor(){this.triggerEvents=["keydown","mousedown","mousemove","touchmove","touchstart","touchend","wheel"],this.userEventHandler=this._triggerListener.bind(this),this.touchStartHandler=this._onTouchStart.bind(this),this.touchMoveHandler=this._onTouchMove.bind(this),this.touchEndHandler=this._onTouchEnd.bind(this),this.clickHandler=this._onClick.bind(this),this.interceptedClicks=[],window.addEventListener("pageshow",(e=>{this.persisted=e.persisted})),window.addEventListener("DOMContentLoaded",(()=>{this._preconnect3rdParties()})),this.delayedScripts={normal:[],async:[],defer:[]},this.allJQueries=[]}_addUserInteractionListener(e){document.hidden?e._triggerListener():(this.triggerEvents.forEach((t=>window.addEventListener(t,e.userEventHandler,{passive:!0}))),window.addEventListener("touchstart",e.touchStartHandler,{passive:!0}),window.addEventListener("mousedown",e.touchStartHandler),document.addEventListener("visibilitychange",e.userEventHandler))}_removeUserInteractionListener(){this.triggerEvents.forEach((e=>window.removeEventListener(e,this.userEventHandler,{passive:!0}))),document.removeEventListener("visibilitychange",this.userEventHandler)}_onTouchStart(e){"HTML"!==e.target.tagName&&(window.addEventListener("touchend",this.touchEndHandler),window.addEventListener("mouseup",this.touchEndHandler),window.addEventListener("touchmove",this.touchMoveHandler,{passive:!0}),window.addEventListener("mousemove",this.touchMoveHandler),e.target.addEventListener("click",this.clickHandler),this._renameDOMAttribute(e.target,"onclick","rocket-onclick"))}_onTouchMove(e){window.removeEventListener("touchend",this.touchEndHandler),window.removeEventListener("mouseup",this.touchEndHandler),window.removeEventListener("touchmove",this.touchMoveHandler,{passive:!0}),window.removeEventListener("mousemove",this.touchMoveHandler),e.target.removeEventListener("click",this.clickHandler),this._renameDOMAttribute(e.target,"rocket-onclick","onclick")}_onTouchEnd(e){window.removeEventListener("touchend",this.touchEndHandler),window.removeEventListener("mouseup",this.touchEndHandler),window.removeEventListener("touchmove",this.touchMoveHandler,{passive:!0}),window.removeEventListener("mousemove",this.touchMoveHandler)}_onClick(e){e.target.removeEventListener("click",this.clickHandler),this._renameDOMAttribute(e.target,"rocket-onclick","onclick"),this.interceptedClicks.push(e),e.preventDefault(),e.stopPropagation(),e.stopImmediatePropagation()}_replayClicks(){window.removeEventListener("touchstart",this.touchStartHandler,{passive:!0}),window.removeEventListener("mousedown",this.touchStartHandler),this.interceptedClicks.forEach((e=>{e.target.dispatchEvent(new MouseEvent("click",{view:e.view,bubbles:!0,cancelable:!0}))}))}_renameDOMAttribute(e,t,n){e.hasAttribute&&e.hasAttribute(t)&&(event.target.setAttribute(n,event.target.getAttribute(t)),event.target.removeAttribute(t))}_triggerListener(){this._removeUserInteractionListener(this),"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this._loadEverythingNow.bind(this)):this._loadEverythingNow()}_preconnect3rdParties(){let e=[];document.querySelectorAll("script[type=rocketlazyloadscript]").forEach((t=>{if(t.hasAttribute("src")){const n=new URL(t.src).origin;n!==location.origin&&e.push({src:n,crossOrigin:t.crossOrigin||"module"===t.getAttribute("data-rocket-type")})}})),e=[...new Map(e.map((e=>[JSON.stringify(e),e]))).values()],this._batchInjectResourceHints(e,"preconnect")}async _loadEverythingNow(){this.lastBreath=Date.now(),this._delayEventListeners(),this._delayJQueryReady(this),this._handleDocumentWrite(),this._registerAllDelayedScripts(),this._preloadAllScripts(),await this._loadScriptsFromList(this.delayedScripts.normal),await this._loadScriptsFromList(this.delayedScripts.defer),await this._loadScriptsFromList(this.delayedScripts.async);try{await this._triggerDOMContentLoaded(),await this._triggerWindowLoad()}catch(e){}window.dispatchEvent(new Event("rocket-allScriptsLoaded")),this._replayClicks()}_registerAllDelayedScripts(){document.querySelectorAll("script[type=rocketlazyloadscript]").forEach((e=>{e.hasAttribute("src")?e.hasAttribute("async")&&!1!==e.async?this.delayedScripts.async.push(e):e.hasAttribute("defer")&&!1!==e.defer||"module"===e.getAttribute("data-rocket-type")?this.delayedScripts.defer.push(e):this.delayedScripts.normal.push(e):this.delayedScripts.normal.push(e)}))}async _transformScript(e){return await this._littleBreath(),new Promise((t=>{const n=document.createElement("script");[...e.attributes].forEach((e=>{let t=e.nodeName;"type"!==t&&("data-rocket-type"===t&&(t="type"),n.setAttribute(t,e.nodeValue))})),e.hasAttribute("src")?(n.addEventListener("load",t),n.addEventListener("error",t)):(n.text=e.text,t());try{e.parentNode.replaceChild(n,e)}catch(e){t()}}))}async _loadScriptsFromList(e){const t=e.shift();return t?(await this._transformScript(t),this._loadScriptsFromList(e)):Promise.resolve()}_preloadAllScripts(){this._batchInjectResourceHints([...this.delayedScripts.normal,...this.delayedScripts.defer,...this.delayedScripts.async],"preload")}_batchInjectResourceHints(e,t){var n=document.createDocumentFragment();e.forEach((e=>{if(e.src){const i=document.createElement("link");i.href=e.src,i.rel=t,"preconnect"!==t&&(i.as="script"),e.getAttribute&&"module"===e.getAttribute("data-rocket-type")&&(i.crossOrigin=!0),e.crossOrigin&&(i.crossOrigin=e.crossOrigin),n.appendChild(i)}})),document.head.appendChild(n)}_delayEventListeners(){let e={};function t(t,n){!function(t){function n(n){return e[t].eventsToRewrite.indexOf(n)>=0?"rocket-"+n:n}e[t]||(e[t]={originalFunctions:{add:t.addEventListener,remove:t.removeEventListener},eventsToRewrite:[]},t.addEventListener=function(){arguments[0]=n(arguments[0]),e[t].originalFunctions.add.apply(t,arguments)},t.removeEventListener=function(){arguments[0]=n(arguments[0]),e[t].originalFunctions.remove.apply(t,arguments)})}(t),e[t].eventsToRewrite.push(n)}function n(e,t){let n=e[t];Object.defineProperty(e,t,{get:()=>n||function(){},set(i){e["rocket"+t]=n=i}})}t(document,"DOMContentLoaded"),t(window,"DOMContentLoaded"),t(window,"load"),t(window,"pageshow"),t(document,"readystatechange"),n(document,"onreadystatechange"),n(window,"onload"),n(window,"onpageshow")}_delayJQueryReady(e){let t=window.jQuery;Object.defineProperty(window,"jQuery",{get:()=>t,set(n){if(n&&n.fn&&!e.allJQueries.includes(n)){n.fn.ready=n.fn.init.prototype.ready=function(t){e.domReadyFired?t.bind(document)(n):document.addEventListener("rocket-DOMContentLoaded",(()=>t.bind(document)(n)))};const t=n.fn.on;n.fn.on=n.fn.init.prototype.on=function(){if(this[0]===window){function e(e){return e.split(" ").map((e=>"load"===e||0===e.indexOf("load.")?"rocket-jquery-load":e)).join(" ")}"string"==typeof arguments[0]||arguments[0]instanceof String?arguments[0]=e(arguments[0]):"object"==typeof arguments[0]&&Object.keys(arguments[0]).forEach((t=>{delete Object.assign(arguments[0],{[e(t)]:arguments[0][t]})[t]}))}return t.apply(this,arguments),this},e.allJQueries.push(n)}t=n}})}async _triggerDOMContentLoaded(){this.domReadyFired=!0,await this._littleBreath(),document.dispatchEvent(new Event("rocket-DOMContentLoaded")),await this._littleBreath(),window.dispatchEvent(new Event("rocket-DOMContentLoaded")),await this._littleBreath(),document.dispatchEvent(new Event("rocket-readystatechange")),await this._littleBreath(),document.rocketonreadystatechange&&document.rocketonreadystatechange()}async _triggerWindowLoad(){await this._littleBreath(),window.dispatchEvent(new Event("rocket-load")),await this._littleBreath(),window.rocketonload&&window.rocketonload(),await this._littleBreath(),this.allJQueries.forEach((e=>e(window).trigger("rocket-jquery-load"))),await this._littleBreath();const e=new Event("rocket-pageshow");e.persisted=this.persisted,window.dispatchEvent(e),await this._littleBreath(),window.rocketonpageshow&&window.rocketonpageshow({persisted:this.persisted})}_handleDocumentWrite(){const e=new Map;document.write=document.writeln=function(t){const n=document.currentScript,i=document.createRange(),r=n.parentElement;let o=e.get(n);void 0===o&&(o=n.nextSibling,e.set(n,o));const s=document.createDocumentFragment();i.setStart(s,0),s.appendChild(i.createContextualFragment(t)),r.insertBefore(s,o)}}async _littleBreath(){Date.now()-this.lastBreath>45&&(await this._requestAnimFrame(),this.lastBreath=Date.now())}async _requestAnimFrame(){return document.hidden?new Promise((e=>setTimeout(e))):new Promise((e=>requestAnimationFrame(e)))}static run(){const e=new RocketLazyLoadScripts;e._addUserInteractionListener(e)}}RocketLazyLoadScripts.run();</script>
+	
+		<title>Cardiofitness &#8211; Agende agora a sua consulta</title><link rel='preload' href='https://cardiofitness.com.br/wp-content/cache/perfmatters/cardiofitness.com.br/css/front.used.css?ver=1776229889' as='style' onload="this.rel='stylesheet';this.removeAttribute('onload');"><link rel="stylesheet" id="perfmatters-used-css" href="https://cardiofitness.com.br/wp-content/cache/perfmatters/cardiofitness.com.br/css/front.used.css?ver=1776229889" media="all" /><link rel="preload" href="//www.w3.org/2000/svg&apos;%20viewBox=&apos;0%200%201616%20302&apos;%3E%3C/svg%3E" as="image" /><link rel="preload" href="//www.w3.org/2000/svg&apos;%20viewBox=&apos;0%200%20800%20800&apos;%3E%3C/svg%3E" as="image" /><link rel="preload" href="//www.w3.org/2000/svg&apos;%20viewBox=&apos;0%200%20800%20800&apos;%3E%3C/svg%3E" as="image" /><link rel="preload" href="//www.w3.org/2000/svg&apos;%20viewBox=&apos;0%200%20800%20800&apos;%3E%3C/svg%3E" as="image" /><link rel="preload" href="//www.w3.org/2000/svg&apos;%20viewBox=&apos;0%200%20300%20150&apos;%3E%3C/svg%3E" as="image" />
+<meta name='robots' content='max-image-preview:large' />
+
+<!-- Google Tag Manager for WordPress by gtm4wp.com -->
+<script data-cfasync="false" data-pagespeed-no-defer>
+	var gtm4wp_datalayer_name = "dataLayer";
+	var dataLayer = dataLayer || [];
+</script>
+<!-- End Google Tag Manager for WordPress by gtm4wp.com --><link rel='dns-prefetch' href='//maps.googleapis.com' />
+<link rel='dns-prefetch' href='//maps.gstatic.com' />
+
+
+<link rel='dns-prefetch' href='//ajax.googleapis.com' />
+<link rel='dns-prefetch' href='//apis.google.com' />
+<link rel='dns-prefetch' href='//google-analytics.com' />
+<link rel='dns-prefetch' href='//www.google-analytics.com' />
+<link rel='dns-prefetch' href='//ssl.google-analytics.com' />
+<link rel='dns-prefetch' href='//youtube.com' />
+<link rel='dns-prefetch' href='//api.pinterest.com' />
+<link rel='dns-prefetch' href='//cdnjs.cloudflare.com' />
+<link rel='dns-prefetch' href='//connect.facebook.net' />
+<link rel='dns-prefetch' href='//platform.twitter.com' />
+<link rel='dns-prefetch' href='//syndication.twitter.com' />
+<link rel='dns-prefetch' href='//platform.instagram.com' />
+<link rel='dns-prefetch' href='//disqus.com' />
+<link rel='dns-prefetch' href='//sitename.disqus.com' />
+<link rel='dns-prefetch' href='//s7.addthis.com' />
+<link rel='dns-prefetch' href='//platform.linkedin.com' />
+<link rel='dns-prefetch' href='//w.sharethis.com' />
+<link rel='dns-prefetch' href='//i0.wp.com' />
+<link rel='dns-prefetch' href='//i1.wp.com' />
+<link rel='dns-prefetch' href='//i2.wp.com' />
+<link rel='dns-prefetch' href='//stats.wp.com' />
+<link rel='dns-prefetch' href='//pixel.wp.com' />
+<link rel='dns-prefetch' href='//s.gravatar.com' />
+<link rel='dns-prefetch' href='//0.gravatar.com' />
+<link rel='dns-prefetch' href='//2.gravatar.com' />
+<link rel='dns-prefetch' href='//1.gravatar.com' />
+<link rel='dns-prefetch' href='//www.googletagmanager.com' />
+<link rel='dns-prefetch' href='//googletagmanager.com' />
+<link rel="alternate" type="application/rss+xml" title="Feed para Cardiofitness &raquo;" href="https://cardiofitness.com.br/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Feed de comentários para Cardiofitness &raquo;" href="https://cardiofitness.com.br/comments/feed/" />
+<link id="omgf-preload-0" rel="preload" href="//cardiofitness.com.br/wp-content/uploads/omgf/google-fonts-1/ibm-plex-sans-normal-latin-ext-300.woff2" as="font" type="font/woff2" crossorigin />
+<link id="omgf-preload-1" rel="preload" href="//cardiofitness.com.br/wp-content/uploads/omgf/google-fonts-1/ibm-plex-sans-normal-latin-300.woff2" as="font" type="font/woff2" crossorigin />
+<link id="omgf-preload-2" rel="preload" href="//cardiofitness.com.br/wp-content/uploads/omgf/google-fonts-1/ibm-plex-sans-normal-latin-ext-400.woff2" as="font" type="font/woff2" crossorigin />
+<link id="omgf-preload-3" rel="preload" href="//cardiofitness.com.br/wp-content/uploads/omgf/google-fonts-1/ibm-plex-sans-normal-latin-400.woff2" as="font" type="font/woff2" crossorigin />
+<link id="omgf-preload-4" rel="preload" href="//cardiofitness.com.br/wp-content/uploads/omgf/google-fonts-1/ibm-plex-sans-normal-latin-ext-500.woff2" as="font" type="font/woff2" crossorigin />
+<link id="omgf-preload-5" rel="preload" href="//cardiofitness.com.br/wp-content/uploads/omgf/google-fonts-1/ibm-plex-sans-normal-latin-500.woff2" as="font" type="font/woff2" crossorigin />
+<link id="omgf-preload-6" rel="preload" href="//cardiofitness.com.br/wp-content/uploads/omgf/google-fonts-1/poppins-normal-latin-ext-300.woff2" as="font" type="font/woff2" crossorigin />
+<link id="omgf-preload-7" rel="preload" href="//cardiofitness.com.br/wp-content/uploads/omgf/google-fonts-1/poppins-normal-latin-300.woff2" as="font" type="font/woff2" crossorigin />
+<link id="omgf-preload-8" rel="preload" href="//cardiofitness.com.br/wp-content/uploads/omgf/google-fonts-1/poppins-normal-latin-ext-500.woff2" as="font" type="font/woff2" crossorigin />
+<link id="omgf-preload-9" rel="preload" href="//cardiofitness.com.br/wp-content/uploads/omgf/google-fonts-1/poppins-normal-latin-500.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="alternate" title="oEmbed (JSON)" type="application/json+oembed" href="https://cardiofitness.com.br/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fcardiofitness.com.br%2F" />
+<link rel="alternate" title="oEmbed (XML)" type="text/xml+oembed" href="https://cardiofitness.com.br/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fcardiofitness.com.br%2F&#038;format=xml" />
+<style id="wp-img-auto-sizes-contain-inline-css">
+img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
+/*# sourceURL=wp-img-auto-sizes-contain-inline-css */
+</style>
+<style id="cf-frontend-style-inline-css">
+@font-face {
+	font-family: 'All Rounder Monument';
+	font-weight: 300;
+	src: url('https://cardiofitness.com.br/wp-content/uploads/2023/08/AllrounderMonumentTest-Book.otf') format('OpenType');
+}
+@font-face {
+	font-family: 'All Rounder Monument';
+	font-weight: 400;
+	src: url('https://cardiofitness.com.br/wp-content/uploads/2023/08/AllrounderMonumentTest-Regular.otf') format('OpenType');
+}
+@font-face {
+	font-family: 'All Rounder Monument';
+	font-weight: 500;
+	src: url('https://cardiofitness.com.br/wp-content/uploads/2023/08/AllrounderMonumentTest-Medium.otf') format('OpenType');
+}
+/*# sourceURL=cf-frontend-style-inline-css */
+</style>
+<style id="wp-emoji-styles-inline-css">
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+/*# sourceURL=wp-emoji-styles-inline-css */
+</style>
+<style id="classic-theme-styles-inline-css">
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+/*# sourceURL=/wp-includes/css/classic-themes.min.css */
+</style>
+
+<style id="global-styles-inline-css">
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgb(6,147,227) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgb(252,185,0) 0%,rgb(255,105,0) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgb(255,105,0) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0);--wp--preset--shadow--crisp: 6px 6px 0px rgb(0, 0, 0);}.wp-block-button{--wp--preset--dimension--25: 25%;--wp--preset--dimension--50: 50%;--wp--preset--dimension--75: 75%;--wp--preset--dimension--100: 100%;}:where(body) { margin: 0; }:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}body{padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;}:root :where(.wp-element-button, .wp-block-button__link){background-color: #32373c;border-width: 0;color: #fff;font-family: inherit;font-size: inherit;font-style: inherit;font-weight: inherit;letter-spacing: inherit;line-height: inherit;padding-top: calc(0.667em + 2px);padding-right: calc(1.333em + 2px);padding-bottom: calc(0.667em + 2px);padding-left: calc(1.333em + 2px);text-decoration: none;text-transform: inherit;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+/*# sourceURL=global-styles-inline-css */
+</style>
+
+<link data-minify="1" rel='stylesheet' id='contact-form-7-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/cache/min/1/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=1783521017" media='all' />
+<link rel='stylesheet' id='hello-elementor-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/themes/hello-elementor/style.min.css?ver=2.8.1" media='all' />
+<link rel='stylesheet' id='hello-elementor-theme-style-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/themes/hello-elementor/theme.min.css?ver=2.8.1" media='all' />
+<link rel='stylesheet' id='elementor-frontend-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/plugins/elementor/assets/css/frontend.min.css?ver=3.30.3" media='all' />
+<link rel='stylesheet' id='elementor-post-3136-css' href='https://cardiofitness.com.br/wp-content/uploads/elementor/css/post-3136.css?ver=1778691870' media='all' />
+<link rel='stylesheet' id='joinchat-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/plugins/creame-whatsapp-me/public/css/joinchat.min.css?ver=5.2.3" media='all' />
+<style id="joinchat-inline-css">
+.joinchat{--red:0;--green:191;--blue:51;--bw:100}
+/*# sourceURL=joinchat-inline-css */
+</style>
+<link data-minify="1" rel='stylesheet' id='elementor-icons-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/cache/min/1/wp-content/plugins/elementor/assets/lib/eicons/css/elementor-icons.min.css?ver=1783521017" media='all' />
+<link rel='stylesheet' id='widget-image-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/plugins/elementor/assets/css/widget-image.min.css?ver=3.30.3" media='all' />
+<link rel='stylesheet' id='widget-icon-box-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/plugins/elementor/assets/css/widget-icon-box.min.css?ver=3.30.3" media='all' />
+<link rel='stylesheet' id='widget-heading-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/plugins/elementor/assets/css/widget-heading.min.css?ver=3.30.3" media='all' />
+<link rel='stylesheet' id='widget-icon-list-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/plugins/elementor/assets/css/widget-icon-list.min.css?ver=3.30.3" media='all' />
+<link rel='stylesheet' id='widget-nav-menu-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/plugins/elementor-pro/assets/css/widget-nav-menu.min.css?ver=3.26.3" media='all' />
+<link data-minify="1" rel='stylesheet' id='swiper-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/cache/min/1/wp-content/plugins/elementor/assets/lib/swiper/v8/css/swiper.min.css?ver=1783521017" media='all' />
+<link rel='stylesheet' id='e-swiper-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/plugins/elementor/assets/css/conditionals/e-swiper.min.css?ver=3.30.3" media='all' />
+<link rel='stylesheet' id='widget-image-box-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/plugins/elementor/assets/css/widget-image-box.min.css?ver=3.30.3" media='all' />
+<link rel='stylesheet' id='widget-image-carousel-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/plugins/elementor/assets/css/widget-image-carousel.min.css?ver=3.30.3" media='all' />
+<link rel='stylesheet' id='e-animation-fadeInUp-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/plugins/elementor/assets/lib/animations/styles/fadeInUp.min.css?ver=3.30.3" media='all' />
+<link rel='stylesheet' id='widget-testimonial-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/plugins/elementor/assets/css/widget-testimonial.min.css?ver=3.30.3" media='all' />
+<link rel='stylesheet' id='widget-spacer-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/plugins/elementor/assets/css/widget-spacer.min.css?ver=3.30.3" media='all' />
+<link rel='stylesheet' id='e-animation-float-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/plugins/elementor/assets/lib/animations/styles/e-animation-float.min.css?ver=3.30.3" media='all' />
+<link rel='stylesheet' id='widget-divider-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/plugins/elementor/assets/css/widget-divider.min.css?ver=3.30.3" media='all' />
+<link rel='stylesheet' id='elementor-post-3439-css' href='https://cardiofitness.com.br/wp-content/uploads/elementor/css/post-3439.css?ver=1778691871' media='all' />
+<link data-minify="1" rel='stylesheet' id='ekit-widget-styles-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/cache/min/1/wp-content/plugins/elementskit-lite/widgets/init/assets/css/widget-styles.css?ver=1783521017" media='all' />
+<link data-minify="1" rel='stylesheet' id='ekit-responsive-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/cache/min/1/wp-content/plugins/elementskit-lite/widgets/init/assets/css/responsive.css?ver=1783521017" media='all' />
+<link rel='stylesheet' id='eael-general-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/plugins/essential-addons-for-elementor-lite/assets/front-end/css/view/general.min.css?ver=6.6.0" media='all' />
+<style id="rocket-lazyload-inline-css">
+.rll-youtube-player{position:relative;padding-bottom:56.23%;height:0;overflow:hidden;max-width:100%;}.rll-youtube-player:focus-within{outline: 2px solid currentColor;outline-offset: 5px;}.rll-youtube-player iframe{position:absolute;top:0;left:0;width:100%;height:100%;z-index:100;background:0 0}.rll-youtube-player img{bottom:0;display:block;left:0;margin:auto;max-width:100%;width:100%;position:absolute;right:0;top:0;border:none;height:auto;-webkit-transition:.4s all;-moz-transition:.4s all;transition:.4s all}.rll-youtube-player img:hover{-webkit-filter:brightness(75%)}.rll-youtube-player .play{height:100%;width:100%;left:0;top:0;position:absolute;background:url(https://cardiofitness.com.br/wp-content/plugins/wp-rocket/assets/img/youtube.png) no-repeat center;background-color: transparent !important;cursor:pointer;border:none;}
+/*# sourceURL=rocket-lazyload-inline-css */
+</style>
+<link data-minify="1" rel='stylesheet' id='elementor-gf-local-ibmplexsans-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/cache/min/1/wp-content/uploads/elementor/google-fonts/css/ibmplexsans.css?ver=1783521017" media='all' />
+<link data-minify="1" rel='stylesheet' id='elementor-gf-local-poppins-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/cache/min/1/wp-content/uploads/elementor/google-fonts/css/poppins.css?ver=1783521017" media='all' />
+<link rel='stylesheet' id='elementor-icons-shared-0-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/plugins/elementor/assets/lib/font-awesome/css/fontawesome.min.css?ver=5.15.3" media='all' />
+<link data-minify="1" rel='stylesheet' id='elementor-icons-fa-regular-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/cache/min/1/wp-content/plugins/elementor/assets/lib/font-awesome/css/regular.min.css?ver=1783521017" media='all' />
+<link data-minify="1" rel='stylesheet' id='elementor-icons-fa-solid-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/cache/min/1/wp-content/plugins/elementor/assets/lib/font-awesome/css/solid.min.css?ver=1783521017" media='all' />
+<link data-minify="1" rel='stylesheet' id='elementor-icons-fa-brands-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/cache/min/1/wp-content/plugins/elementor/assets/lib/font-awesome/css/brands.min.css?ver=1783521017" media='all' />
+<link data-minify="1" rel='stylesheet' id='elementor-icons-ekiticons-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/cache/min/1/wp-content/plugins/elementskit-lite/modules/elementskit-icon-pack/assets/css/ekiticons.css?ver=1783521017" media='all' />
+<script type="rocketlazyloadscript" id="jquery-core-js" src="https://cardiofitness.com.br/wp-includes/js/jquery/jquery.min.js?ver=3.7.1" defer></script>
+<script type="rocketlazyloadscript" id="jquery-migrate-js" defer='defer' src="https://cardiofitness.com.br/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1"></script>
+<link rel="https://api.w.org/" href="https://cardiofitness.com.br/wp-json/" /><link rel="alternate" title="JSON" type="application/json" href="https://cardiofitness.com.br/wp-json/wp/v2/pages/3439" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://cardiofitness.com.br/xmlrpc.php?rsd" />
+<meta name="generator" content="WordPress 7.1.2" />
+<link rel="canonical" href="https://cardiofitness.com.br/" />
+<link rel='shortlink' href='https://cardiofitness.com.br/' />
+<!-- HFCM by 99 Robots - Snippet # 3: Tag Global GA4 -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script type="rocketlazyloadscript" async src="https://www.googletagmanager.com/gtag/js?id=UA-242609589-1"></script>
+<script type="rocketlazyloadscript">
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-242609589-1');
+</script>
+<!-- /end HFCM by 99 Robots -->
+
+<!-- Google Tag Manager for WordPress by gtm4wp.com -->
+<!-- GTM Container placement set to automatic -->
+<script data-cfasync="false" data-pagespeed-no-defer>
+	var dataLayer_content = {"pagePostType":"frontpage","pagePostType2":"single-page","pagePostAuthor":"cardiofitness"};
+	dataLayer.push( dataLayer_content );
+</script>
+<script type="rocketlazyloadscript" data-cfasync="false" data-pagespeed-no-defer>
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-P6BFD7V');
+</script>
+<!-- End Google Tag Manager for WordPress by gtm4wp.com --><meta name="generator" content="Elementor 3.30.3; features: additional_custom_breakpoints; settings: css_print_method-external, google_font-enabled, font_display-auto">
+			<style>
+				.e-con.e-parent:nth-of-type(n+4):not(.e-lazyloaded):not(.e-no-lazyload),
+				.e-con.e-parent:nth-of-type(n+4):not(.e-lazyloaded):not(.e-no-lazyload) * {
+					background-image: none !important;
+				}
+				@media screen and (max-height: 1024px) {
+					.e-con.e-parent:nth-of-type(n+3):not(.e-lazyloaded):not(.e-no-lazyload),
+					.e-con.e-parent:nth-of-type(n+3):not(.e-lazyloaded):not(.e-no-lazyload) * {
+						background-image: none !important;
+					}
+				}
+				@media screen and (max-height: 640px) {
+					.e-con.e-parent:nth-of-type(n+2):not(.e-lazyloaded):not(.e-no-lazyload),
+					.e-con.e-parent:nth-of-type(n+2):not(.e-lazyloaded):not(.e-no-lazyload) * {
+						background-image: none !important;
+					}
+				}
+			</style>
+			<meta name="redi-version" content="1.2.6" /><link rel="icon" href="https://cardiofitness.com.br/wp-content/uploads/2023/08/favicon-cardiofitness-150x150.png" sizes="32x32" />
+<link rel="icon" href="https://cardiofitness.com.br/wp-content/uploads/2023/08/favicon-cardiofitness.png" sizes="192x192" />
+<link rel="apple-touch-icon" href="https://cardiofitness.com.br/wp-content/uploads/2023/08/favicon-cardiofitness.png" />
+<meta name="msapplication-TileImage" content="https://cardiofitness.com.br/wp-content/uploads/2023/08/favicon-cardiofitness.png" />
+<style id="wp-custom-css">
+
+
+/** Start Block Kit CSS: 72-3-34d2cc762876498c8f6be5405a48e6e2 **/
+
+.envato-block__preview{overflow: visible;}
+
+/*Kit 69 Custom Styling for buttons */
+.envato-kit-69-slide-btn .elementor-button,
+.envato-kit-69-cta-btn .elementor-button,
+.envato-kit-69-flip-btn .elementor-button{
+	border-left: 0px !important;
+	border-bottom: 0px !important;
+	border-right: 0px !important;
+	padding: 15px 0 0 !important;
+}
+.envato-kit-69-slide-btn .elementor-slide-button:hover,
+.envato-kit-69-cta-btn .elementor-button:hover,
+.envato-kit-69-flip-btn .elementor-button:hover{
+	margin-bottom: 20px;
+}
+.envato-kit-69-menu .elementor-nav-menu--main a:hover{
+	margin-top: -7px;
+	padding-top: 4px;
+	border-bottom: 1px solid #FFF;
+}
+/* Fix menu dropdown width */
+.envato-kit-69-menu .elementor-nav-menu--dropdown{
+	width: 100% !important;
+}
+
+/** End Block Kit CSS: 72-3-34d2cc762876498c8f6be5405a48e6e2 **/
+
+
+</style>
+<noscript><style id="rocket-lazyload-nojs-css">.rll-youtube-player, [data-lazy-src]{display:none !important;}</style></noscript>	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" /><link rel='stylesheet' id='e-sticky-css' data-pmdelayedstyle="https://cardiofitness.com.br/wp-content/plugins/elementor-pro/assets/css/modules/sticky.min.css?ver=3.26.3" media='all' />
+
+</head>
+<body class="home wp-singular page-template page-template-elementor_canvas page page-id-3439 wp-theme-hello-elementor elementor-default elementor-template-canvas elementor-kit-3136 elementor-page elementor-page-3439">
+	
+<!-- GTM Container placement set to automatic -->
+<!-- Google Tag Manager (noscript) -->
+				<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P6BFD7V" height="0" width="0" style="display:none;visibility:hidden" aria-hidden="true"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<!-- GTM Container placement set to automatic -->
+<!-- Google Tag Manager (noscript) -->		<div data-elementor-type="wp-page" data-elementor-id="3439" class="elementor elementor-3439" data-elementor-post-type="page">
+						<section class="elementor-section elementor-top-section elementor-element elementor-element-461c1520 elementor-section-content-middle elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="461c1520" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;,&quot;sticky&quot;:&quot;top&quot;,&quot;sticky_on&quot;:[&quot;desktop&quot;],&quot;sticky_offset&quot;:0,&quot;sticky_effects_offset&quot;:0,&quot;sticky_anchor_link_offset&quot;:0}">
+						<div class="elementor-container elementor-column-gap-no">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-ea4fd1f" data-id="ea4fd1f" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<section class="elementor-section elementor-inner-section elementor-element elementor-element-765a0c44 elementor-section-content-middle elementor-section-height-min-height elementor-section-boxed elementor-section-height-default" data-id="765a0c44" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-no">
+					<div class="elementor-column elementor-col-50 elementor-inner-column elementor-element elementor-element-7b68773c" data-id="7b68773c" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-6b97543a elementor-widget elementor-widget-image" data-id="6b97543a" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container">
+																<a href="https://cardiofitness.com.br">
+							<img data-perfmatters-preload fetchpriority="high" decoding="async" width="1616" height="302" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%201616%20302'%3E%3C/svg%3E" class="attachment-full size-full wp-image-3407" alt="" data-lazy-srcset="https://cardiofitness.com.br/wp-content/uploads/2023/08/logo_cardiofitness-extendida.png 1616w, https://cardiofitness.com.br/wp-content/uploads/2023/08/logo_cardiofitness-extendida-300x56.png 300w, https://cardiofitness.com.br/wp-content/uploads/2023/08/logo_cardiofitness-extendida-1024x191.png 1024w, https://cardiofitness.com.br/wp-content/uploads/2023/08/logo_cardiofitness-extendida-768x144.png 768w, https://cardiofitness.com.br/wp-content/uploads/2023/08/logo_cardiofitness-extendida-1536x287.png 1536w" data-lazy-sizes="(max-width: 1616px) 100vw, 1616px" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/08/logo_cardiofitness-extendida.png" /><noscript><img fetchpriority="high" decoding="async" width="1616" height="302" src="https://cardiofitness.com.br/wp-content/uploads/2023/08/logo_cardiofitness-extendida.png" class="attachment-full size-full wp-image-3407" alt="" srcset="https://cardiofitness.com.br/wp-content/uploads/2023/08/logo_cardiofitness-extendida.png 1616w, https://cardiofitness.com.br/wp-content/uploads/2023/08/logo_cardiofitness-extendida-300x56.png 300w, https://cardiofitness.com.br/wp-content/uploads/2023/08/logo_cardiofitness-extendida-1024x191.png 1024w, https://cardiofitness.com.br/wp-content/uploads/2023/08/logo_cardiofitness-extendida-768x144.png 768w, https://cardiofitness.com.br/wp-content/uploads/2023/08/logo_cardiofitness-extendida-1536x287.png 1536w" sizes="(max-width: 1616px) 100vw, 1616px" /></noscript>								</a>
+															</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-50 elementor-inner-column elementor-element elementor-element-a676d19 elementor-hidden-phone" data-id="a676d19" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-f7179f4 elementor-view-framed elementor-shape-square elementor-position-left elementor-widget__width-auto elementor-mobile-position-top elementor-vertical-align-top elementor-widget elementor-widget-icon-box" data-id="f7179f4" data-element_type="widget" data-widget_type="icon-box.default">
+				<div class="elementor-widget-container">
+							<div class="elementor-icon-box-wrapper">
+
+						<div class="elementor-icon-box-icon">
+				<span  class="elementor-icon">
+				<i aria-hidden="true" class="far fa-building"></i>				</span>
+			</div>
+			
+						<div class="elementor-icon-box-content">
+
+									<h3 class="elementor-icon-box-title">
+						<span  >
+							Ed. Life Center						</span>
+					</h3>
+				
+									<p class="elementor-icon-box-description">
+						STN, Bloco O - Sala 144					</p>
+				
+			</div>
+			
+		</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-21b24875 elementor-view-framed elementor-shape-square elementor-position-left elementor-widget__width-auto elementor-mobile-position-top elementor-vertical-align-top elementor-widget elementor-widget-icon-box" data-id="21b24875" data-element_type="widget" data-widget_type="icon-box.default">
+				<div class="elementor-widget-container">
+							<div class="elementor-icon-box-wrapper">
+
+						<div class="elementor-icon-box-icon">
+				<span  class="elementor-icon">
+				<i aria-hidden="true" class="fas fa-phone"></i>				</span>
+			</div>
+			
+						<div class="elementor-icon-box-content">
+
+									<h3 class="elementor-icon-box-title">
+						<span  >
+							Entre em contato						</span>
+					</h3>
+				
+									<p class="elementor-icon-box-description">
+						(61) 3340-1400					</p>
+				
+			</div>
+			
+		</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-195f608e elementor-align-right elementor-hidden-tablet elementor-hidden-phone elementor-widget__width-auto elementor-widget elementor-widget-button" data-id="195f608e" data-element_type="widget" data-widget_type="button.default">
+				<div class="elementor-widget-container">
+									<div class="elementor-button-wrapper">
+					<a class="elementor-button elementor-button-link elementor-size-sm" href="https://wa.me/556184048002?text=Ol%C3%A1%21+Vim+pelo+site+da+Cardiofitness+e+gostaria+de+agendar+uma+consulta.">
+						<span class="elementor-button-content-wrapper">
+									<span class="elementor-button-text">Agendar Consulta</span>
+					</span>
+					</a>
+				</div>
+								</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-5ee6708 elementor-section-content-middle elementor-hidden-desktop elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="5ee6708" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-no">
+					<div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-30dc2ab" data-id="30dc2ab" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-0bc8802 elementor-widget__width-auto elementor-widget elementor-widget-heading" data-id="0bc8802" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-heading-title elementor-size-default"><a href="https://wa.me/556184048002?text=Ol%C3%A1%21+Vim+pelo+site+da+Cardiofitness+e+gostaria+de+agendar+uma+consulta.">CONVERSE PELO WHATSAPP:</a></div>				</div>
+				</div>
+				<div class="elementor-element elementor-element-c4d4f7f elementor-icon-list--layout-inline elementor-align-center elementor-widget__width-auto elementor-mobile-align-center elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="c4d4f7f" data-element_type="widget" data-widget_type="icon-list.default">
+				<div class="elementor-widget-container">
+							<ul class="elementor-icon-list-items elementor-inline-items">
+							<li class="elementor-icon-list-item elementor-inline-item">
+											<a href="https://wa.me/556133401400?text=Ol%C3%A1%21+Vim+pelo+site+da+Cardiofitness+e+gostaria+de+agendar+uma+consulta.">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fab fa-whatsapp"></i>						</span>
+										<span class="elementor-icon-list-text"></span>
+											</a>
+									</li>
+						</ul>
+						</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-b3625fc elementor-section-content-middle elementor-hidden-tablet elementor-hidden-mobile elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="b3625fc" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-no">
+					<div class="elementor-column elementor-col-50 elementor-inner-column elementor-element elementor-element-47b59ac5" data-id="47b59ac5" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-9366359 elementor-nav-menu__align-start elementor-widget-mobile__width-initial elementor-nav-menu--dropdown-tablet elementor-nav-menu__text-align-aside elementor-nav-menu--toggle elementor-nav-menu--burger elementor-widget elementor-widget-nav-menu" data-id="9366359" data-element_type="widget" data-settings="{&quot;layout&quot;:&quot;horizontal&quot;,&quot;submenu_icon&quot;:{&quot;value&quot;:&quot;&lt;i class=\&quot;fas fa-caret-down\&quot;&gt;&lt;\/i&gt;&quot;,&quot;library&quot;:&quot;fa-solid&quot;},&quot;toggle&quot;:&quot;burger&quot;}" data-widget_type="nav-menu.default">
+				<div class="elementor-widget-container">
+								<nav aria-label="Menu" class="elementor-nav-menu--main elementor-nav-menu__container elementor-nav-menu--layout-horizontal e--pointer-underline e--animation-fade">
+				<ul id="menu-1-9366359" class="elementor-nav-menu"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3596"><a href="https://cardiofitness.com.br/sobrenos/" class="elementor-item">Sobre Nós</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3466"><a href="https://cardiofitness.com.br/especialidades/" class="elementor-item">Especialidades</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3669"><a href="https://cardiofitness.com.br/exames/" class="elementor-item">Exames</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3602"><a href="https://cardiofitness.com.br/convenios/" class="elementor-item">Convênios e Reembolso</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3450"><a href="https://cardiofitness.com.br/corpoclinico/" class="elementor-item">Corpo Clínico</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-4484"><a href="https://resultados.cardiofitness.com.br/" class="elementor-item">Resultados de exames</a></li>
+</ul>			</nav>
+					<div class="elementor-menu-toggle" role="button" tabindex="0" aria-label="Alternar menu" aria-expanded="false">
+			<i aria-hidden="true" role="presentation" class="elementor-menu-toggle__icon--open eicon-menu-bar"></i><i aria-hidden="true" role="presentation" class="elementor-menu-toggle__icon--close eicon-close"></i>		</div>
+					<nav class="elementor-nav-menu--dropdown elementor-nav-menu__container" aria-hidden="true">
+				<ul id="menu-2-9366359" class="elementor-nav-menu"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3596"><a href="https://cardiofitness.com.br/sobrenos/" class="elementor-item" tabindex="-1">Sobre Nós</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3466"><a href="https://cardiofitness.com.br/especialidades/" class="elementor-item" tabindex="-1">Especialidades</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3669"><a href="https://cardiofitness.com.br/exames/" class="elementor-item" tabindex="-1">Exames</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3602"><a href="https://cardiofitness.com.br/convenios/" class="elementor-item" tabindex="-1">Convênios e Reembolso</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3450"><a href="https://cardiofitness.com.br/corpoclinico/" class="elementor-item" tabindex="-1">Corpo Clínico</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-4484"><a href="https://resultados.cardiofitness.com.br/" class="elementor-item" tabindex="-1">Resultados de exames</a></li>
+</ul>			</nav>
+						</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-50 elementor-inner-column elementor-element elementor-element-d4bf29a" data-id="d4bf29a" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-1657029f elementor-widget__width-auto elementor-widget elementor-widget-heading" data-id="1657029f" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-heading-title elementor-size-default"><a href="https://wa.me/556184048002?text=Ol%C3%A1%21+Vim+pelo+site+da+Cardiofitness+e+gostaria+de+agendar+uma+consulta.">CONVERSE PELO WHATSAPP:</a></div>				</div>
+				</div>
+				<div class="elementor-element elementor-element-3d65ec5 elementor-icon-list--layout-inline elementor-align-center elementor-widget__width-auto elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="3d65ec5" data-element_type="widget" data-widget_type="icon-list.default">
+				<div class="elementor-widget-container">
+							<ul class="elementor-icon-list-items elementor-inline-items">
+							<li class="elementor-icon-list-item elementor-inline-item">
+											<a href="https://wa.me/556184048002?text=Ol%C3%A1%21+Vim+pelo+site+da+Cardiofitness+e+gostaria+de+agendar+uma+consulta.">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fab fa-whatsapp"></i>						</span>
+										<span class="elementor-icon-list-text"></span>
+											</a>
+									</li>
+						</ul>
+						</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-12efbbd elementor-section-content-middle elementor-hidden-desktop elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="12efbbd" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-no">
+					<div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-2e77555" data-id="2e77555" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-7453429 elementor-nav-menu__align-center elementor-nav-menu__text-align-center elementor-widget-mobile__width-initial elementor-nav-menu--dropdown-tablet elementor-nav-menu--toggle elementor-nav-menu--burger elementor-widget elementor-widget-nav-menu" data-id="7453429" data-element_type="widget" data-settings="{&quot;layout&quot;:&quot;horizontal&quot;,&quot;submenu_icon&quot;:{&quot;value&quot;:&quot;&lt;i class=\&quot;fas fa-caret-down\&quot;&gt;&lt;\/i&gt;&quot;,&quot;library&quot;:&quot;fa-solid&quot;},&quot;toggle&quot;:&quot;burger&quot;}" data-widget_type="nav-menu.default">
+				<div class="elementor-widget-container">
+								<nav aria-label="Menu" class="elementor-nav-menu--main elementor-nav-menu__container elementor-nav-menu--layout-horizontal e--pointer-underline e--animation-fade">
+				<ul id="menu-1-7453429" class="elementor-nav-menu"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3596"><a href="https://cardiofitness.com.br/sobrenos/" class="elementor-item">Sobre Nós</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3466"><a href="https://cardiofitness.com.br/especialidades/" class="elementor-item">Especialidades</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3669"><a href="https://cardiofitness.com.br/exames/" class="elementor-item">Exames</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3602"><a href="https://cardiofitness.com.br/convenios/" class="elementor-item">Convênios e Reembolso</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3450"><a href="https://cardiofitness.com.br/corpoclinico/" class="elementor-item">Corpo Clínico</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-4484"><a href="https://resultados.cardiofitness.com.br/" class="elementor-item">Resultados de exames</a></li>
+</ul>			</nav>
+					<div class="elementor-menu-toggle" role="button" tabindex="0" aria-label="Alternar menu" aria-expanded="false">
+			<i aria-hidden="true" role="presentation" class="elementor-menu-toggle__icon--open eicon-menu-bar"></i><i aria-hidden="true" role="presentation" class="elementor-menu-toggle__icon--close eicon-close"></i>		</div>
+					<nav class="elementor-nav-menu--dropdown elementor-nav-menu__container" aria-hidden="true">
+				<ul id="menu-2-7453429" class="elementor-nav-menu"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3596"><a href="https://cardiofitness.com.br/sobrenos/" class="elementor-item" tabindex="-1">Sobre Nós</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3466"><a href="https://cardiofitness.com.br/especialidades/" class="elementor-item" tabindex="-1">Especialidades</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3669"><a href="https://cardiofitness.com.br/exames/" class="elementor-item" tabindex="-1">Exames</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3602"><a href="https://cardiofitness.com.br/convenios/" class="elementor-item" tabindex="-1">Convênios e Reembolso</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3450"><a href="https://cardiofitness.com.br/corpoclinico/" class="elementor-item" tabindex="-1">Corpo Clínico</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-4484"><a href="https://resultados.cardiofitness.com.br/" class="elementor-item" tabindex="-1">Resultados de exames</a></li>
+</ul>			</nav>
+						</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+					</div>
+		</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-43900de3 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="43900de3" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;slideshow&quot;,&quot;background_slideshow_gallery&quot;:[{&quot;id&quot;:3776,&quot;url&quot;:&quot;https:\/\/cardiofitness.com.br\/wp-content\/uploads\/2023\/12\/IMG_9911_edit-e1701731500446.jpg&quot;},{&quot;id&quot;:3858,&quot;url&quot;:&quot;https:\/\/cardiofitness.com.br\/wp-content\/uploads\/2023\/12\/IMG_9928.jpg&quot;},{&quot;id&quot;:3778,&quot;url&quot;:&quot;https:\/\/cardiofitness.com.br\/wp-content\/uploads\/2023\/12\/IMG_9954_edit.jpg&quot;},{&quot;id&quot;:3140,&quot;url&quot;:&quot;https:\/\/cardiofitness.com.br\/wp-content\/uploads\/2023\/08\/successful-handsome-doctor-with-a-beaming-smile-V34ZJYH.jpg&quot;}],&quot;background_slideshow_loop&quot;:&quot;yes&quot;,&quot;background_slideshow_slide_duration&quot;:5000,&quot;background_slideshow_slide_transition&quot;:&quot;fade&quot;,&quot;background_slideshow_transition_duration&quot;:500}">
+							<div class="elementor-background-overlay"></div>
+							<div class="elementor-container elementor-column-gap-no">
+					<div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-1cac90a8" data-id="1cac90a8" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-8603fb6 elementor-widget elementor-widget-heading" data-id="8603fb6" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+					<h2 class="elementor-heading-title elementor-size-default">Sua jornada para uma vida saudável começa aqui</h2>				</div>
+				</div>
+				<div class="elementor-element elementor-element-61738e64 elementor-widget elementor-widget-text-editor" data-id="61738e64" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+									<p>Há mais de 30 anos somos a sua clínica especializada em Cardiologia e Medicina Preventiva na Asa Norte.</p>								</div>
+				</div>
+				<div class="elementor-element elementor-element-6fe0eb87 elementor-widget__width-auto elementor-mobile-align-center elementor-widget elementor-widget-button" data-id="6fe0eb87" data-element_type="widget" data-widget_type="button.default">
+				<div class="elementor-widget-container">
+									<div class="elementor-button-wrapper">
+					<a class="elementor-button elementor-button-link elementor-size-lg" href="https://wa.me/556184048002?text=Ol%C3%A1%21+Vim+pelo+site+da+Cardiofitness+e+gostaria+de+agendar+uma+consulta.">
+						<span class="elementor-button-content-wrapper">
+						<span class="elementor-button-icon">
+				<i aria-hidden="true" class="fas fa-phone-alt"></i>			</span>
+									<span class="elementor-button-text">Quero agendar minha consulta</span>
+					</span>
+					</a>
+				</div>
+								</div>
+				</div>
+				<div class="elementor-element elementor-element-66312d48 elementor-widget__width-auto elementor-widget elementor-widget-button" data-id="66312d48" data-element_type="widget" data-widget_type="button.default">
+				<div class="elementor-widget-container">
+									<div class="elementor-button-wrapper">
+					<a class="elementor-button elementor-button-link elementor-size-lg" href="https://cardiofitness.com.br/convenios">
+						<span class="elementor-button-content-wrapper">
+						<span class="elementor-button-icon">
+				<i aria-hidden="true" class="icon icon-hospital-1"></i>			</span>
+									<span class="elementor-button-text">Verificar Convênios</span>
+					</span>
+					</a>
+				</div>
+								</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-66eeca9e elementor-hidden-phone" data-id="66eeca9e" data-element_type="column">
+			<div class="elementor-widget-wrap">
+							</div>
+		</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-20fee6c6 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="20fee6c6" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-25 elementor-top-column elementor-element elementor-element-7e30d27e" data-id="7e30d27e" data-element_type="column" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-33717d76 elementor-widget elementor-widget-image" data-id="33717d76" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container">
+															<img data-perfmatters-preload decoding="async" width="800" height="800" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20800%20800'%3E%3C/svg%3E" class="attachment-large size-large wp-image-3782" alt="" data-lazy-srcset="https://cardiofitness.com.br/wp-content/uploads/2023/12/cnsulta_edit.jpg 800w, https://cardiofitness.com.br/wp-content/uploads/2023/12/cnsulta_edit-300x300.jpg 300w, https://cardiofitness.com.br/wp-content/uploads/2023/12/cnsulta_edit-150x150.jpg 150w, https://cardiofitness.com.br/wp-content/uploads/2023/12/cnsulta_edit-768x768.jpg 768w" data-lazy-sizes="(max-width: 800px) 100vw, 800px" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/12/cnsulta_edit.jpg" /><noscript><img decoding="async" width="800" height="800" src="https://cardiofitness.com.br/wp-content/uploads/2023/12/cnsulta_edit.jpg" class="attachment-large size-large wp-image-3782" alt="" srcset="https://cardiofitness.com.br/wp-content/uploads/2023/12/cnsulta_edit.jpg 800w, https://cardiofitness.com.br/wp-content/uploads/2023/12/cnsulta_edit-300x300.jpg 300w, https://cardiofitness.com.br/wp-content/uploads/2023/12/cnsulta_edit-150x150.jpg 150w, https://cardiofitness.com.br/wp-content/uploads/2023/12/cnsulta_edit-768x768.jpg 768w" sizes="(max-width: 800px) 100vw, 800px" /></noscript>															</div>
+				</div>
+				<div class="elementor-element elementor-element-55106245 elementor-widget elementor-widget-image-box" data-id="55106245" data-element_type="widget" data-widget_type="image-box.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image-box-wrapper"><div class="elementor-image-box-content"><h3 class="elementor-image-box-title">Consultas<br>e Exames</h3><p class="elementor-image-box-description">Faça todas as suas consultas e exames em um único lugar</p></div></div>				</div>
+				</div>
+				<div class="elementor-element elementor-element-3f3bb3b elementor-align-center elementor-tablet-align-center elementor-widget elementor-widget-button" data-id="3f3bb3b" data-element_type="widget" data-widget_type="button.default">
+				<div class="elementor-widget-container">
+									<div class="elementor-button-wrapper">
+					<a class="elementor-button elementor-button-link elementor-size-sm" href="https://cardiofitness.com.br/especialidades">
+						<span class="elementor-button-content-wrapper">
+									<span class="elementor-button-text">Ver Serviços</span>
+					</span>
+					</a>
+				</div>
+								</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-top-column elementor-element elementor-element-297ac673" data-id="297ac673" data-element_type="column" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-27ffb3b0 elementor-widget elementor-widget-image" data-id="27ffb3b0" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container">
+															<img data-perfmatters-preload decoding="async" width="800" height="800" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20800%20800'%3E%3C/svg%3E" class="attachment-full size-full wp-image-3783" alt="" data-lazy-srcset="https://cardiofitness.com.br/wp-content/uploads/2023/12/atend-humanizado.jpg 800w, https://cardiofitness.com.br/wp-content/uploads/2023/12/atend-humanizado-300x300.jpg 300w, https://cardiofitness.com.br/wp-content/uploads/2023/12/atend-humanizado-150x150.jpg 150w, https://cardiofitness.com.br/wp-content/uploads/2023/12/atend-humanizado-768x768.jpg 768w" data-lazy-sizes="(max-width: 800px) 100vw, 800px" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/12/atend-humanizado.jpg" /><noscript><img decoding="async" width="800" height="800" src="https://cardiofitness.com.br/wp-content/uploads/2023/12/atend-humanizado.jpg" class="attachment-full size-full wp-image-3783" alt="" srcset="https://cardiofitness.com.br/wp-content/uploads/2023/12/atend-humanizado.jpg 800w, https://cardiofitness.com.br/wp-content/uploads/2023/12/atend-humanizado-300x300.jpg 300w, https://cardiofitness.com.br/wp-content/uploads/2023/12/atend-humanizado-150x150.jpg 150w, https://cardiofitness.com.br/wp-content/uploads/2023/12/atend-humanizado-768x768.jpg 768w" sizes="(max-width: 800px) 100vw, 800px" /></noscript>															</div>
+				</div>
+				<div class="elementor-element elementor-element-3ef3563a elementor-widget elementor-widget-image-box" data-id="3ef3563a" data-element_type="widget" data-widget_type="image-box.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image-box-wrapper"><div class="elementor-image-box-content"><h3 class="elementor-image-box-title">Atendimento<br>Humanizado</h3><p class="elementor-image-box-description">Sinta-se como se estivesse sendo atendido em casa </p></div></div>				</div>
+				</div>
+				<div class="elementor-element elementor-element-7915be7d elementor-align-center elementor-widget elementor-widget-button" data-id="7915be7d" data-element_type="widget" data-widget_type="button.default">
+				<div class="elementor-widget-container">
+									<div class="elementor-button-wrapper">
+					<a class="elementor-button elementor-button-link elementor-size-sm" href="https://cardiofitness.com.br/sobrenos">
+						<span class="elementor-button-content-wrapper">
+									<span class="elementor-button-text">Saiba Mais</span>
+					</span>
+					</a>
+				</div>
+								</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-top-column elementor-element elementor-element-7c95f519" data-id="7c95f519" data-element_type="column" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-81d504b elementor-widget elementor-widget-image" data-id="81d504b" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container">
+															<img data-perfmatters-preload decoding="async" width="800" height="800" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20800%20800'%3E%3C/svg%3E" class="attachment-large size-large wp-image-3429" alt="" data-lazy-srcset="https://cardiofitness.com.br/wp-content/uploads/2023/10/retrato-de-jovens-medicos-sorridentes-juntos-retrato-da-equipe-medica-dentro-do-hospital-moderno-sorrindo-para-a-camera-scaled-e1697553857397-1024x1024.jpg 1024w, https://cardiofitness.com.br/wp-content/uploads/2023/10/retrato-de-jovens-medicos-sorridentes-juntos-retrato-da-equipe-medica-dentro-do-hospital-moderno-sorrindo-para-a-camera-scaled-e1697553857397-300x300.jpg 300w, https://cardiofitness.com.br/wp-content/uploads/2023/10/retrato-de-jovens-medicos-sorridentes-juntos-retrato-da-equipe-medica-dentro-do-hospital-moderno-sorrindo-para-a-camera-scaled-e1697553857397-150x150.jpg 150w, https://cardiofitness.com.br/wp-content/uploads/2023/10/retrato-de-jovens-medicos-sorridentes-juntos-retrato-da-equipe-medica-dentro-do-hospital-moderno-sorrindo-para-a-camera-scaled-e1697553857397-768x768.jpg 768w, https://cardiofitness.com.br/wp-content/uploads/2023/10/retrato-de-jovens-medicos-sorridentes-juntos-retrato-da-equipe-medica-dentro-do-hospital-moderno-sorrindo-para-a-camera-scaled-e1697553857397-1536x1536.jpg 1536w, https://cardiofitness.com.br/wp-content/uploads/2023/10/retrato-de-jovens-medicos-sorridentes-juntos-retrato-da-equipe-medica-dentro-do-hospital-moderno-sorrindo-para-a-camera-scaled-e1697553857397.jpg 1706w" data-lazy-sizes="(max-width: 800px) 100vw, 800px" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/10/retrato-de-jovens-medicos-sorridentes-juntos-retrato-da-equipe-medica-dentro-do-hospital-moderno-sorrindo-para-a-camera-scaled-e1697553857397-1024x1024.jpg" /><noscript><img loading="lazy" decoding="async" width="800" height="800" src="https://cardiofitness.com.br/wp-content/uploads/2023/10/retrato-de-jovens-medicos-sorridentes-juntos-retrato-da-equipe-medica-dentro-do-hospital-moderno-sorrindo-para-a-camera-scaled-e1697553857397-1024x1024.jpg" class="attachment-large size-large wp-image-3429" alt="" srcset="https://cardiofitness.com.br/wp-content/uploads/2023/10/retrato-de-jovens-medicos-sorridentes-juntos-retrato-da-equipe-medica-dentro-do-hospital-moderno-sorrindo-para-a-camera-scaled-e1697553857397-1024x1024.jpg 1024w, https://cardiofitness.com.br/wp-content/uploads/2023/10/retrato-de-jovens-medicos-sorridentes-juntos-retrato-da-equipe-medica-dentro-do-hospital-moderno-sorrindo-para-a-camera-scaled-e1697553857397-300x300.jpg 300w, https://cardiofitness.com.br/wp-content/uploads/2023/10/retrato-de-jovens-medicos-sorridentes-juntos-retrato-da-equipe-medica-dentro-do-hospital-moderno-sorrindo-para-a-camera-scaled-e1697553857397-150x150.jpg 150w, https://cardiofitness.com.br/wp-content/uploads/2023/10/retrato-de-jovens-medicos-sorridentes-juntos-retrato-da-equipe-medica-dentro-do-hospital-moderno-sorrindo-para-a-camera-scaled-e1697553857397-768x768.jpg 768w, https://cardiofitness.com.br/wp-content/uploads/2023/10/retrato-de-jovens-medicos-sorridentes-juntos-retrato-da-equipe-medica-dentro-do-hospital-moderno-sorrindo-para-a-camera-scaled-e1697553857397-1536x1536.jpg 1536w, https://cardiofitness.com.br/wp-content/uploads/2023/10/retrato-de-jovens-medicos-sorridentes-juntos-retrato-da-equipe-medica-dentro-do-hospital-moderno-sorrindo-para-a-camera-scaled-e1697553857397.jpg 1706w" sizes="(max-width: 800px) 100vw, 800px" /></noscript>															</div>
+				</div>
+				<div class="elementor-element elementor-element-33e03965 elementor-widget elementor-widget-image-box" data-id="33e03965" data-element_type="widget" data-widget_type="image-box.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image-box-wrapper"><div class="elementor-image-box-content"><h3 class="elementor-image-box-title">Profissionais<br>Atualizados</h3><p class="elementor-image-box-description">Conte com profissionais de qualidade e atualizados</p></div></div>				</div>
+				</div>
+				<div class="elementor-element elementor-element-124edb8d elementor-align-center elementor-widget elementor-widget-button" data-id="124edb8d" data-element_type="widget" data-widget_type="button.default">
+				<div class="elementor-widget-container">
+									<div class="elementor-button-wrapper">
+					<a class="elementor-button elementor-button-link elementor-size-sm" href="https://cardiofitness.com.br/corpoclinico">
+						<span class="elementor-button-content-wrapper">
+									<span class="elementor-button-text">Ver Médicos</span>
+					</span>
+					</a>
+				</div>
+								</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-top-column elementor-element elementor-element-1e22b61b" data-id="1e22b61b" data-element_type="column" data-settings="{&quot;background_background&quot;:&quot;gradient&quot;}">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-3833985e elementor-widget elementor-widget-image-box" data-id="3833985e" data-element_type="widget" data-widget_type="image-box.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image-box-wrapper"><div class="elementor-image-box-content"><h3 class="elementor-image-box-title">Agende sua consulta</h3><p class="elementor-image-box-description">Entre em contato com o nosso time de atendimento e solicite agora uma consulta conosco.</p></div></div>				</div>
+				</div>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-662d725d elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="662d725d" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;gradient&quot;}">
+						<div class="elementor-container elementor-column-gap-no">
+					<div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-76e7f2cd" data-id="76e7f2cd" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-f7b7c61 elementor-widget elementor-widget-heading" data-id="f7b7c61" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+					<p class="elementor-heading-title elementor-size-default">Ligue para agendamento:</p>				</div>
+				</div>
+				<div class="elementor-element elementor-element-4a1c9af1 elementor-widget elementor-widget-heading" data-id="4a1c9af1" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+					<h3 class="elementor-heading-title elementor-size-default">(61) 3340-1400</h3>				</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+					</div>
+		</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-1e8f1f60 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="1e8f1f60" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-no">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-7e9fcf70" data-id="7e9fcf70" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-3b25e963 elementor-widget elementor-widget-heading" data-id="3b25e963" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+					<h2 class="elementor-heading-title elementor-size-default">Nossas Especialidades</h2>				</div>
+				</div>
+				<div class="elementor-element elementor-element-e5622d3 elementor-widget elementor-widget-text-editor" data-id="e5622d3" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+									<p><b>Tudo em um só lugar!</b> Aqui na Cardiofitness você será atendido do início ao fim e com a possibilidade de fazer também os seus exames sem precisar ir em outro lugar.</p>								</div>
+				</div>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-652f703 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="652f703" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-057aecc" data-id="057aecc" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-88c699d ekit-equal-height-disable elementor-widget elementor-widget-elementskit-icon-box" data-id="88c699d" data-element_type="widget" data-widget_type="elementskit-icon-box.default">
+				<div class="elementor-widget-container">
+					<div class="ekit-wid-con" >        <!-- link opening -->
+                <!-- end link opening -->
+
+        <div class="elementskit-infobox text-left text-left icon-lef-right-aligin elementor-animation- media  ">
+                    <div class="elementskit-box-header elementor-animation-">
+                <div class="elementskit-info-box-icon  text-center">
+                    <i aria-hidden="true" class="elementkit-infobox-icon icon icon-heart"></i>
+                </div>
+          </div>
+                        <div class="box-body">
+                            <h3 class="elementskit-info-box-title">
+                    Cardiologia                </h3>
+                        		  	<p>Cuidamos do coração dos brasilienses há mais de 30 anos com tecnologia de ponta para check-up e tratamento. </p>
+                                </div>
+        
+        
+                </div>
+        </div>				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-cd69308" data-id="cd69308" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-222136c ekit-equal-height-disable elementor-widget elementor-widget-elementskit-icon-box" data-id="222136c" data-element_type="widget" data-widget_type="elementskit-icon-box.default">
+				<div class="elementor-widget-container">
+					<div class="ekit-wid-con" >        <!-- link opening -->
+                <!-- end link opening -->
+
+        <div class="elementskit-infobox text-left text-left icon-lef-right-aligin elementor-animation- media  ">
+                    <div class="elementskit-box-header elementor-animation-">
+                <div class="elementskit-info-box-icon  text-center">
+                    <i aria-hidden="true" class="elementkit-infobox-icon icon icon-medicine-1"></i>
+                </div>
+          </div>
+                        <div class="box-body">
+                            <h3 class="elementskit-info-box-title">
+                    Medicina Preventiva                </h3>
+                        		  	<p>A Medicina Preventiva e a Geriatria Preventiva são essenciais para o seu pleno envelhecimento com saúde.</p>
+                                </div>
+        
+        
+                </div>
+        </div>				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-3be8d1a" data-id="3be8d1a" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-bd56d33 ekit-equal-height-disable elementor-widget elementor-widget-elementskit-icon-box" data-id="bd56d33" data-element_type="widget" data-widget_type="elementskit-icon-box.default">
+				<div class="elementor-widget-container">
+					<div class="ekit-wid-con" >        <!-- link opening -->
+                <!-- end link opening -->
+
+        <div class="elementskit-infobox text-left text-left icon-lef-right-aligin elementor-animation- media  ">
+                    <div class="elementskit-box-header elementor-animation-">
+                <div class="elementskit-info-box-icon  text-center">
+                    <i aria-hidden="true" class="elementkit-infobox-icon icon icon-stethoscope"></i>
+                </div>
+          </div>
+                        <div class="box-body">
+                            <h3 class="elementskit-info-box-title">
+                    Angiologia                </h3>
+                        		  	<p>Especializado no tratamento de enfermidades que afetam os vasos sanguíneos como trombose, AVC e varizes.</p>
+                                </div>
+        
+        
+                </div>
+        </div>				</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-72f0555 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="72f0555" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-e3a571e" data-id="e3a571e" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-ef578cf ekit-equal-height-disable elementor-widget elementor-widget-elementskit-icon-box" data-id="ef578cf" data-element_type="widget" data-widget_type="elementskit-icon-box.default">
+				<div class="elementor-widget-container">
+					<div class="ekit-wid-con" >        <!-- link opening -->
+                <!-- end link opening -->
+
+        <div class="elementskit-infobox text-left text-left icon-lef-right-aligin elementor-animation- media  ">
+                    <div class="elementskit-box-header elementor-animation-">
+                <div class="elementskit-info-box-icon  text-center">
+                    <i aria-hidden="true" class="elementkit-infobox-icon icon icon-doctor"></i>
+                </div>
+          </div>
+                        <div class="box-body">
+                            <h3 class="elementskit-info-box-title">
+                    Clínica Médica                </h3>
+                        		  	<p>Realize o cuidado preventivo com check-ups essenciais no diagnóstico precoce de muitas doenças silenciosas.</p>
+                                </div>
+        
+        
+                </div>
+        </div>				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-3b519c6" data-id="3b519c6" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-7c8d695 ekit-equal-height-disable elementor-widget elementor-widget-elementskit-icon-box" data-id="7c8d695" data-element_type="widget" data-widget_type="elementskit-icon-box.default">
+				<div class="elementor-widget-container">
+					<div class="ekit-wid-con" >        <!-- link opening -->
+                <!-- end link opening -->
+
+        <div class="elementskit-infobox text-left text-left icon-lef-right-aligin elementor-animation- media  ">
+                    <div class="elementskit-box-header elementor-animation-">
+                <div class="elementskit-info-box-icon  text-center">
+                    <i aria-hidden="true" class="elementkit-infobox-icon icon icon-flower"></i>
+                </div>
+          </div>
+                        <div class="box-body">
+                            <h3 class="elementskit-info-box-title">
+                    Ginecologia                </h3>
+                        		  	<p>As visitas ao ginecologista são essenciais para a saúde da mulher e devem ocorrer pelo menos uma vez por ano.</p>
+                                </div>
+        
+        
+                </div>
+        </div>				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-2c357cd" data-id="2c357cd" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-a44d1fe ekit-equal-height-disable elementor-widget elementor-widget-elementskit-icon-box" data-id="a44d1fe" data-element_type="widget" data-widget_type="elementskit-icon-box.default">
+				<div class="elementor-widget-container">
+					<div class="ekit-wid-con" >        <!-- link opening -->
+                <!-- end link opening -->
+
+        <div class="elementskit-infobox text-left text-left icon-lef-right-aligin elementor-animation- media  ">
+                    <div class="elementskit-box-header elementor-animation-">
+                <div class="elementskit-info-box-icon  text-center">
+                    <i aria-hidden="true" class="elementkit-infobox-icon icon icon-bicycle"></i>
+                </div>
+          </div>
+                        <div class="box-body">
+                            <h3 class="elementskit-info-box-title">
+                    Medicina Esportiva                </h3>
+                        		  	<p>A medicina esportiva lida com todas as questões relacionadas ao tratamento e prevenção de comorbidades esportivas.</p>
+                                </div>
+        
+        
+                </div>
+        </div>				</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-224f792f elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="224f792f" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-2e8c2f3c" data-id="2e8c2f3c" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-368e8286 ekit-equal-height-disable elementor-widget elementor-widget-elementskit-icon-box" data-id="368e8286" data-element_type="widget" data-widget_type="elementskit-icon-box.default">
+				<div class="elementor-widget-container">
+					<div class="ekit-wid-con" >        <!-- link opening -->
+                <!-- end link opening -->
+
+        <div class="elementskit-infobox text-left text-left icon-lef-right-aligin elementor-animation- media  ">
+                    <div class="elementskit-box-header elementor-animation-">
+                <div class="elementskit-info-box-icon  text-center">
+                    <i aria-hidden="true" class="elementkit-infobox-icon icon icon-cutlery"></i>
+                </div>
+          </div>
+                        <div class="box-body">
+                            <h3 class="elementskit-info-box-title">
+                    Nutrição                </h3>
+                        		  	<p>O acompanhamento nutricional é essencial para quem busca uma boa alimentação saudável e a prevenção de doenças.</p>
+                                </div>
+        
+        
+                </div>
+        </div>				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-1635bace" data-id="1635bace" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-2be263c9 ekit-equal-height-disable elementor-widget elementor-widget-elementskit-icon-box" data-id="2be263c9" data-element_type="widget" data-widget_type="elementskit-icon-box.default">
+				<div class="elementor-widget-container">
+					<div class="ekit-wid-con" >        <!-- link opening -->
+                <!-- end link opening -->
+
+        <div class="elementskit-infobox text-left text-left icon-lef-right-aligin elementor-animation- media  ">
+                    <div class="elementskit-box-header elementor-animation-">
+                <div class="elementskit-info-box-icon  text-center">
+                    <i aria-hidden="true" class="elementkit-infobox-icon icon icon-tooth"></i>
+                </div>
+          </div>
+                        <div class="box-body">
+                            <h3 class="elementskit-info-box-title">
+                    Odontologia                </h3>
+                        		  	<p>Cuidar da sua boca é sinônimo de bem-estar. Exibir um sorriso bonito, alinhado e sem cáries é um alento para a autoestima.</p>
+                                </div>
+        
+        
+                </div>
+        </div>				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-18612160" data-id="18612160" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-3107063b ekit-equal-height-disable elementor-widget elementor-widget-elementskit-icon-box" data-id="3107063b" data-element_type="widget" data-widget_type="elementskit-icon-box.default">
+				<div class="elementor-widget-container">
+					<div class="ekit-wid-con" >        <!-- link opening -->
+                <!-- end link opening -->
+
+        <div class="elementskit-infobox text-left text-left icon-lef-right-aligin elementor-animation- media  ">
+                    <div class="elementskit-box-header elementor-animation-">
+                <div class="elementskit-info-box-icon  text-center">
+                    <i aria-hidden="true" class="elementkit-infobox-icon icon icon-manager"></i>
+                </div>
+          </div>
+                        <div class="box-body">
+                            <h3 class="elementskit-info-box-title">
+                    Ortopedia                </h3>
+                        		  	<p>A ortopedia é aliada da sua vitalidade na recuperação ágil e na qualidade de vida para todo o seu corpo.</p>
+                                </div>
+        
+        
+                </div>
+        </div>				</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-4355087c elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="4355087c" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-370fa51d" data-id="370fa51d" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-2ff5ef2e ekit-equal-height-disable elementor-widget elementor-widget-elementskit-icon-box" data-id="2ff5ef2e" data-element_type="widget" data-widget_type="elementskit-icon-box.default">
+				<div class="elementor-widget-container">
+					<div class="ekit-wid-con" >        <!-- link opening -->
+                <!-- end link opening -->
+
+        <div class="elementskit-infobox text-left text-left icon-lef-right-aligin elementor-animation- media  ">
+                    <div class="elementskit-box-header elementor-animation-">
+                <div class="elementskit-info-box-icon  text-center">
+                    <i aria-hidden="true" class="elementkit-infobox-icon icon icon-conversation"></i>
+                </div>
+          </div>
+                        <div class="box-body">
+                            <h3 class="elementskit-info-box-title">
+                    Psicologia                </h3>
+                        		  	<p>Contar com o apoio de um psicólogo é essencial para tratar transtornos mentais e emocionais como a ansiedade.</p>
+                                </div>
+        
+        
+                </div>
+        </div>				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-3dec112d" data-id="3dec112d" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-16a52947 ekit-equal-height-disable elementor-widget elementor-widget-elementskit-icon-box" data-id="16a52947" data-element_type="widget" data-widget_type="elementskit-icon-box.default">
+				<div class="elementor-widget-container">
+					<div class="ekit-wid-con" >        <!-- link opening -->
+                <!-- end link opening -->
+
+        <div class="elementskit-infobox text-left text-left icon-lef-right-aligin elementor-animation- media  ">
+                    <div class="elementskit-box-header elementor-animation-">
+                <div class="elementskit-info-box-icon  text-center">
+                    <i aria-hidden="true" class="elementkit-infobox-icon icon icon-doctor"></i>
+                </div>
+          </div>
+                        <div class="box-body">
+                            <h3 class="elementskit-info-box-title">
+                    Urologia                </h3>
+                        		  	<p>Trate seus problemas hormonais e os relacionados ao Sistema Urinário tanto masculino quanto feminino.</p>
+                                </div>
+        
+        
+                </div>
+        </div>				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-3b26ead7" data-id="3b26ead7" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-538a26a7 ekit-equal-height-disable elementor-widget elementor-widget-elementskit-icon-box" data-id="538a26a7" data-element_type="widget" data-widget_type="elementskit-icon-box.default">
+				<div class="elementor-widget-container">
+					<div class="ekit-wid-con" >        <!-- link opening -->
+                <!-- end link opening -->
+
+        <div class="elementskit-infobox text-left text-left icon-lef-right-aligin elementor-animation- media  ">
+                    <div class="elementskit-box-header elementor-animation-">
+                <div class="elementskit-info-box-icon  text-center">
+                    <i aria-hidden="true" class="elementkit-infobox-icon icon icon-dentist"></i>
+                </div>
+          </div>
+                        <div class="box-body">
+                            <h3 class="elementskit-info-box-title">
+                    Exames Diversos                </h3>
+                        		  	<p>Tudo em um só lugar! Clique aqui e conheça em detalhes todos os exames realizados pela Cardiofitness.</p>
+                                </div>
+        
+        
+                </div>
+        </div>				</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+					</div>
+		</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-11018693 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="11018693" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-7b27421d" data-id="7b27421d" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-baa48bb elementor-widget elementor-widget-heading" data-id="baa48bb" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+					<h2 class="elementor-heading-title elementor-size-default">Convênios Atendidos</h2>				</div>
+				</div>
+				<div class="elementor-element elementor-element-24dc8d9 elementor-widget elementor-widget-text-editor" data-id="24dc8d9" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+									<p><b>Caso o seu convênio não esteja listado</b> em nosso site, entre em contato conosco para verificar a possibilidade de reembolso da sua consulta pelo seu Plano de Saúde.</p>								</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-7441b0f elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="7441b0f" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-415715e" data-id="415715e" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-2dc48e1 elementor-arrows-position-outside elementor-pagination-position-outside elementor-widget elementor-widget-image-carousel" data-id="2dc48e1" data-element_type="widget" data-settings="{&quot;slides_to_show&quot;:&quot;4&quot;,&quot;slides_to_scroll&quot;:&quot;2&quot;,&quot;autoplay_speed&quot;:3000,&quot;speed&quot;:2000,&quot;image_spacing_custom&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:50,&quot;sizes&quot;:[]},&quot;slides_to_show_mobile&quot;:&quot;2&quot;,&quot;navigation&quot;:&quot;both&quot;,&quot;autoplay&quot;:&quot;yes&quot;,&quot;pause_on_hover&quot;:&quot;yes&quot;,&quot;pause_on_interaction&quot;:&quot;yes&quot;,&quot;infinite&quot;:&quot;yes&quot;,&quot;image_spacing_custom_tablet&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:&quot;&quot;,&quot;sizes&quot;:[]},&quot;image_spacing_custom_mobile&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:&quot;&quot;,&quot;sizes&quot;:[]}}" data-widget_type="image-carousel.default">
+				<div class="elementor-widget-container">
+							<div class="elementor-image-carousel-wrapper swiper" role="region" aria-roledescription="carousel" aria-label="Carrossel de imagens" dir="ltr">
+			<div class="elementor-image-carousel swiper-wrapper" aria-live="off">
+								<div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="1 de 13"><figure class="swiper-slide-inner"><img data-perfmatters-preload width="300" height="150" decoding="async" class="swiper-slide-image" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20150'%3E%3C/svg%3E" alt="cassi" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/09/cassi.png" /><noscript><img width="300" height="150" decoding="async" class="swiper-slide-image" src="https://cardiofitness.com.br/wp-content/uploads/2023/09/cassi.png" alt="cassi" /></noscript></figure></div><div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="2 de 13"><figure class="swiper-slide-inner"><img width="300" height="150" decoding="async" class="swiper-slide-image" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20150'%3E%3C/svg%3E" alt="CNU" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/09/CNU.png" /><noscript><img width="300" height="150" decoding="async" class="swiper-slide-image" src="https://cardiofitness.com.br/wp-content/uploads/2023/09/CNU.png" alt="CNU" /></noscript></figure></div><div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="3 de 13"><figure class="swiper-slide-inner"><img width="300" height="150" decoding="async" class="swiper-slide-image" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20150'%3E%3C/svg%3E" alt="geap" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/09/geap.png" /><noscript><img width="300" height="150" decoding="async" class="swiper-slide-image" src="https://cardiofitness.com.br/wp-content/uploads/2023/09/geap.png" alt="geap" /></noscript></figure></div><div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="4 de 13"><figure class="swiper-slide-inner"><img width="300" height="150" decoding="async" class="swiper-slide-image" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20150'%3E%3C/svg%3E" alt="golden-cross" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/09/golden-cross.png" /><noscript><img width="300" height="150" decoding="async" class="swiper-slide-image" src="https://cardiofitness.com.br/wp-content/uploads/2023/09/golden-cross.png" alt="golden-cross" /></noscript></figure></div><div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="5 de 13"><figure class="swiper-slide-inner"><img width="300" height="150" decoding="async" class="swiper-slide-image" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20150'%3E%3C/svg%3E" alt="infraero" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/09/infraero.png" /><noscript><img width="300" height="150" decoding="async" class="swiper-slide-image" src="https://cardiofitness.com.br/wp-content/uploads/2023/09/infraero.png" alt="infraero" /></noscript></figure></div><div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="6 de 13"><figure class="swiper-slide-inner"><img width="300" height="150" decoding="async" class="swiper-slide-image" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20150'%3E%3C/svg%3E" alt="porto-seguro" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/09/porto-seguro.png" /><noscript><img width="300" height="150" decoding="async" class="swiper-slide-image" src="https://cardiofitness.com.br/wp-content/uploads/2023/09/porto-seguro.png" alt="porto-seguro" /></noscript></figure></div><div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="7 de 13"><figure class="swiper-slide-inner"><img width="300" height="150" decoding="async" class="swiper-slide-image" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20150'%3E%3C/svg%3E" alt="postal-saude" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/09/postal-saude.png" /><noscript><img width="300" height="150" decoding="async" class="swiper-slide-image" src="https://cardiofitness.com.br/wp-content/uploads/2023/09/postal-saude.png" alt="postal-saude" /></noscript></figure></div><div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="8 de 13"><figure class="swiper-slide-inner"><img width="300" height="150" decoding="async" class="swiper-slide-image" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20150'%3E%3C/svg%3E" alt="pro-saude-tjdft" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/09/pro-saude-tjdft.png" /><noscript><img width="300" height="150" decoding="async" class="swiper-slide-image" src="https://cardiofitness.com.br/wp-content/uploads/2023/09/pro-saude-tjdft.png" alt="pro-saude-tjdft" /></noscript></figure></div><div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="9 de 13"><figure class="swiper-slide-inner"><img width="300" height="150" decoding="async" class="swiper-slide-image" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20150'%3E%3C/svg%3E" alt="pro-ser" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/09/pro-ser.png" /><noscript><img width="300" height="150" decoding="async" class="swiper-slide-image" src="https://cardiofitness.com.br/wp-content/uploads/2023/09/pro-ser.png" alt="pro-ser" /></noscript></figure></div><div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="10 de 13"><figure class="swiper-slide-inner"><img width="300" height="150" decoding="async" class="swiper-slide-image" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20150'%3E%3C/svg%3E" alt="seguros-unimed" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/09/seguros-unimed.png" /><noscript><img width="300" height="150" decoding="async" class="swiper-slide-image" src="https://cardiofitness.com.br/wp-content/uploads/2023/09/seguros-unimed.png" alt="seguros-unimed" /></noscript></figure></div><div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="11 de 13"><figure class="swiper-slide-inner"><img width="300" height="150" decoding="async" class="swiper-slide-image" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20150'%3E%3C/svg%3E" alt="serpro" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/09/serpro.png" /><noscript><img width="300" height="150" decoding="async" class="swiper-slide-image" src="https://cardiofitness.com.br/wp-content/uploads/2023/09/serpro.png" alt="serpro" /></noscript></figure></div><div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="12 de 13"><figure class="swiper-slide-inner"><img width="300" height="150" decoding="async" class="swiper-slide-image" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20150'%3E%3C/svg%3E" alt="unafisco-saude" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/09/unafisco-saude.png" /><noscript><img width="300" height="150" decoding="async" class="swiper-slide-image" src="https://cardiofitness.com.br/wp-content/uploads/2023/09/unafisco-saude.png" alt="unafisco-saude" /></noscript></figure></div><div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="13 de 13"><figure class="swiper-slide-inner"><img width="300" height="150" decoding="async" class="swiper-slide-image" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20150'%3E%3C/svg%3E" alt="vale-saude" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/09/vale-saude.png" /><noscript><img width="300" height="150" decoding="async" class="swiper-slide-image" src="https://cardiofitness.com.br/wp-content/uploads/2023/09/vale-saude.png" alt="vale-saude" /></noscript></figure></div>			</div>
+												<div class="elementor-swiper-button elementor-swiper-button-prev" role="button" tabindex="0">
+						<i aria-hidden="true" class="eicon-chevron-left"></i>					</div>
+					<div class="elementor-swiper-button elementor-swiper-button-next" role="button" tabindex="0">
+						<i aria-hidden="true" class="eicon-chevron-right"></i>					</div>
+				
+									<div class="swiper-pagination"></div>
+									</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-eb63ccf elementor-align-center elementor-widget elementor-widget-button" data-id="eb63ccf" data-element_type="widget" data-widget_type="button.default">
+				<div class="elementor-widget-container">
+									<div class="elementor-button-wrapper">
+					<a class="elementor-button elementor-button-link elementor-size-sm" href="https://cardiofitness.com.br/convenios-2">
+						<span class="elementor-button-content-wrapper">
+									<span class="elementor-button-text">Ver todos os Convênios</span>
+					</span>
+					</a>
+				</div>
+								</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-7a0a3b01 elementor-section-stretched elementor-section-content-middle elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="7a0a3b01" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;,&quot;stretch_section&quot;:&quot;section-stretched&quot;}">
+						<div class="elementor-container elementor-column-gap-extended">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-73b6b358" data-id="73b6b358" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<section class="elementor-section elementor-inner-section elementor-element elementor-element-499b4dcc elementor-section-content-middle elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="499b4dcc" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-extended">
+					<div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-59c72613" data-id="59c72613" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-e2c8f1e elementor-widget elementor-widget-heading" data-id="e2c8f1e" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+					<h2 class="elementor-heading-title elementor-size-default">⭐⭐⭐⭐⭐</h2>				</div>
+				</div>
+				<div class="elementor-element elementor-element-42ab308 elementor-widget elementor-widget-heading" data-id="42ab308" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+					<h2 class="elementor-heading-title elementor-size-default">Pacientes Satisfeitos</h2>				</div>
+				</div>
+				<div class="elementor-element elementor-element-bb381ab elementor-widget elementor-widget-text-editor" data-id="bb381ab" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+									<p>Mais do que uma relação de médicos e pacientes, temos uma parceria de saúde com todos que frequentam a Clínica Cardiofitness. E é por isso que temos ótimas avaliações!</p>								</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-c94d593 elementor-section-content-middle elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="c94d593" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-extended">
+					<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-b162846" data-id="b162846" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-84e82df elementor-invisible elementor-widget elementor-widget-testimonial" data-id="84e82df" data-element_type="widget" data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;}" data-widget_type="testimonial.default">
+				<div class="elementor-widget-container">
+							<div class="elementor-testimonial-wrapper">
+							<div class="elementor-testimonial-content">Sou paciente há doze anos nesta clínica e sempre fui bem atendido.
+Gostaria de deixar um agradecimento especial para a funcionária Eliane que sempre me trata com atenção, cordialidade e excelente profissionalismo.</div>
+			
+						<div class="elementor-testimonial-meta elementor-has-image elementor-testimonial-image-position-aside">
+				<div class="elementor-testimonial-meta-inner">
+											<div class="elementor-testimonial-image">
+							<img width="60" height="60" decoding="async" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2060%2060'%3E%3C/svg%3E" title="unnamed (8)" alt="unnamed (8)" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/elementor/thumbs/unnamed-8-qcazysoqa3am4pfwcka3a8a5z823mkaaxqp8f4q7o8.png" /><noscript><img width="60" height="60" decoding="async" src="https://cardiofitness.com.br/wp-content/uploads/elementor/thumbs/unnamed-8-qcazysoqa3am4pfwcka3a8a5z823mkaaxqp8f4q7o8.png" title="unnamed (8)" alt="unnamed (8)" loading="lazy" /></noscript>						</div>
+					
+										<div class="elementor-testimonial-details">
+														<div class="elementor-testimonial-name">Elcio Muniz</div>
+																						<div class="elementor-testimonial-job">Paciente</div>
+													</div>
+									</div>
+			</div>
+					</div>
+						</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-2c07a83" data-id="2c07a83" data-element_type="column" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-d4645ef elementor-invisible elementor-widget elementor-widget-testimonial" data-id="d4645ef" data-element_type="widget" data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;}" data-widget_type="testimonial.default">
+				<div class="elementor-widget-container">
+							<div class="elementor-testimonial-wrapper">
+							<div class="elementor-testimonial-content">Maravilha! Dra. Marisa é uma excelente médica, muito profissional, super atenciosa, tem uma excelente equipe super treinada com um maravilhoso atendimento. Não tenho do que me queixar. Indico a Clínica Cardiofitness e a Dra. Marisa de olhos fechados.</div>
+			
+						<div class="elementor-testimonial-meta elementor-has-image elementor-testimonial-image-position-aside">
+				<div class="elementor-testimonial-meta-inner">
+											<div class="elementor-testimonial-image">
+							<img width="60" height="60" decoding="async" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2060%2060'%3E%3C/svg%3E" title="unnamed (7)" alt="unnamed (7)" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/elementor/thumbs/unnamed-7-qcazs7tefuacuyzyrpw3tw20a4hlqu5y16avhehf88.png" /><noscript><img width="60" height="60" decoding="async" src="https://cardiofitness.com.br/wp-content/uploads/elementor/thumbs/unnamed-7-qcazs7tefuacuyzyrpw3tw20a4hlqu5y16avhehf88.png" title="unnamed (7)" alt="unnamed (7)" loading="lazy" /></noscript>						</div>
+					
+										<div class="elementor-testimonial-details">
+														<div class="elementor-testimonial-name">Emmanuelle Soares</div>
+																						<div class="elementor-testimonial-job">Paciente</div>
+													</div>
+									</div>
+			</div>
+					</div>
+						</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-ab7066a" data-id="ab7066a" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-84ab57f elementor-invisible elementor-widget elementor-widget-testimonial" data-id="84ab57f" data-element_type="widget" data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;}" data-widget_type="testimonial.default">
+				<div class="elementor-widget-container">
+							<div class="elementor-testimonial-wrapper">
+							<div class="elementor-testimonial-content">A consulta foi 100%. A Dra Marisa tem um atendimento muito humanizado, ela se preocupa mais com a atenção ao paciente do que com o tempo de atendimento. Eu indico.
+Preciso ressaltar em particular o atendimento prestado pela Cleuma. Uma funcionária simpática, prestativa e eficiente.
+</div>
+			
+						<div class="elementor-testimonial-meta elementor-has-image elementor-testimonial-image-position-aside">
+				<div class="elementor-testimonial-meta-inner">
+											<div class="elementor-testimonial-image">
+							<img decoding="async" width="60" height="60" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2060%2060'%3E%3C/svg%3E" class="attachment-full size-full wp-image-3292" alt="" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/09/unnamed-9.png" /><noscript><img loading="lazy" decoding="async" width="60" height="60" src="https://cardiofitness.com.br/wp-content/uploads/2023/09/unnamed-9.png" class="attachment-full size-full wp-image-3292" alt="" /></noscript>						</div>
+					
+										<div class="elementor-testimonial-details">
+														<div class="elementor-testimonial-name">Ivan Gomes</div>
+																						<div class="elementor-testimonial-job">PACIENTE</div>
+													</div>
+									</div>
+			</div>
+					</div>
+						</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+				<div class="elementor-element elementor-element-22ca13ef elementor-widget elementor-widget-spacer" data-id="22ca13ef" data-element_type="widget" data-widget_type="spacer.default">
+				<div class="elementor-widget-container">
+							<div class="elementor-spacer">
+			<div class="elementor-spacer-inner"></div>
+		</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-554cd3de elementor-align-center elementor-invisible elementor-widget elementor-widget-button" data-id="554cd3de" data-element_type="widget" data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;_animation_delay&quot;:800}" data-widget_type="button.default">
+				<div class="elementor-widget-container">
+									<div class="elementor-button-wrapper">
+					<a class="elementor-button elementor-button-link elementor-size-md elementor-animation-float" href="https://www.doctoralia.com.br/clinicas/cardiofitness-clinica-cardiologica#facility-opinion-stats">
+						<span class="elementor-button-content-wrapper">
+						<span class="elementor-button-icon">
+				<i aria-hidden="true" class="fas fa-long-arrow-alt-right"></i>			</span>
+									<span class="elementor-button-text">Ver mais depoimentos</span>
+					</span>
+					</a>
+				</div>
+								</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-11619c0f elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="11619c0f" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+						<div class="elementor-container elementor-column-gap-no">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-7b4acb77" data-id="7b4acb77" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<section class="elementor-section elementor-inner-section elementor-element elementor-element-468fb32f elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="468fb32f" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-no">
+					<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-3131d14" data-id="3131d14" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-4c79ebf7 elementor-widget elementor-widget-heading" data-id="4c79ebf7" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+					<h2 class="elementor-heading-title elementor-size-default">Menu Rápido</h2>				</div>
+				</div>
+				<div class="elementor-element elementor-element-7dbe9e7 elementor-nav-menu__align-start elementor-nav-menu--dropdown-none elementor-widget elementor-widget-nav-menu" data-id="7dbe9e7" data-element_type="widget" data-settings="{&quot;layout&quot;:&quot;vertical&quot;,&quot;submenu_icon&quot;:{&quot;value&quot;:&quot;&lt;i class=\&quot;fas fa-caret-down\&quot;&gt;&lt;\/i&gt;&quot;,&quot;library&quot;:&quot;fa-solid&quot;}}" data-widget_type="nav-menu.default">
+				<div class="elementor-widget-container">
+								<nav aria-label="Menu" class="elementor-nav-menu--main elementor-nav-menu__container elementor-nav-menu--layout-vertical e--pointer-none">
+				<ul id="menu-1-7dbe9e7" class="elementor-nav-menu sm-vertical"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3596"><a href="https://cardiofitness.com.br/sobrenos/" class="elementor-item">Sobre Nós</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3466"><a href="https://cardiofitness.com.br/especialidades/" class="elementor-item">Especialidades</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3669"><a href="https://cardiofitness.com.br/exames/" class="elementor-item">Exames</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3602"><a href="https://cardiofitness.com.br/convenios/" class="elementor-item">Convênios e Reembolso</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3450"><a href="https://cardiofitness.com.br/corpoclinico/" class="elementor-item">Corpo Clínico</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-4484"><a href="https://resultados.cardiofitness.com.br/" class="elementor-item">Resultados de exames</a></li>
+</ul>			</nav>
+						<nav class="elementor-nav-menu--dropdown elementor-nav-menu__container" aria-hidden="true">
+				<ul id="menu-2-7dbe9e7" class="elementor-nav-menu sm-vertical"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3596"><a href="https://cardiofitness.com.br/sobrenos/" class="elementor-item" tabindex="-1">Sobre Nós</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3466"><a href="https://cardiofitness.com.br/especialidades/" class="elementor-item" tabindex="-1">Especialidades</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3669"><a href="https://cardiofitness.com.br/exames/" class="elementor-item" tabindex="-1">Exames</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3602"><a href="https://cardiofitness.com.br/convenios/" class="elementor-item" tabindex="-1">Convênios e Reembolso</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3450"><a href="https://cardiofitness.com.br/corpoclinico/" class="elementor-item" tabindex="-1">Corpo Clínico</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-4484"><a href="https://resultados.cardiofitness.com.br/" class="elementor-item" tabindex="-1">Resultados de exames</a></li>
+</ul>			</nav>
+						</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-45f2336e" data-id="45f2336e" data-element_type="column">
+			<div class="elementor-widget-wrap">
+							</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-d245d0e" data-id="d245d0e" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-4c601226 elementor-widget elementor-widget-heading" data-id="4c601226" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+					<h2 class="elementor-heading-title elementor-size-default">Entre em Contato</h2>				</div>
+				</div>
+				<div class="elementor-element elementor-element-4c5565a7 elementor-widget__width-initial elementor-mobile-align-center elementor-icon-list--layout-traditional elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="4c5565a7" data-element_type="widget" data-widget_type="icon-list.default">
+				<div class="elementor-widget-container">
+							<ul class="elementor-icon-list-items">
+							<li class="elementor-icon-list-item">
+											<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-map-marker-alt"></i>						</span>
+										<span class="elementor-icon-list-text">STN, Bloco O - Sala 144 - Asa Norte | Ed. Life Center</span>
+									</li>
+								<li class="elementor-icon-list-item">
+											<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-phone-alt"></i>						</span>
+										<span class="elementor-icon-list-text">(61) 3340-1400</span>
+									</li>
+								<li class="elementor-icon-list-item">
+											<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="far fa-envelope"></i>						</span>
+										<span class="elementor-icon-list-text">multiclinicas@multiclinicas.com.br</span>
+									</li>
+								<li class="elementor-icon-list-item">
+											<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="far fa-envelope"></i>						</span>
+										<span class="elementor-icon-list-text">cardiofitnessbsb@gmail.com</span>
+									</li>
+								<li class="elementor-icon-list-item">
+											<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-hospital"></i>						</span>
+										<span class="elementor-icon-list-text">Razão Social: Cardiofitness Assistencia Medica LTDA</span>
+									</li>
+								<li class="elementor-icon-list-item">
+											<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="far fa-hospital"></i>						</span>
+										<span class="elementor-icon-list-text">CNPJ: 37.101.540/0001-71</span>
+									</li>
+						</ul>
+						</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-4c667b53" data-id="4c667b53" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-639a69b3 elementor-widget elementor-widget-heading" data-id="639a69b3" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+					<h2 class="elementor-heading-title elementor-size-default">Agende sua consulta</h2>				</div>
+				</div>
+				<div class="elementor-element elementor-element-5ccb6adf elementor-widget elementor-widget-text-editor" data-id="5ccb6adf" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+									<p>Nosso atendimento funciona de Segunda a Sexta das 07h às 19h e aos Sábados das 08h às 12h.</p>								</div>
+				</div>
+				<div class="elementor-element elementor-element-2eb46d4b elementor-mobile-align-center elementor-widget elementor-widget-button" data-id="2eb46d4b" data-element_type="widget" data-widget_type="button.default">
+				<div class="elementor-widget-container">
+									<div class="elementor-button-wrapper">
+					<a class="elementor-button elementor-button-link elementor-size-lg" href="https://wa.me/556184048002?text=Ol%C3%A1%21+Vim+pelo+site+da+Cardiofitness+e+gostaria+de+agendar+uma+consulta.">
+						<span class="elementor-button-content-wrapper">
+						<span class="elementor-button-icon">
+				<i aria-hidden="true" class="fas fa-phone-alt"></i>			</span>
+									<span class="elementor-button-text">(61) 8404-8002</span>
+					</span>
+					</a>
+				</div>
+								</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+				<div class="elementor-element elementor-element-337cca52 elementor-widget-divider--view-line elementor-widget elementor-widget-divider" data-id="337cca52" data-element_type="widget" data-widget_type="divider.default">
+				<div class="elementor-widget-container">
+							<div class="elementor-divider">
+			<span class="elementor-divider-separator">
+						</span>
+		</div>
+						</div>
+				</div>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-5af3b9e5 elementor-section-content-middle elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="5af3b9e5" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-no">
+					<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-76d38a56" data-id="76d38a56" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-1a58526f elementor-widget elementor-widget-image" data-id="1a58526f" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container">
+															<img decoding="async" width="1522" height="169" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%201522%20169'%3E%3C/svg%3E" class="attachment-full size-full wp-image-3224" alt="" data-lazy-srcset="https://cardiofitness.com.br/wp-content/uploads/2023/08/logo-site.png 1522w, https://cardiofitness.com.br/wp-content/uploads/2023/08/logo-site-300x33.png 300w, https://cardiofitness.com.br/wp-content/uploads/2023/08/logo-site-1024x114.png 1024w, https://cardiofitness.com.br/wp-content/uploads/2023/08/logo-site-768x85.png 768w" data-lazy-sizes="(max-width: 1522px) 100vw, 1522px" data-lazy-src="https://cardiofitness.com.br/wp-content/uploads/2023/08/logo-site.png" /><noscript><img loading="lazy" decoding="async" width="1522" height="169" src="https://cardiofitness.com.br/wp-content/uploads/2023/08/logo-site.png" class="attachment-full size-full wp-image-3224" alt="" srcset="https://cardiofitness.com.br/wp-content/uploads/2023/08/logo-site.png 1522w, https://cardiofitness.com.br/wp-content/uploads/2023/08/logo-site-300x33.png 300w, https://cardiofitness.com.br/wp-content/uploads/2023/08/logo-site-1024x114.png 1024w, https://cardiofitness.com.br/wp-content/uploads/2023/08/logo-site-768x85.png 768w" sizes="(max-width: 1522px) 100vw, 1522px" /></noscript>															</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-637755b0" data-id="637755b0" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-14cce3ec elementor-widget__width-initial elementor-widget elementor-widget-text-editor" data-id="14cce3ec" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+									<p><span style="color: #808080;">Produzido com ⚡ por <a style="color: #808080;" href="https://acelerasupr.com.br"> SUPR &#8211; Aceleração Digital</a></span></p>								</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-7c53ecc0" data-id="7c53ecc0" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-1edc1e1 elementor-widget__width-initial elementor-widget elementor-widget-text-editor" data-id="1edc1e1" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+									<p>Copyright © 2023. Todos os direitos reservados.<br /><a href="https://cardiofitness.com.br/politicas-de-privacidade">Políticas de Privacidade</a></p>								</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+					</div>
+		</div>
+					</div>
+		</section>
+				</div>
+		<script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/wp-*.php","/wp-admin/*","/wp-content/uploads/*","/wp-content/*","/wp-content/plugins/*","/wp-content/themes/hello-elementor/*","/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script>
+
+<div class="joinchat joinchat--right joinchat--dark-auto" data-settings='{"telephone":"5561984048002","mobile_only":false,"button_delay":3,"whatsapp_web":true,"qr":false,"message_views":2,"message_delay":5,"message_badge":true,"message_send":"Olá! Gostaria de agendar uma consulta.","message_hash":"96923635"}'>
+	<div class="joinchat__button">
+		<div class="joinchat__button__open"></div>
+											<div class="joinchat__button__sendtext">Agendar consulta</div>
+						<svg class="joinchat__button__send" width="60" height="60" viewbox="0 0 400 400" stroke-linecap="round" stroke-width="33">
+				<path class="joinchat_svg__plain" d="M168.83 200.504H79.218L33.04 44.284a1 1 0 0 1 1.386-1.188L365.083 199.04a1 1 0 0 1 .003 1.808L34.432 357.903a1 1 0 0 1-1.388-1.187l29.42-99.427"/>
+				<path class="joinchat_svg__chat" d="M318.087 318.087c-52.982 52.982-132.708 62.922-195.725 29.82l-80.449 10.18 10.358-80.112C18.956 214.905 28.836 134.99 81.913 81.913c65.218-65.217 170.956-65.217 236.174 0 42.661 42.661 57.416 102.661 44.265 157.316"/>
+			</svg>
+							<div class="joinchat__badge">1</div>
+										<div class="joinchat__tooltip"><div>Precisa de ajuda?</div></div>
+					</div>
+			<div class="joinchat__box">
+			<div class="joinchat__header">
+									<svg class="joinchat__wa" width="120" height="28" viewBox="0 0 120 28"><title>WhatsApp</title><path d="M117.2 17c0 .4-.2.7-.4 1-.1.3-.4.5-.7.7l-1 .2c-.5 0-.9 0-1.2-.2l-.7-.7a3 3 0 0 1-.4-1 5.4 5.4 0 0 1 0-2.3c0-.4.2-.7.4-1l.7-.7a2 2 0 0 1 1.1-.3 2 2 0 0 1 1.8 1l.4 1a5.3 5.3 0 0 1 0 2.3zm2.5-3c-.1-.7-.4-1.3-.8-1.7a4 4 0 0 0-1.3-1.2c-.6-.3-1.3-.4-2-.4-.6 0-1.2.1-1.7.4a3 3 0 0 0-1.2 1.1V11H110v13h2.7v-4.5c.4.4.8.8 1.3 1 .5.3 1 .4 1.6.4a4 4 0 0 0 3.2-1.5c.4-.5.7-1 .8-1.6.2-.6.3-1.2.3-1.9s0-1.3-.3-2zm-13.1 3c0 .4-.2.7-.4 1l-.7.7-1.1.2c-.4 0-.8 0-1-.2-.4-.2-.6-.4-.8-.7a3 3 0 0 1-.4-1 5.4 5.4 0 0 1 0-2.3c0-.4.2-.7.4-1 .1-.3.4-.5.7-.7a2 2 0 0 1 1-.3 2 2 0 0 1 1.9 1l.4 1a5.4 5.4 0 0 1 0 2.3zm1.7-4.7a4 4 0 0 0-3.3-1.6c-.6 0-1.2.1-1.7.4a3 3 0 0 0-1.2 1.1V11h-2.6v13h2.7v-4.5c.3.4.7.8 1.2 1 .6.3 1.1.4 1.7.4a4 4 0 0 0 3.2-1.5c.4-.5.6-1 .8-1.6.2-.6.3-1.2.3-1.9s-.1-1.3-.3-2c-.2-.6-.4-1.2-.8-1.6zm-17.5 3.2l1.7-5 1.7 5h-3.4zm.2-8.2l-5 13.4h3l1-3h5l1 3h3L94 7.3h-3zm-5.3 9.1l-.6-.8-1-.5a11.6 11.6 0 0 0-2.3-.5l-1-.3a2 2 0 0 1-.6-.3.7.7 0 0 1-.3-.6c0-.2 0-.4.2-.5l.3-.3h.5l.5-.1c.5 0 .9 0 1.2.3.4.1.6.5.6 1h2.5c0-.6-.2-1.1-.4-1.5a3 3 0 0 0-1-1 4 4 0 0 0-1.3-.5 7.7 7.7 0 0 0-3 0c-.6.1-1 .3-1.4.5l-1 1a3 3 0 0 0-.4 1.5 2 2 0 0 0 1 1.8l1 .5 1.1.3 2.2.6c.6.2.8.5.8 1l-.1.5-.4.4a2 2 0 0 1-.6.2 2.8 2.8 0 0 1-1.4 0 2 2 0 0 1-.6-.3l-.5-.5-.2-.8H77c0 .7.2 1.2.5 1.6.2.5.6.8 1 1 .4.3.9.5 1.4.6a8 8 0 0 0 3.3 0c.5 0 1-.2 1.4-.5a3 3 0 0 0 1-1c.3-.5.4-1 .4-1.6 0-.5 0-.9-.3-1.2zM74.7 8h-2.6v3h-1.7v1.7h1.7v5.8c0 .5 0 .9.2 1.2l.7.7 1 .3a7.8 7.8 0 0 0 2 0h.7v-2.1a3.4 3.4 0 0 1-.8 0l-1-.1-.2-1v-4.8h2V11h-2V8zm-7.6 9v.5l-.3.8-.7.6c-.2.2-.7.2-1.2.2h-.6l-.5-.2a1 1 0 0 1-.4-.4l-.1-.6.1-.6.4-.4.5-.3a4.8 4.8 0 0 1 1.2-.2 8.3 8.3 0 0 0 1.2-.2l.4-.3v1zm2.6 1.5v-5c0-.6 0-1.1-.3-1.5l-1-.8-1.4-.4a10.9 10.9 0 0 0-3.1 0l-1.5.6c-.4.2-.7.6-1 1a3 3 0 0 0-.5 1.5h2.7c0-.5.2-.9.5-1a2 2 0 0 1 1.3-.4h.6l.6.2.3.4.2.7c0 .3 0 .5-.3.6-.1.2-.4.3-.7.4l-1 .1a21.9 21.9 0 0 0-2.4.4l-1 .5c-.3.2-.6.5-.8.9-.2.3-.3.8-.3 1.3s.1 1 .3 1.3c.1.4.4.7.7 1l1 .4c.4.2.9.2 1.3.2a6 6 0 0 0 1.8-.2c.6-.2 1-.5 1.5-1a4 4 0 0 0 .2 1H70l-.3-1v-1.2zm-11-6.7c-.2-.4-.6-.6-1-.8-.5-.2-1-.3-1.8-.3-.5 0-1 .1-1.5.4a3 3 0 0 0-1.3 1.2v-5h-2.7v13.4H53v-5.1c0-1 .2-1.7.5-2.2.3-.4.9-.6 1.6-.6.6 0 1 .2 1.3.6.3.4.4 1 .4 1.8v5.5h2.7v-6c0-.6 0-1.2-.2-1.6 0-.5-.3-1-.5-1.3zm-14 4.7l-2.3-9.2h-2.8l-2.3 9-2.2-9h-3l3.6 13.4h3l2.2-9.2 2.3 9.2h3l3.6-13.4h-3l-2.1 9.2zm-24.5.2L18 15.6c-.3-.1-.6-.2-.8.2A20 20 0 0 1 16 17c-.2.2-.4.3-.7.1-.4-.2-1.5-.5-2.8-1.7-1-1-1.7-2-2-2.4-.1-.4 0-.5.2-.7l.5-.6.4-.6v-.6L10.4 8c-.3-.6-.6-.5-.8-.6H9c-.2 0-.6.1-.9.5C7.8 8.2 7 9 7 10.7c0 1.7 1.3 3.4 1.4 3.6.2.3 2.5 3.7 6 5.2l1.9.8c.8.2 1.6.2 2.2.1.6-.1 2-.8 2.3-1.6.3-.9.3-1.5.2-1.7l-.7-.4zM14 25.3c-2 0-4-.5-5.8-1.6l-.4-.2-4.4 1.1 1.2-4.2-.3-.5A11.5 11.5 0 0 1 22.1 5.7 11.5 11.5 0 0 1 14 25.3zM14 0A13.8 13.8 0 0 0 2 20.7L0 28l7.3-2A13.8 13.8 0 1 0 14 0z"/></svg>
+								<div class="joinchat__close" title="Fechar"></div>
+			</div>
+			<div class="joinchat__box__scroll">
+				<div class="joinchat__box__content">
+					<div class="joinchat__message">Olá! Bem vindo(a) à Cardiofitness. Vamos agendar a sua consulta?</div>				</div>
+			</div>
+		</div>
+		<svg style="width:0;height:0;position:absolute"><defs><clipPath id="joinchat__peak_l"><path d="M17 25V0C17 12.877 6.082 14.9 1.031 15.91c-1.559.31-1.179 2.272.004 2.272C9.609 18.182 17 18.088 17 25z"/></clipPath><clipPath id="joinchat__peak_r"><path d="M0 25.68V0c0 13.23 10.92 15.3 15.97 16.34 1.56.32 1.18 2.34 0 2.34-8.58 0-15.97-.1-15.97 7Z"/></clipPath></defs></svg>
+	</div>
+			<script type="rocketlazyloadscript">
+				const lazyloadRunObserver = () => {
+					const lazyloadBackgrounds = document.querySelectorAll( `.e-con.e-parent:not(.e-lazyloaded)` );
+					const lazyloadBackgroundObserver = new IntersectionObserver( ( entries ) => {
+						entries.forEach( ( entry ) => {
+							if ( entry.isIntersecting ) {
+								let lazyloadBackground = entry.target;
+								if( lazyloadBackground ) {
+									lazyloadBackground.classList.add( 'e-lazyloaded' );
+								}
+								lazyloadBackgroundObserver.unobserve( entry.target );
+							}
+						});
+					}, { rootMargin: '200px 0px 200px 0px' } );
+					lazyloadBackgrounds.forEach( ( lazyloadBackground ) => {
+						lazyloadBackgroundObserver.observe( lazyloadBackground );
+					} );
+				};
+				const events = [
+					'DOMContentLoaded',
+					'elementor/lazyload/observe',
+				];
+				events.forEach( ( event ) => {
+					document.addEventListener( event, lazyloadRunObserver );
+				} );
+			</script>
+			<script type="rocketlazyloadscript" id="wp-hooks-js" defer='defer' src="https://cardiofitness.com.br/wp-includes/js/dist/hooks.min.js?ver=f0f188028580e8dc1255"></script>
+<script type="rocketlazyloadscript" id="wp-i18n-js" defer='defer' src="https://cardiofitness.com.br/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"></script>
+<script type="rocketlazyloadscript" id="wp-i18n-js-after">
+wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
+//# sourceURL=wp-i18n-js-after
+</script>
+<script type="rocketlazyloadscript" data-minify="1" id="swv-js" defer='defer' src="https://cardiofitness.com.br/wp-content/cache/min/1/wp-content/plugins/contact-form-7/includes/swv/js/index.js?ver=1783521017"></script>
+<script type="rocketlazyloadscript" id="contact-form-7-js-translations">
+( function( domain, translations ) {
+	var localeData = translations.locale_data[ domain ] || translations.locale_data.messages;
+	localeData[""].domain = domain;
+	wp.i18n.setLocaleData( localeData, domain );
+} )( "contact-form-7", {"translation-revision-date":"2025-05-19 13:41:20+0000","generator":"GlotPress\/4.0.1","domain":"messages","locale_data":{"messages":{"":{"domain":"messages","plural-forms":"nplurals=2; plural=n > 1;","lang":"pt_BR"},"Error:":["Erro:"]}},"comment":{"reference":"includes\/js\/index.js"}} );
+//# sourceURL=contact-form-7-js-translations
+</script>
+<script type="rocketlazyloadscript" id="contact-form-7-js-before">
+var wpcf7 = {
+    "api": {
+        "root": "https:\/\/cardiofitness.com.br\/wp-json\/",
+        "namespace": "contact-form-7\/v1"
+    },
+    "cached": 1
+};
+//# sourceURL=contact-form-7-js-before
+</script>
+<script type="rocketlazyloadscript" data-minify="1" id="contact-form-7-js" defer='defer' src="https://cardiofitness.com.br/wp-content/cache/min/1/wp-content/plugins/contact-form-7/includes/js/index.js?ver=1783521017"></script>
+<script type="rocketlazyloadscript" id="rocket-browser-checker-js-after">
+"use strict";var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||!1,descriptor.configurable=!0,"value"in descriptor&&(descriptor.writable=!0),Object.defineProperty(target,descriptor.key,descriptor)}}return function(Constructor,protoProps,staticProps){return protoProps&&defineProperties(Constructor.prototype,protoProps),staticProps&&defineProperties(Constructor,staticProps),Constructor}}();function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor))throw new TypeError("Cannot call a class as a function")}var RocketBrowserCompatibilityChecker=function(){function RocketBrowserCompatibilityChecker(options){_classCallCheck(this,RocketBrowserCompatibilityChecker),this.passiveSupported=!1,this._checkPassiveOption(this),this.options=!!this.passiveSupported&&options}return _createClass(RocketBrowserCompatibilityChecker,[{key:"_checkPassiveOption",value:function(self){try{var options={get passive(){return!(self.passiveSupported=!0)}};window.addEventListener("test",null,options),window.removeEventListener("test",null,options)}catch(err){self.passiveSupported=!1}}},{key:"initRequestIdleCallback",value:function(){!1 in window&&(window.requestIdleCallback=function(cb){var start=Date.now();return setTimeout(function(){cb({didTimeout:!1,timeRemaining:function(){return Math.max(0,50-(Date.now()-start))}})},1)}),!1 in window&&(window.cancelIdleCallback=function(id){return clearTimeout(id)})}},{key:"isDataSaverModeOn",value:function(){return"connection"in navigator&&!0===navigator.connection.saveData}},{key:"supportsLinkPrefetch",value:function(){var elem=document.createElement("link");return elem.relList&&elem.relList.supports&&elem.relList.supports("prefetch")&&window.IntersectionObserver&&"isIntersecting"in IntersectionObserverEntry.prototype}},{key:"isSlowConnection",value:function(){return"connection"in navigator&&"effectiveType"in navigator.connection&&("2g"===navigator.connection.effectiveType||"slow-2g"===navigator.connection.effectiveType)}}]),RocketBrowserCompatibilityChecker}();
+//# sourceURL=rocket-browser-checker-js-after
+</script>
+<script id="rocket-preload-links-js-extra">
+var RocketPreloadLinksConfig = {"excludeUris":"/(?:.+/)?feed(?:/(?:.+/?)?)?$|/(?:.+/)?embed/|/(index\\.php/)?wp\\-json(/.*|$)|/refer/|/go/|/recommend/|/recommends/","usesTrailingSlash":"1","imageExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif|pdf|doc|docx|xls|xlsx|php","fileExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif|pdf|doc|docx|xls|xlsx|php|html|htm","siteUrl":"https://cardiofitness.com.br","onHoverDelay":"100","rateThrottle":"3"};
+//# sourceURL=rocket-preload-links-js-extra
+</script>
+<script type="rocketlazyloadscript" id="rocket-preload-links-js-after">
+(function() {
+"use strict";var r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},e=function(){function i(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(e,t,n){return t&&i(e.prototype,t),n&&i(e,n),e}}();function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var t=function(){function n(e,t){i(this,n),this.browser=e,this.config=t,this.options=this.browser.options,this.prefetched=new Set,this.eventTime=null,this.threshold=1111,this.numOnHover=0}return e(n,[{key:"init",value:function(){!this.browser.supportsLinkPrefetch()||this.browser.isDataSaverModeOn()||this.browser.isSlowConnection()||(this.regex={excludeUris:RegExp(this.config.excludeUris,"i"),images:RegExp(".("+this.config.imageExt+")$","i"),fileExt:RegExp(".("+this.config.fileExt+")$","i")},this._initListeners(this))}},{key:"_initListeners",value:function(e){-1<this.config.onHoverDelay&&document.addEventListener("mouseover",e.listener.bind(e),e.listenerOptions),document.addEventListener("mousedown",e.listener.bind(e),e.listenerOptions),document.addEventListener("touchstart",e.listener.bind(e),e.listenerOptions)}},{key:"listener",value:function(e){var t=e.target.closest("a"),n=this._prepareUrl(t);if(null!==n)switch(e.type){case"mousedown":case"touchstart":this._addPrefetchLink(n);break;case"mouseover":this._earlyPrefetch(t,n,"mouseout")}}},{key:"_earlyPrefetch",value:function(t,e,n){var i=this,r=setTimeout(function(){if(r=null,0===i.numOnHover)setTimeout(function(){return i.numOnHover=0},1e3);else if(i.numOnHover>i.config.rateThrottle)return;i.numOnHover++,i._addPrefetchLink(e)},this.config.onHoverDelay);t.addEventListener(n,function e(){t.removeEventListener(n,e,{passive:!0}),null!==r&&(clearTimeout(r),r=null)},{passive:!0})}},{key:"_addPrefetchLink",value:function(i){return this.prefetched.add(i.href),new Promise(function(e,t){var n=document.createElement("link");n.rel="prefetch",n.href=i.href,n.onload=e,n.onerror=t,document.head.appendChild(n)}).catch(function(){})}},{key:"_prepareUrl",value:function(e){if(null===e||"object"!==(void 0===e?"undefined":r(e))||!1 in e||-1===["http:","https:"].indexOf(e.protocol))return null;var t=e.href.substring(0,this.config.siteUrl.length),n=this._getPathname(e.href,t),i={original:e.href,protocol:e.protocol,origin:t,pathname:n,href:t+n};return this._isLinkOk(i)?i:null}},{key:"_getPathname",value:function(e,t){var n=t?e.substring(this.config.siteUrl.length):e;return n.startsWith("/")||(n="/"+n),this._shouldAddTrailingSlash(n)?n+"/":n}},{key:"_shouldAddTrailingSlash",value:function(e){return this.config.usesTrailingSlash&&!e.endsWith("/")&&!this.regex.fileExt.test(e)}},{key:"_isLinkOk",value:function(e){return null!==e&&"object"===(void 0===e?"undefined":r(e))&&(!this.prefetched.has(e.href)&&e.origin===this.config.siteUrl&&-1===e.href.indexOf("?")&&-1===e.href.indexOf("#")&&!this.regex.excludeUris.test(e.href)&&!this.regex.images.test(e.href))}}],[{key:"run",value:function(){"undefined"!=typeof RocketPreloadLinksConfig&&new n(new RocketBrowserCompatibilityChecker({capture:!0,passive:!0}),RocketPreloadLinksConfig).init()}}]),n}();t.run();
+}());
+
+//# sourceURL=rocket-preload-links-js-after
+</script>
+<script type="rocketlazyloadscript" id="hello-theme-frontend-js" defer='defer' src="https://cardiofitness.com.br/wp-content/themes/hello-elementor/assets/js/hello-frontend.min.js?ver=1.0.0"></script>
+<script type="rocketlazyloadscript" data-minify="1" id="elementskit-framework-js-frontend-js" defer='defer' src="https://cardiofitness.com.br/wp-content/cache/min/1/wp-content/plugins/elementskit-lite/libs/framework/assets/js/frontend-script.js?ver=1783521017"></script>
+<script type="rocketlazyloadscript" id="elementskit-framework-js-frontend-js-after">
+		var elementskit = {
+			resturl: 'https://cardiofitness.com.br/wp-json/elementskit/v1/',
+		}
+
+		
+//# sourceURL=elementskit-framework-js-frontend-js-after
+</script>
+<script type="rocketlazyloadscript" data-minify="1" id="ekit-widget-scripts-js" defer='defer' src="https://cardiofitness.com.br/wp-content/cache/min/1/wp-content/plugins/elementskit-lite/widgets/init/assets/js/widget-scripts.js?ver=1783521017"></script>
+<script type="rocketlazyloadscript" id="joinchat-js" defer='defer' src="https://cardiofitness.com.br/wp-content/plugins/creame-whatsapp-me/public/js/joinchat.min.js?ver=5.2.3"></script>
+<script type="rocketlazyloadscript" id="elementor-webpack-runtime-js" defer='defer' src="https://cardiofitness.com.br/wp-content/plugins/elementor/assets/js/webpack.runtime.min.js?ver=3.30.3"></script>
+<script type="rocketlazyloadscript" id="elementor-frontend-modules-js" defer='defer' src="https://cardiofitness.com.br/wp-content/plugins/elementor/assets/js/frontend-modules.min.js?ver=3.30.3"></script>
+<script type="rocketlazyloadscript" id="jquery-ui-core-js-before">window.addEventListener('DOMContentLoaded', function() {
+jQuery.uiBackCompat = true;
+//# sourceURL=jquery-ui-core-js-before
+});</script>
+<script type="rocketlazyloadscript" id="jquery-ui-core-js" defer='defer' src="https://cardiofitness.com.br/wp-includes/js/jquery/ui/core.min.js?ver=1.14.2"></script>
+<script id="elementor-frontend-js-extra">
+var EAELImageMaskingConfig = {"svg_dir_url":"https://cardiofitness.com.br/wp-content/plugins/essential-addons-for-elementor-lite/assets/front-end/img/image-masking/svg-shapes/"};
+//# sourceURL=elementor-frontend-js-extra
+</script>
+<script type="rocketlazyloadscript" id="elementor-frontend-js-before">
+var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false,"isScriptDebug":false},"i18n":{"shareOnFacebook":"Compartilhar no Facebook","shareOnTwitter":"Compartilhar no Twitter","pinIt":"Fixar","download":"Baixar","downloadImage":"Baixar imagem","fullscreen":"Tela cheia","zoom":"Zoom","share":"Compartilhar","playVideo":"Reproduzir v\u00eddeo","previous":"Anterior","next":"Pr\u00f3ximo","close":"Fechar","a11yCarouselPrevSlideMessage":"Slide anterior","a11yCarouselNextSlideMessage":"Pr\u00f3ximo slide","a11yCarouselFirstSlideMessage":"Este \u00e9 o primeiro slide","a11yCarouselLastSlideMessage":"Este \u00e9 o \u00faltimo slide","a11yCarouselPaginationBulletMessage":"Ir para o slide"},"is_rtl":false,"breakpoints":{"xs":0,"sm":480,"md":768,"lg":1025,"xl":1440,"xxl":1600},"responsive":{"breakpoints":{"mobile":{"label":"Dispositivos m\u00f3veis no modo retrato","value":767,"default_value":767,"direction":"max","is_enabled":true},"mobile_extra":{"label":"Dispositivos m\u00f3veis no modo paisagem","value":880,"default_value":880,"direction":"max","is_enabled":false},"tablet":{"label":"Tablet no modo retrato","value":1024,"default_value":1024,"direction":"max","is_enabled":true},"tablet_extra":{"label":"Tablet no modo paisagem","value":1200,"default_value":1200,"direction":"max","is_enabled":false},"laptop":{"label":"Notebook","value":1366,"default_value":1366,"direction":"max","is_enabled":false},"widescreen":{"label":"Tela ampla (widescreen)","value":2400,"default_value":2400,"direction":"min","is_enabled":false}},"hasCustomBreakpoints":false},"version":"3.30.3","is_static":false,"experimentalFeatures":{"additional_custom_breakpoints":true,"theme_builder_v2":true,"hello-theme-header-footer":true,"home_screen":true,"global_classes_should_enforce_capabilities":true,"cloud-library":true,"e_opt_in_v4_page":true},"urls":{"assets":"https:\/\/cardiofitness.com.br\/wp-content\/plugins\/elementor\/assets\/","ajaxurl":"https:\/\/cardiofitness.com.br\/wp-admin\/admin-ajax.php","uploadUrl":"https:\/\/cardiofitness.com.br\/wp-content\/uploads"},"nonces":{"floatingButtonsClickTracking":"180549664e"},"swiperClass":"swiper","settings":{"page":[],"editorPreferences":[]},"kit":{"active_breakpoints":["viewport_mobile","viewport_tablet"],"global_image_lightbox":"yes","lightbox_enable_counter":"yes","lightbox_enable_fullscreen":"yes","lightbox_enable_zoom":"yes","lightbox_enable_share":"yes","lightbox_title_src":"title","lightbox_description_src":"description","hello_header_logo_type":"title","hello_header_menu_layout":"horizontal","hello_footer_logo_type":"logo"},"post":{"id":3439,"title":"Cardiofitness%20%E2%80%93%20Agende%20agora%20a%20sua%20consulta","excerpt":"","featuredImage":false}};
+//# sourceURL=elementor-frontend-js-before
+</script>
+<script type="rocketlazyloadscript" id="elementor-frontend-js" defer='defer' src="https://cardiofitness.com.br/wp-content/plugins/elementor/assets/js/frontend.min.js?ver=3.30.3"></script>
+<script type="rocketlazyloadscript" id="smartmenus-js" defer='defer' src="https://cardiofitness.com.br/wp-content/plugins/elementor-pro/assets/lib/smartmenus/jquery.smartmenus.min.js?ver=1.2.1"></script>
+<script type="rocketlazyloadscript" id="e-sticky-js" defer='defer' src="https://cardiofitness.com.br/wp-content/plugins/elementor-pro/assets/lib/sticky/jquery.sticky.min.js?ver=3.26.3"></script>
+<script type="rocketlazyloadscript" id="swiper-js" defer='defer' src="https://cardiofitness.com.br/wp-content/plugins/elementor/assets/lib/swiper/v8/swiper.min.js?ver=8.4.5"></script>
+<script id="eael-general-js-extra">
+var localize = {"ajaxurl":"https://cardiofitness.com.br/wp-admin/admin-ajax.php","nonce":"72efa9f716","i18n":{"added":"Adicionado ","compare":"Comparar","loading":"Carregando..."},"eael_translate_text":{"required_text":"\u00e9 um campo obrigat\u00f3rio","invalid_text":"Inv\u00e1lido","billing_text":"Cobran\u00e7a","shipping_text":"Envio","fg_mfp_counter_text":"de"},"page_permalink":"https://cardiofitness.com.br/","cart_redirectition":"","cart_page_url":"","el_breakpoints":{"mobile":{"label":"Dispositivos m\u00f3veis no modo retrato","value":767,"default_value":767,"direction":"max","is_enabled":true},"mobile_extra":{"label":"Dispositivos m\u00f3veis no modo paisagem","value":880,"default_value":880,"direction":"max","is_enabled":false},"tablet":{"label":"Tablet no modo retrato","value":1024,"default_value":1024,"direction":"max","is_enabled":true},"tablet_extra":{"label":"Tablet no modo paisagem","value":1200,"default_value":1200,"direction":"max","is_enabled":false},"laptop":{"label":"Notebook","value":1366,"default_value":1366,"direction":"max","is_enabled":false},"widescreen":{"label":"Tela ampla (widescreen)","value":2400,"default_value":2400,"direction":"min","is_enabled":false}}};
+//# sourceURL=eael-general-js-extra
+</script>
+<script type="rocketlazyloadscript" id="eael-general-js" defer='defer' src="https://cardiofitness.com.br/wp-content/plugins/essential-addons-for-elementor-lite/assets/front-end/js/view/general.min.js?ver=6.6.0"></script>
+<script type="rocketlazyloadscript" id="heartbeat-js" defer='defer' src="https://cardiofitness.com.br/wp-content/plugins/wp-rocket/assets/js/heartbeat.js?ver=3.12.4"></script>
+<script type="rocketlazyloadscript" id="elementor-pro-webpack-runtime-js" defer='defer' src="https://cardiofitness.com.br/wp-content/plugins/elementor-pro/assets/js/webpack-pro.runtime.min.js?ver=3.26.3"></script>
+<script type="rocketlazyloadscript" id="elementor-pro-frontend-js-before">
+var ElementorProFrontendConfig = {"ajaxurl":"https:\/\/cardiofitness.com.br\/wp-admin\/admin-ajax.php","nonce":"16193a35bd","urls":{"assets":"https:\/\/cardiofitness.com.br\/wp-content\/plugins\/elementor-pro\/assets\/","rest":"https:\/\/cardiofitness.com.br\/wp-json\/"},"settings":{"lazy_load_background_images":true},"popup":{"hasPopUps":true},"shareButtonsNetworks":{"facebook":{"title":"Facebook","has_counter":true},"twitter":{"title":"Twitter"},"linkedin":{"title":"LinkedIn","has_counter":true},"pinterest":{"title":"Pinterest","has_counter":true},"reddit":{"title":"Reddit","has_counter":true},"vk":{"title":"VK","has_counter":true},"odnoklassniki":{"title":"OK","has_counter":true},"tumblr":{"title":"Tumblr"},"digg":{"title":"Digg"},"skype":{"title":"Skype"},"stumbleupon":{"title":"StumbleUpon","has_counter":true},"mix":{"title":"Mix"},"telegram":{"title":"Telegram"},"pocket":{"title":"Pocket","has_counter":true},"xing":{"title":"XING","has_counter":true},"whatsapp":{"title":"WhatsApp"},"email":{"title":"Email"},"print":{"title":"Print"},"x-twitter":{"title":"X"},"threads":{"title":"Threads"}},"facebook_sdk":{"lang":"pt_BR","app_id":""},"lottie":{"defaultAnimationUrl":"https:\/\/cardiofitness.com.br\/wp-content\/plugins\/elementor-pro\/modules\/lottie\/assets\/animations\/default.json"}};
+//# sourceURL=elementor-pro-frontend-js-before
+</script>
+<script type="rocketlazyloadscript" id="elementor-pro-frontend-js" defer='defer' src="https://cardiofitness.com.br/wp-content/plugins/elementor-pro/assets/js/frontend.min.js?ver=3.26.3"></script>
+<script type="rocketlazyloadscript" id="pro-elements-handlers-js" defer='defer' src="https://cardiofitness.com.br/wp-content/plugins/elementor-pro/assets/js/elements-handlers.min.js?ver=3.26.3"></script>
+<script type="rocketlazyloadscript" id="animate-circle-js" defer='defer' src="https://cardiofitness.com.br/wp-content/plugins/elementskit-lite/widgets/init/assets/js/animate-circle.min.js?ver=3.7.9"></script>
+<script id="elementskit-elementor-js-extra">
+var ekit_config = {"ajaxurl":"https://cardiofitness.com.br/wp-admin/admin-ajax.php","nonce":"c0bcb9d4e8"};
+//# sourceURL=elementskit-elementor-js-extra
+</script>
+<script type="rocketlazyloadscript" data-minify="1" id="elementskit-elementor-js" defer='defer' src="https://cardiofitness.com.br/wp-content/cache/min/1/wp-content/plugins/elementskit-lite/widgets/init/assets/js/elementor.js?ver=1783521017"></script>
+<script id="wp-emoji-settings" type="application/json">
+{"baseUrl":"https://s.w.org/images/core/emoji/17.0.2/72x72/","ext":".png","svgUrl":"https://s.w.org/images/core/emoji/17.0.2/svg/","svgExt":".svg","source":{"concatemoji":"https://cardiofitness.com.br/wp-includes/js/wp-emoji-release.min.js?ver=7.1.2"}}
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="module">
+/*! This file is auto-generated */
+var e="script#wp-emoji-settings",t=document.querySelector(e);if(!(t instanceof HTMLScriptElement))throw new Error("Element missing: "+e);const r=JSON.parse(t.text),s=(window._wpemojiSettings=r,"wpEmojiSettingsSupports"),o=["flag","emoji"];function i(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(s,JSON.stringify(t))}catch(e){}}function c(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0);const r=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);return t.every((e,t)=>e===r[t])}function p(e,t){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var n=e.getImageData(16,16,1,1);for(let e=0;e<n.data.length;e++)if(0!==n.data[e])return!1;return!0}function u(e,t,n,r){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\udde8\ud83c\uddf6","\ud83c\udde8\u200b\ud83c\uddf6")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!r(e,"\ud83e\u1fac8")}return!1}function f(e,t,n,r){let a;const s=(a="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):document.createElement("canvas")).getContext("2d",{willReadFrequently:!0}),o=(s.textBaseline="top",s.font="600 32px Arial",{});return e.forEach(e=>{o[e]=t(s,e,n,r)}),o}function a(e){var t=document.createElement("script");t.src=e,t.defer=!0,document.head.appendChild(t)}r.supports={everything:!0,everythingExceptFlag:!0},new Promise(t=>{let n=function(){try{var e=JSON.parse(sessionStorage.getItem(s));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(o),u.toString(),c.toString(),p.toString()].join(",")+"));",r=new Blob([e],{type:"text/javascript"});const a=new Worker(URL.createObjectURL(r),{name:"wpTestEmojiSupports"});return void(a.onmessage=e=>{i(n=e.data),a.terminate(),t(n)})}catch(e){}i(n=f(o,u,c,p))}t(n)}).then(e=>{for(const n in e)r.supports[n]=e[n],r.supports.everything=r.supports.everything&&r.supports[n],"flag"!==n&&(r.supports.everythingExceptFlag=r.supports.everythingExceptFlag&&r.supports[n]);var t;r.supports.everythingExceptFlag=r.supports.everythingExceptFlag&&!r.supports.flag,r.supports.everything||((t=r.source||{}).concatemoji?a(t.concatemoji):t.wpemoji&&t.twemoji&&(a(t.twemoji),a(t.wpemoji)))});
+//# sourceURL=https://cardiofitness.com.br/wp-includes/js/wp-emoji-loader.min.js
+</script>
+<script>window.lazyLoadOptions=[{elements_selector:"img[data-lazy-src],.rocket-lazyload,iframe[data-lazy-src]",data_src:"lazy-src",data_srcset:"lazy-srcset",data_sizes:"lazy-sizes",class_loading:"lazyloading",class_loaded:"lazyloaded",threshold:300,callback_loaded:function(element){if(element.tagName==="IFRAME"&&element.dataset.rocketLazyload=="fitvidscompatible"){if(element.classList.contains("lazyloaded")){if(typeof window.jQuery!="undefined"){if(jQuery.fn.fitVids){jQuery(element).parent().fitVids()}}}}}},{elements_selector:".rocket-lazyload",data_src:"lazy-src",data_srcset:"lazy-srcset",data_sizes:"lazy-sizes",class_loading:"lazyloading",class_loaded:"lazyloaded",threshold:300,}];window.addEventListener('LazyLoad::Initialized',function(e){var lazyLoadInstance=e.detail.instance;if(window.MutationObserver){var observer=new MutationObserver(function(mutations){var image_count=0;var iframe_count=0;var rocketlazy_count=0;mutations.forEach(function(mutation){for(var i=0;i<mutation.addedNodes.length;i++){if(typeof mutation.addedNodes[i].getElementsByTagName!=='function'){continue}
+if(typeof mutation.addedNodes[i].getElementsByClassName!=='function'){continue}
+images=mutation.addedNodes[i].getElementsByTagName('img');is_image=mutation.addedNodes[i].tagName=="IMG";iframes=mutation.addedNodes[i].getElementsByTagName('iframe');is_iframe=mutation.addedNodes[i].tagName=="IFRAME";rocket_lazy=mutation.addedNodes[i].getElementsByClassName('rocket-lazyload');image_count+=images.length;iframe_count+=iframes.length;rocketlazy_count+=rocket_lazy.length;if(is_image){image_count+=1}
+if(is_iframe){iframe_count+=1}}});if(image_count>0||iframe_count>0||rocketlazy_count>0){lazyLoadInstance.update()}});var b=document.getElementsByTagName("body")[0];var config={childList:!0,subtree:!0};observer.observe(b,config)}},!1)</script><script data-no-minify="1" async src="https://cardiofitness.com.br/wp-content/plugins/wp-rocket/assets/js/lazyload/17.5/lazyload.min.js"></script><script>function lazyLoadThumb(e){var t='<img data-lazy-src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360"><noscript><img src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360"></noscript>',a='<button class="play" aria-label="play Youtube video"></button>';return t.replace("ID",e)+a}function lazyLoadYoutubeIframe(){var e=document.createElement("iframe"),t="ID?autoplay=1";t+=0===this.parentNode.dataset.query.length?'':'&'+this.parentNode.dataset.query;e.setAttribute("src",t.replace("ID",this.parentNode.dataset.src)),e.setAttribute("frameborder","0"),e.setAttribute("allowfullscreen","1"),e.setAttribute("allow", "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"),this.parentNode.parentNode.replaceChild(e,this.parentNode)}document.addEventListener("DOMContentLoaded",function(){var e,t,p,a=document.getElementsByClassName("rll-youtube-player");for(t=0;t<a.length;t++)e=document.createElement("div"),e.setAttribute("data-id",a[t].dataset.id),e.setAttribute("data-query", a[t].dataset.query),e.setAttribute("data-src", a[t].dataset.src),e.innerHTML=lazyLoadThumb(a[t].dataset.id),a[t].appendChild(e),p=e.querySelector('.play'),p.onclick=lazyLoadYoutubeIframe});</script>	<script>class RocketElementorAnimation{constructor(){this.deviceMode=document.createElement("span"),this.deviceMode.id="elementor-device-mode",this.deviceMode.setAttribute("class","elementor-screen-only"),document.body.appendChild(this.deviceMode)}_detectAnimations(){let t=getComputedStyle(this.deviceMode,":after").content.replace(/"/g,"");this.animationSettingKeys=this._listAnimationSettingsKeys(t),document.querySelectorAll(".elementor-invisible[data-settings]").forEach(t=>{const e=t.getBoundingClientRect();if(e.bottom>=0&&e.top<=window.innerHeight)try{this._animateElement(t)}catch(t){}})}_animateElement(t){const e=JSON.parse(t.dataset.settings),i=e._animation_delay||e.animation_delay||0,n=e[this.animationSettingKeys.find(t=>e[t])];if("none"===n)return void t.classList.remove("elementor-invisible");t.classList.remove(n),this.currentAnimation&&t.classList.remove(this.currentAnimation),this.currentAnimation=n;let s=setTimeout(()=>{t.classList.remove("elementor-invisible"),t.classList.add("animated",n),this._removeAnimationSettings(t,e)},i);window.addEventListener("rocket-startLoading",function(){clearTimeout(s)})}_listAnimationSettingsKeys(t="mobile"){const e=[""];switch(t){case"mobile":e.unshift("_mobile");case"tablet":e.unshift("_tablet");case"desktop":e.unshift("_desktop")}const i=[];return["animation","_animation"].forEach(t=>{e.forEach(e=>{i.push(t+e)})}),i}_removeAnimationSettings(t,e){this._listAnimationSettingsKeys().forEach(t=>delete e[t]),t.dataset.settings=JSON.stringify(e)}static run(){const t=new RocketElementorAnimation;requestAnimationFrame(t._detectAnimations.bind(t))}}document.addEventListener("DOMContentLoaded",RocketElementorAnimation.run);</script><script type="text/javascript" id="perfmatters-delayed-styles-js">!function(){const e=["keydown","mousemove","wheel","touchmove","touchstart","touchend"];function t(){document.querySelectorAll("link[data-pmdelayedstyle]").forEach(function(e){e.setAttribute("href",e.getAttribute("data-pmdelayedstyle"))}),e.forEach(function(e){window.removeEventListener(e,t,{passive:!0})})}e.forEach(function(e){window.addEventListener(e,t,{passive:!0})})}();</script></body>
+</html>
+
+<!-- This website is like a Rocket, isn't it? Performance optimized by WP Rocket. Learn more: https://wp-rocket.me - Debug: cached@1791244143 -->

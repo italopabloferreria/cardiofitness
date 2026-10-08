@@ -1,0 +1,1606 @@
+{
+  "leaders": [
+    {
+      "items": [
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Qual o seu nome?\n*",
+          "level": "3",
+          "options": [
+            "Escolher",
+            "Ana Karolina",
+            "Ana Karoline",
+            "Bruna",
+            "Gabriel",
+            "Lucas",
+            "Joelson",
+            "Rute",
+            "João",
+            "Daiane Ramos",
+            "Renilda",
+            "Dayane Mares",
+            "Sulami",
+            "Roni",
+            "Eliane",
+            "Luzia",
+            "Solange",
+            "Helen Silva",
+            "Jaqueline",
+            "Júlia",
+            "Alice",
+            "Sabrina",
+            "Rayane",
+            "Luciana",
+            "Thiago",
+            "Emanuele",
+            "Maria da Luz",
+            "Maria Socorro"
+          ],
+          "radios": [],
+          "required": true,
+          "text": "Qual o seu nome?\n*\nEscolher\nAna Karolina\nAna Karoline\nBruna\nGabriel\nLucas\nJoelson\nRute\nJoão\nDaiane Ramos\nRenilda\nDayane Mares\nSulami\nRoni\nEliane\nLuzia\nSolange\nHelen Silva\nJaqueline\nJúlia\nAlice\nSabrina\nRayane\nLuciana\nThiago\nEmanuele\nMaria da Luz\nMaria Socorro"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Qual o seu setor?\n*",
+          "level": "3",
+          "options": [
+            "Escolher",
+            "Faturamento",
+            "Central",
+            "Recepção",
+            "Técnicas de Exame/Corredor/Triagem",
+            "Limpeza",
+            "Entrega de Exames"
+          ],
+          "radios": [],
+          "required": true,
+          "text": "Qual o seu setor?\n*\nEscolher\nFaturamento\nCentral\nRecepção\nTécnicas de Exame/Corredor/Triagem\nLimpeza\nEntrega de Exames"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Qual é a Líder responsável pelo seu setor?\n*",
+          "level": "3",
+          "options": [
+            "Escolher",
+            "Lídia",
+            "Cleuma",
+            "Welisson",
+            "Natacha"
+          ],
+          "radios": [],
+          "required": true,
+          "text": "Qual é a Líder responsável pelo seu setor?\n*\nEscolher\nLídia\nCleuma\nWelisson\nNatacha"
+        }
+      ],
+      "page": null,
+      "title": "Avaliação | Líderes"
+    },
+    {
+      "items": [
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Líderes",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Líderes"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Desempenho",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n*\n1\n2\n3\n4"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": " O funcionário tem desempenhado bem sua função?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": " O funcionário tem desempenhado bem sua função?\n\n\n*\n1\n2\n3\n4"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Trabalho em Equipe",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Trabalho em Equipe"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n*\n1\n2\n3\n4"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n*\n1\n2\n3\n4"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Liderança",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Liderança"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Consegue influenciar os demais colaboradores e motivá-los a participar das atividades propostas? \n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "Consegue influenciar os demais colaboradores e motivá-los a participar das atividades propostas? \n\n\n*\n1\n2\n3\n4"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Entende a diversidade de personalidades e consegue despertar o melhor de cada uma?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "Entende a diversidade de personalidades e consegue despertar o melhor de cada uma?\n\n\n*\n1\n2\n3\n4"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Cultura\n",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Cultura\n"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário reflete os valores da empresa?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário reflete os valores da empresa?\n\n\n*\n1\n2\n3\n4"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": true,
+          "heading": "Deixe um feedbacks para seu líder?\n*",
+          "level": "3",
+          "options": [],
+          "radios": [],
+          "required": true,
+          "text": "Deixe um feedbacks para seu líder?\n*\nSua resposta"
+        }
+      ],
+      "page": null,
+      "title": "Avaliação | Líderes"
+    }
+  ],
+  "team": [
+    {
+      "items": [
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Qual o seu setor?\n*",
+          "level": "3",
+          "options": [
+            "Escolher",
+            "Faturamento",
+            "Central/Resultado de Exames",
+            "Recepção",
+            "Técnicas de Exame/Corredor/Triagem",
+            "Limpeza",
+            "Resultado de Exame"
+          ],
+          "radios": [],
+          "required": true,
+          "text": "Qual o seu setor?\n*\nEscolher\nFaturamento\nCentral/Resultado de Exames\nRecepção\nTécnicas de Exame/Corredor/Triagem\nLimpeza\nResultado de Exame"
+        }
+      ],
+      "page": null,
+      "title": "Avaliação | Autoavaliação e Equipe"
+    },
+    {
+      "items": [
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Recepção/Triagem",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Recepção/Triagem"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Qual o seu nome?\n*",
+          "level": "3",
+          "options": [
+            "Escolher",
+            "Dayane Mares",
+            "Gabriel",
+            "Lucas",
+            "Jaqueline",
+            "Thiago",
+            "Ana Karoline"
+          ],
+          "radios": [],
+          "required": true,
+          "text": "Qual o seu nome?\n*\nEscolher\nDayane Mares\nGabriel\nLucas\nJaqueline\nThiago\nAna Karoline"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Quem você irá avaliar??\n*",
+          "level": "3",
+          "options": [
+            "Escolher",
+            "Dayane Mares",
+            "Gabriel",
+            "Lucas",
+            "Jaqueline",
+            "Ana Karoline"
+          ],
+          "radios": [],
+          "required": true,
+          "text": "Quem você irá avaliar??\n*\nEscolher\nDayane Mares\nGabriel\nLucas\nJaqueline\nAna Karoline"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Desempenho",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário tem conhecimento dos convênios credenciados, consultas, exames e respectivos valores? ////// O funcionário tem conhecimento técnico dos exames da empresa? \n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário tem conhecimento dos convênios credenciados, consultas, exames e respectivos valores? ////// O funcionário tem conhecimento técnico dos exames da empresa? \n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Trabalho em Equipe",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Trabalho em Equipe"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Ferramenta\n",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Ferramenta\n"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário tem domínio do software MedWare?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário tem domínio do software MedWare?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Cultura\n",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Cultura\n"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário reflete os valores da empresa?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário reflete os valores da empresa?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Feedback",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Feedback"
+        },
+        {
+          "hasParagraph": true,
+          "hasShortText": false,
+          "heading": "Dê um feedback para o seu colega ou para você!!\n*",
+          "level": "3",
+          "options": [],
+          "radios": [],
+          "required": true,
+          "text": "Dê um feedback para o seu colega ou para você!!\n*\nSua resposta"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Você já avaliou todos os envolvidos, inclusive você?\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "Sim",
+            "Não"
+          ],
+          "required": true,
+          "text": "Você já avaliou todos os envolvidos, inclusive você?\n*\nSim\nNão"
+        }
+      ],
+      "page": null,
+      "title": "Avaliação | Autoavaliação e Equipe"
+    },
+    {
+      "items": [
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Qual o seu setor?\n*",
+          "level": "3",
+          "options": [
+            "Escolher",
+            "Faturamento",
+            "Central/Resultado de Exames",
+            "Recepção",
+            "Técnicas de Exame/Corredor/Triagem",
+            "Limpeza",
+            "Resultado de Exame",
+            "Escolher",
+            "Faturamento",
+            "Central/Resultado de Exames",
+            "Recepção",
+            "Técnicas de Exame/Corredor/Triagem",
+            "Limpeza",
+            "Resultado de Exame"
+          ],
+          "radios": [],
+          "required": true,
+          "text": "Qual o seu setor?\n*\nEscolher\nFaturamento\nCentral/Resultado de Exames\nRecepção\nTécnicas de Exame/Corredor/Triagem\nLimpeza\nResultado de Exame\nEscolher\nFaturamento\nCentral/Resultado de Exames\nRecepção\nTécnicas de Exame/Corredor/Triagem\nLimpeza\nResultado de Exame"
+        }
+      ],
+      "page": null,
+      "title": "Avaliação | Autoavaliação e Equipe"
+    },
+    {
+      "items": [
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Faturamento",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Faturamento"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Qual o seu nome?\n*",
+          "level": "3",
+          "options": [
+            "Escolher",
+            "Ana",
+            "Bruna",
+            "Rayane",
+            "Sabrina"
+          ],
+          "radios": [],
+          "required": true,
+          "text": "Qual o seu nome?\n*\nEscolher\nAna\nBruna\nRayane\nSabrina"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Quem você irá avaliar??\n*",
+          "level": "3",
+          "options": [
+            "Escolher",
+            "Ana",
+            "Bruna",
+            "Rayane",
+            "Sabrina"
+          ],
+          "radios": [],
+          "required": true,
+          "text": "Quem você irá avaliar??\n*\nEscolher\nAna\nBruna\nRayane\nSabrina"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Desempenho",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário tem conhecimento amplo dos convênios que fatura/autoriza?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário tem conhecimento amplo dos convênios que fatura/autoriza?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Trabalho em Equipe",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Trabalho em Equipe"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Ferramenta\n",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Ferramenta\n"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário tem domínio do software MedWare?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário tem domínio do software MedWare?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário tem domínio dos sites dos convênios que fatura/autoriza?\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário tem domínio dos sites dos convênios que fatura/autoriza?\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Cultura\n",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Cultura\n"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário reflete os valores da empresa?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário reflete os valores da empresa?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Feedback",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Feedback"
+        },
+        {
+          "hasParagraph": true,
+          "hasShortText": false,
+          "heading": "Dê um feedback para o seu colega ou para você!!\n*",
+          "level": "3",
+          "options": [],
+          "radios": [],
+          "required": true,
+          "text": "Dê um feedback para o seu colega ou para você!!\n*\nSua resposta"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Você já avaliou todos os envolvidos, inclusive você?\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "Sim",
+            "Não"
+          ],
+          "required": true,
+          "text": "Você já avaliou todos os envolvidos, inclusive você?\n*\nSim\nNão"
+        }
+      ],
+      "page": null,
+      "title": "Avaliação | Autoavaliação e Equipe"
+    },
+    {
+      "items": [
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Central/Resultado",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Central/Resultado"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Qual o seu nome?\n*",
+          "level": "3",
+          "options": [
+            "Escolher",
+            "Rute",
+            "Hellen Silva",
+            "Alice",
+            "Joelson",
+            "Emanuele",
+            "Luciana"
+          ],
+          "radios": [],
+          "required": true,
+          "text": "Qual o seu nome?\n*\nEscolher\nRute\nHellen Silva\nAlice\nJoelson\nEmanuele\nLuciana"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Quem você irá avaliar??\n*",
+          "level": "3",
+          "options": [
+            "Escolher",
+            "Rute",
+            "Hellen Silva",
+            "Alice",
+            "Joelson",
+            "Emanuele",
+            "Luciana"
+          ],
+          "radios": [],
+          "required": true,
+          "text": "Quem você irá avaliar??\n*\nEscolher\nRute\nHellen Silva\nAlice\nJoelson\nEmanuele\nLuciana"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Desempenho",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário tem conhecimento dos convênios credenciados, consultas, exames e respectivos valores?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário tem conhecimento dos convênios credenciados, consultas, exames e respectivos valores?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Trabalho em Equipe",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Trabalho em Equipe"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Ferramenta\n",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Ferramenta\n"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário tem domínio do software MedWare?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário tem domínio do software MedWare?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário tem domínio do software da Fasterisks?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário tem domínio do software da Fasterisks?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Cultura\n",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Cultura\n"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário reflete os valores da empresa?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário reflete os valores da empresa?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Feedback",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Feedback"
+        },
+        {
+          "hasParagraph": true,
+          "hasShortText": false,
+          "heading": "Dê um feedback para o seu colega ou para você!!\n*",
+          "level": "3",
+          "options": [],
+          "radios": [],
+          "required": true,
+          "text": "Dê um feedback para o seu colega ou para você!!\n*\nSua resposta"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Você já avaliou todos os envolvidos, inclusive você?\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "Sim",
+            "Não"
+          ],
+          "required": true,
+          "text": "Você já avaliou todos os envolvidos, inclusive você?\n*\nSim\nNão"
+        }
+      ],
+      "page": null,
+      "title": "Avaliação | Autoavaliação e Equipe"
+    },
+    {
+      "items": [
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Técnicas de Exame/Corredor",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Técnicas de Exame/Corredor"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Qual o seu nome?\n*",
+          "level": "3",
+          "options": [
+            "Escolher",
+            "Sulami",
+            "Renilda",
+            "Roni",
+            "Eliane",
+            "Luzia",
+            "Daiane Ramos",
+            "Júlia"
+          ],
+          "radios": [],
+          "required": true,
+          "text": "Qual o seu nome?\n*\nEscolher\nSulami\nRenilda\nRoni\nEliane\nLuzia\nDaiane Ramos\nJúlia"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Quem você irá avaliar?\n*",
+          "level": "3",
+          "options": [
+            "Escolher",
+            "Eliane",
+            "Daiane Ramos",
+            "Luzia",
+            "Renilda",
+            "Roni",
+            "Sulami",
+            "Júlia"
+          ],
+          "radios": [],
+          "required": true,
+          "text": "Quem você irá avaliar?\n*\nEscolher\nEliane\nDaiane Ramos\nLuzia\nRenilda\nRoni\nSulami\nJúlia"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Desempenho",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário tem conhecimento técnico dos exames da empresa? \n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário tem conhecimento técnico dos exames da empresa? \n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Trabalho em Equipe",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Trabalho em Equipe"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Ferramenta\n",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Ferramenta\n"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário tem domínio do software MedWare?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário tem domínio do software MedWare?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Cultura\n",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Cultura\n"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário reflete os valores da empresa?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário reflete os valores da empresa?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Feedback",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Feedback"
+        },
+        {
+          "hasParagraph": true,
+          "hasShortText": false,
+          "heading": "Dê um feedback para o seu colega ou para você!!\n*",
+          "level": "3",
+          "options": [],
+          "radios": [],
+          "required": true,
+          "text": "Dê um feedback para o seu colega ou para você!!\n*\nSua resposta"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Você já avaliou todos os envolvidos, inclusive você?\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "Sim",
+            "Não"
+          ],
+          "required": true,
+          "text": "Você já avaliou todos os envolvidos, inclusive você?\n*\nSim\nNão"
+        }
+      ],
+      "page": null,
+      "title": "Avaliação | Autoavaliação e Equipe"
+    },
+    {
+      "items": [
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Limpeza",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Limpeza"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Qual o seu nome?\n*",
+          "level": "3",
+          "options": [
+            "Escolher",
+            "Maria da Luz",
+            "Maria Socorro"
+          ],
+          "radios": [],
+          "required": true,
+          "text": "Qual o seu nome?\n*\nEscolher\nMaria da Luz\nMaria Socorro"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Quem você irá avaliar?\n*",
+          "level": "3",
+          "options": [
+            "Escolher",
+            "Maria da Luz",
+            "Maria Socorro"
+          ],
+          "radios": [],
+          "required": true,
+          "text": "Quem você irá avaliar?\n*\nEscolher\nMaria da Luz\nMaria Socorro"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Desempenho",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário tem desempenhado bem sua função?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário tem desempenhado bem sua função?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Trabalho em Equipe",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Trabalho em Equipe"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Cultura\n",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Cultura\n"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário reflete os valores da empresa?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário reflete os valores da empresa?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Feedback",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Feedback"
+        },
+        {
+          "hasParagraph": true,
+          "hasShortText": false,
+          "heading": "Dê um feedback para o seu colega ou para você!!\n*",
+          "level": "3",
+          "options": [],
+          "radios": [],
+          "required": true,
+          "text": "Dê um feedback para o seu colega ou para você!!\n*\nSua resposta"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Você já avaliou todos os envolvidos, inclusive você?\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "Sim",
+            "Não"
+          ],
+          "required": true,
+          "text": "Você já avaliou todos os envolvidos, inclusive você?\n*\nSim\nNão"
+        }
+      ],
+      "page": null,
+      "title": "Avaliação | Autoavaliação e Equipe"
+    },
+    {
+      "items": [
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Faturamento",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Faturamento"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Qual o seu nome?\n*",
+          "level": "3",
+          "options": [
+            "Escolher",
+            "Ana",
+            "Bruna",
+            "Rayane",
+            "Sabrina"
+          ],
+          "radios": [],
+          "required": true,
+          "text": "Qual o seu nome?\n*\nEscolher\nAna\nBruna\nRayane\nSabrina"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Quem você irá avaliar??\n*",
+          "level": "3",
+          "options": [
+            "Escolher",
+            "Ana",
+            "Bruna",
+            "Rayane",
+            "Sabrina"
+          ],
+          "radios": [],
+          "required": true,
+          "text": "Quem você irá avaliar??\n*\nEscolher\nAna\nBruna\nRayane\nSabrina"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Desempenho",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário tem conhecimento amplo dos convênios que fatura/autoriza?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário tem conhecimento amplo dos convênios que fatura/autoriza?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Trabalho em Equipe",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Trabalho em Equipe"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Ferramenta\n",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Ferramenta\n"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário tem domínio do software MedWare?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário tem domínio do software MedWare?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário tem domínio dos sites dos convênios que fatura/autoriza?\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário tem domínio dos sites dos convênios que fatura/autoriza?\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Cultura\n",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Cultura\n"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "O funcionário reflete os valores da empresa?\n\n\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "required": true,
+          "text": "O funcionário reflete os valores da empresa?\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Feedback",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Feedback"
+        },
+        {
+          "hasParagraph": true,
+          "hasShortText": false,
+          "heading": "Dê um feedback para o seu colega ou para você!!\n*",
+          "level": "3",
+          "options": [],
+          "radios": [],
+          "required": true,
+          "text": "Dê um feedback para o seu colega ou para você!!\n*\nSua resposta"
+        },
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Você já avaliou todos os envolvidos, inclusive você?\n*",
+          "level": "3",
+          "options": [],
+          "radios": [
+            "Sim",
+            "Não"
+          ],
+          "required": true,
+          "text": "Você já avaliou todos os envolvidos, inclusive você?\n*\nSim\nNão"
+        }
+      ],
+      "page": null,
+      "title": "Avaliação | Autoavaliação e Equipe"
+    }
+  ]
+}

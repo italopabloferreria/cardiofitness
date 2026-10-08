@@ -1,0 +1,26 @@
+[
+  {
+    "option": "Faturamento",
+    "target": "Ir para a seção 3 (Faturamento)"
+  },
+  {
+    "option": "Central/Resultado de Exames",
+    "target": "Ir para a seção 4 (Central/Resultado)"
+  },
+  {
+    "option": "Recepção",
+    "target": "Ir para a seção 2 (Recepção/Triagem)"
+  },
+  {
+    "option": "Técnicas de Exame/Corredor/Triagem",
+    "target": "Ir para a seção 5 (Técnicas de Exame/Corredor)"
+  },
+  {
+    "option": "Limpeza",
+    "target": "Ir para a seção 6 (Limpeza)"
+  },
+  {
+    "option": "Resultado de Exame",
+    "target": "Ir para a seção 3 (Faturamento)"
+  }
+]

@@ -1,0 +1,969 @@
+{
+  "state": "RESPONDENT_FLOW_VERIFIED_DRAFT_UNPUBLISHED",
+  "checks": [
+    {
+      "key": "leaders",
+      "count": 11,
+      "titles": true,
+      "options": true,
+      "groups": true,
+      "sections": true,
+      "scaleLabels": true,
+      "scales": true,
+      "required": true,
+      "scaleCount": 7
+    },
+    {
+      "key": "team",
+      "count": 52,
+      "titles": true,
+      "options": true,
+      "groups": true,
+      "sections": true,
+      "scaleLabels": true,
+      "scales": true,
+      "required": true,
+      "scaleCount": 31
+    }
+  ],
+  "routesMatch": true,
+  "leaders": {
+    "groups": [
+      "Desempenho",
+      "Trabalho em Equipe",
+      "Liderança",
+      "Cultura"
+    ],
+    "questions": [
+      {
+        "options": [
+          "Ana Karolina",
+          "Ana Karoline",
+          "Bruna",
+          "Gabriel",
+          "Lucas",
+          "Joelson",
+          "Rute",
+          "João",
+          "Daiane Ramos",
+          "Renilda",
+          "Dayane Mares",
+          "Sulami",
+          "Roni",
+          "Eliane",
+          "Luzia",
+          "Solange",
+          "Helen Silva",
+          "Jaqueline",
+          "Júlia",
+          "Alice",
+          "Sabrina",
+          "Rayane",
+          "Luciana",
+          "Thiago",
+          "Emanuele",
+          "Maria da Luz",
+          "Maria Socorro"
+        ],
+        "radios": [],
+        "required": false,
+        "text": " \nQual o seu nome?\n\n\n\n\n\n \nTipo de pergunta\n \nResposta curta\n \nParágrafo\n \nMúltipla escolha\n \nCaixas de seleção\n \nLista suspensa\n \nUpload de arquivo\n \nEscala linear\n \nClassificação\n \nGrade de múltipla escolha\n \nGrade da caixa de seleção\n \nData\n \nHorário\n1.\n2.\n3.\n4.\n5.\n6.\n7.\n8.\n9.\n10.\n11.\n12.\n13.\n14.\n15.\n16.\n17.\n18.\n19.\n20.\n21.\n22.\n23.\n24.\n25.\n26.\n27.\n28.\nAdicionar opção\n \n \nObrigatória\n ",
+        "title": "Qual o seu nome?"
+      },
+      {
+        "options": [
+          "Faturamento",
+          "Central",
+          "Recepção",
+          "Técnicas de Exame/Corredor/Triagem",
+          "Limpeza",
+          "Entrega de Exames"
+        ],
+        "radios": [],
+        "required": true,
+        "text": "Qual o seu setor?\n\n\n\n\n\n*\n1.\n2.\n3.\n4.\n5.\n6.",
+        "title": "Qual o seu setor?"
+      },
+      {
+        "options": [
+          "Lídia",
+          "Cleuma",
+          "Welisson",
+          "Natacha"
+        ],
+        "radios": [],
+        "required": true,
+        "text": "Qual é a Líder responsável pelo seu setor?\n\n\n\n\n\n*\n1.\n2.\n3.\n4.",
+        "title": "Qual é a Líder responsável pelo seu setor?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n\n\n\n*\n1\n2\n3\n4",
+        "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário tem desempenhado bem sua função?\n\n\n\n\n\n*\n1\n2\n3\n4",
+        "title": "O funcionário tem desempenhado bem sua função?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n\n\n\n*\n1\n2\n3\n4",
+        "title": "Passa as informações necessárias para seu grupo de trabalho?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n\n\n\n*\n1\n2\n3\n4",
+        "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "Consegue influenciar os demais colaboradores e motivá-los a participar das atividades propostas?\n\n\n\n\n\n*\n1\n2\n3\n4",
+        "title": "Consegue influenciar os demais colaboradores e motivá-los a participar das atividades propostas?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "Entende a diversidade de personalidades e consegue despertar o melhor de cada uma?\n\n\n\n\n\n*\n1\n2\n3\n4",
+        "title": "Entende a diversidade de personalidades e consegue despertar o melhor de cada uma?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário reflete os valores da empresa?\n\n\n\n\n\n*\n1\n2\n3\n4",
+        "title": "O funcionário reflete os valores da empresa?"
+      },
+      {
+        "options": [],
+        "radios": [],
+        "required": true,
+        "text": "Deixe um feedbacks para seu líder?\n\n\n\n\n\n*\nTexto de resposta curta",
+        "title": "Deixe um feedbacks para seu líder?"
+      }
+    ],
+    "sections": [
+      "Líderes",
+      "Agradecemos sua participação!"
+    ]
+  },
+  "team": {
+    "groups": [
+      "Desempenho",
+      "Trabalho em Equipe",
+      "Ferramenta",
+      "Cultura",
+      "Feedback",
+      "Desempenho",
+      "Trabalho em Equipe",
+      "Ferramenta",
+      "Cultura",
+      "Feedback",
+      "Desempenho",
+      "Trabalho em Equipe",
+      "Ferramenta",
+      "Cultura",
+      "Feedback",
+      "Desempenho",
+      "Trabalho em Equipe",
+      "Ferramenta",
+      "Cultura",
+      "Feedback",
+      "Desempenho",
+      "Trabalho em Equipe",
+      "Cultura",
+      "Feedback"
+    ],
+    "questions": [
+      {
+        "options": [
+          "Faturamento",
+          "Central/Resultado de Exames",
+          "Recepção",
+          "Técnicas de Exame/Corredor/Triagem",
+          "Limpeza",
+          "Resultado de Exame"
+        ],
+        "radios": [],
+        "required": false,
+        "text": " \nQual o seu setor?\n\n\n\n\n\n \nTipo de pergunta\n \nResposta curta\n \nParágrafo\n \nMúltipla escolha\n \nCaixas de seleção\n \nLista suspensa\n \nUpload de arquivo\n \nEscala linear\n \nClassificação\n \nGrade de múltipla escolha\n \nGrade da caixa de seleção\n \nData\n \nHorário\n1.\nContinuar para a próxima seção\nIr para a seção 1 (Avaliação | Autoavaliação e Equipe)\nIr para a seção 2 (Faturamento)\nIr para a seção 3 (Central/Resultado)\nIr para a seção 4 (Recepção/Triagem)\nIr para a seção 5 (Técnicas de Exame/Corredor)\nIr para a seção 6 (Limpeza)\nIr para a seção 7 (Você ainda deve re...nder o formulário)\nIr para a seção 8 (Agradecemos sua participação!)\nEnviar formulário\n2.\nContinuar para a próxima seção\nIr para a seção 1 (Avaliação | Autoavaliação e Equipe)\nIr para a seção 2 (Faturamento)\nIr para a seção 3 (Central/Resultado)\nIr para a seção 4 (Recepção/Triagem)\nIr para a seção 5 (Técnicas de Exame/Corredor)\nIr para a seção 6 (Limpeza)\nIr para a seção 7 (Você ainda deve re...nder o formulário)\nIr para a seção 8 (Agradecemos sua participação!)\nEnviar formulário\n3.\nContinuar para a próxima seção\nIr para a seção 1 (Avaliação | Autoavaliação e Equipe)\nIr para a seção 2 (Faturamento)\nIr para a seção 3 (Central/Resultado)\nIr para a seção 4 (Recepção/Triagem)\nIr para a seção 5 (Técnicas de Exame/Corredor)\nIr para a seção 6 (Limpeza)\nIr para a seção 7 (Você ainda deve re...nder o formulário)\nIr para a seção 8 (Agradecemos sua participação!)\nEnviar formulário\n4.\nContinuar para a próxima seção\nIr para a seção 1 (Avaliação | Autoavaliação e Equipe)\nIr para a seção 2 (Faturamento)\nIr para a seção 3 (Central/Resultado)\nIr para a seção 4 (Recepção/Triagem)\nIr para a seção 5 (Técnicas de Exame/Corredor)\nIr para a seção 6 (Limpeza)\nIr para a seção 7 (Você ainda deve re...nder o formulário)\nIr para a seção 8 (Agradecemos sua participação!)\nEnviar formulário\n5.\nContinuar para a próxima seção\nIr para a seção 1 (Avaliação | Autoavaliação e Equipe)\nIr para a seção 2 (Faturamento)\nIr para a seção 3 (Central/Resultado)\nIr para a seção 4 (Recepção/Triagem)\nIr para a seção 5 (Técnicas de Exame/Corredor)\nIr para a seção 6 (Limpeza)\nIr para a seção 7 (Você ainda deve re...nder o formulário)\nIr para a seção 8 (Agradecemos sua participação!)\nEnviar formulário\n6.\nContinuar para a próxima seção\nIr para a seção 1 (Avaliação | Autoavaliação e Equipe)\nIr para a seção 2 (Faturamento)\nIr para a seção 3 (Central/Resultado)\nIr para a seção 4 (Recepção/Triagem)\nIr para a seção 5 (Técnicas de Exame/Corredor)\nIr para a seção 6 (Limpeza)\nIr para a seção 7 (Você ainda deve re...nder o formulário)\nIr para a seção 8 (Agradecemos sua participação!)\nEnviar formulário\n7.\nAdicionar opção\n \n \nObrigatória\n ",
+        "title": "Qual o seu setor?"
+      },
+      {
+        "options": [
+          "Ana",
+          "Bruna",
+          "Rayane",
+          "Sabrina"
+        ],
+        "radios": [],
+        "required": true,
+        "text": "Qual o seu nome?\n\n\n\n\n\n*\n1.\n2.\n3.\n4.",
+        "title": "Qual o seu nome?"
+      },
+      {
+        "options": [
+          "Ana",
+          "Bruna",
+          "Rayane",
+          "Sabrina"
+        ],
+        "radios": [],
+        "required": true,
+        "text": "Quem você irá avaliar??\n\n\n\n\n\n*\n1.\n2.\n3.\n4.",
+        "title": "Quem você irá avaliar??"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário tem conhecimento amplo dos convênios que fatura/autoriza?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário tem conhecimento amplo dos convênios que fatura/autoriza?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "Passa as informações necessárias para seu grupo de trabalho?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário tem domínio do software MedWare?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário tem domínio do software MedWare?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário tem domínio dos sites dos convênios que fatura/autoriza?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário tem domínio dos sites dos convênios que fatura/autoriza?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário reflete os valores da empresa?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário reflete os valores da empresa?"
+      },
+      {
+        "options": [],
+        "radios": [],
+        "required": true,
+        "text": "Dê um feedback para o seu colega ou para você!!\n\n\n\n\n\n*\nTexto de resposta longa",
+        "title": "Dê um feedback para o seu colega ou para você!!"
+      },
+      {
+        "options": [
+          "Sim",
+          "Não"
+        ],
+        "radios": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "required": true,
+        "text": "Você já avaliou todos os envolvidos, inclusive você?\n\n\n\n\n\n*",
+        "title": "Você já avaliou todos os envolvidos, inclusive você?"
+      },
+      {
+        "options": [
+          "Rute",
+          "Hellen Silva",
+          "Alice",
+          "Joelson",
+          "Emanuele",
+          "Luciana"
+        ],
+        "radios": [],
+        "required": true,
+        "text": "Qual o seu nome?\n\n\n\n\n\n*\n1.\n2.\n3.\n4.\n5.\n6.",
+        "title": "Qual o seu nome?"
+      },
+      {
+        "options": [
+          "Rute",
+          "Hellen Silva",
+          "Alice",
+          "Joelson",
+          "Emanuele",
+          "Luciana"
+        ],
+        "radios": [],
+        "required": true,
+        "text": "Quem você irá avaliar??\n\n\n\n\n\n*\n1.\n2.\n3.\n4.\n5.\n6.",
+        "title": "Quem você irá avaliar??"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário tem conhecimento dos convênios credenciados, consultas, exames e respectivos valores?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário tem conhecimento dos convênios credenciados, consultas, exames e respectivos valores?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "Passa as informações necessárias para seu grupo de trabalho?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário tem domínio do software MedWare?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário tem domínio do software MedWare?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário tem domínio do software da Fasterisks?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário tem domínio do software da Fasterisks?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário reflete os valores da empresa?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário reflete os valores da empresa?"
+      },
+      {
+        "options": [],
+        "radios": [],
+        "required": true,
+        "text": "Dê um feedback para o seu colega ou para você!!\n\n\n\n\n\n*\nTexto de resposta longa",
+        "title": "Dê um feedback para o seu colega ou para você!!"
+      },
+      {
+        "options": [
+          "Sim",
+          "Não"
+        ],
+        "radios": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "required": true,
+        "text": "Você já avaliou todos os envolvidos, inclusive você?\n\n\n\n\n\n*",
+        "title": "Você já avaliou todos os envolvidos, inclusive você?"
+      },
+      {
+        "options": [
+          "Dayane Mares",
+          "Gabriel",
+          "Lucas",
+          "Jaqueline",
+          "Thiago",
+          "Ana Karoline"
+        ],
+        "radios": [],
+        "required": true,
+        "text": "Qual o seu nome?\n\n\n\n\n\n*\n1.\n2.\n3.\n4.\n5.\n6.",
+        "title": "Qual o seu nome?"
+      },
+      {
+        "options": [
+          "Dayane Mares",
+          "Gabriel",
+          "Lucas",
+          "Jaqueline",
+          "Ana Karoline"
+        ],
+        "radios": [],
+        "required": true,
+        "text": "Quem você irá avaliar??\n\n\n\n\n\n*\n1.\n2.\n3.\n4.\n5.",
+        "title": "Quem você irá avaliar??"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário tem conhecimento dos convênios credenciados, consultas, exames e respectivos valores? ////// O funcionário tem conhecimento técnico dos exames da empresa?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário tem conhecimento dos convênios credenciados, consultas, exames e respectivos valores? ////// O funcionário tem conhecimento técnico dos exames da empresa?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "Passa as informações necessárias para seu grupo de trabalho?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário tem domínio do software MedWare?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário tem domínio do software MedWare?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário reflete os valores da empresa?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário reflete os valores da empresa?"
+      },
+      {
+        "options": [],
+        "radios": [],
+        "required": true,
+        "text": "Dê um feedback para o seu colega ou para você!!\n\n\n\n\n\n*\nTexto de resposta longa",
+        "title": "Dê um feedback para o seu colega ou para você!!"
+      },
+      {
+        "options": [
+          "Sim",
+          "Não"
+        ],
+        "radios": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "required": true,
+        "text": "Você já avaliou todos os envolvidos, inclusive você?\n\n\n\n\n\n*",
+        "title": "Você já avaliou todos os envolvidos, inclusive você?"
+      },
+      {
+        "options": [
+          "Sulami",
+          "Renilda",
+          "Roni",
+          "Eliane",
+          "Luzia",
+          "Daiane Ramos",
+          "Júlia"
+        ],
+        "radios": [],
+        "required": true,
+        "text": "Qual o seu nome?\n\n\n\n\n\n*\n1.\n2.\n3.\n4.\n5.\n6.\n7.",
+        "title": "Qual o seu nome?"
+      },
+      {
+        "options": [
+          "Eliane",
+          "Daiane Ramos",
+          "Luzia",
+          "Renilda",
+          "Roni",
+          "Sulami",
+          "Júlia"
+        ],
+        "radios": [],
+        "required": true,
+        "text": "Quem você irá avaliar?\n\n\n\n\n\n*\n1.\n2.\n3.\n4.\n5.\n6.\n7.",
+        "title": "Quem você irá avaliar?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário tem conhecimento técnico dos exames da empresa?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário tem conhecimento técnico dos exames da empresa?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "Passa as informações necessárias para seu grupo de trabalho?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário tem domínio do software MedWare?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário tem domínio do software MedWare?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário reflete os valores da empresa?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário reflete os valores da empresa?"
+      },
+      {
+        "options": [],
+        "radios": [],
+        "required": true,
+        "text": "Dê um feedback para o seu colega ou para você!!\n\n\n\n\n\n*\nTexto de resposta longa",
+        "title": "Dê um feedback para o seu colega ou para você!!"
+      },
+      {
+        "options": [
+          "Sim",
+          "Não"
+        ],
+        "radios": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "required": true,
+        "text": "Você já avaliou todos os envolvidos, inclusive você?\n\n\n\n\n\n*",
+        "title": "Você já avaliou todos os envolvidos, inclusive você?"
+      },
+      {
+        "options": [
+          "Maria da Luz",
+          "Maria Socorro"
+        ],
+        "radios": [],
+        "required": true,
+        "text": "Qual o seu nome?\n\n\n\n\n\n*\n1.\n2.",
+        "title": "Qual o seu nome?"
+      },
+      {
+        "options": [
+          "Maria da Luz",
+          "Maria Socorro"
+        ],
+        "radios": [],
+        "required": true,
+        "text": "Quem você irá avaliar?\n\n\n\n\n\n*\n1.\n2.",
+        "title": "Quem você irá avaliar?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário tem desempenhado bem sua função?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário tem desempenhado bem sua função?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "Passa as informações necessárias para seu grupo de trabalho?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "Passa as informações necessárias para seu grupo de trabalho?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?"
+      },
+      {
+        "options": [],
+        "radios": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "required": true,
+        "text": "O funcionário reflete os valores da empresa?\n\n\n\n\n\n*\nAbaixo do esperado\n1\n2\n3\n4\nAlto desempenho",
+        "title": "O funcionário reflete os valores da empresa?"
+      },
+      {
+        "options": [],
+        "radios": [],
+        "required": true,
+        "text": "Dê um feedback para o seu colega ou para você!!\n\n\n\n\n\n*\nTexto de resposta longa",
+        "title": "Dê um feedback para o seu colega ou para você!!"
+      },
+      {
+        "options": [
+          "Sim",
+          "Não"
+        ],
+        "radios": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "required": true,
+        "text": "Você já avaliou todos os envolvidos, inclusive você?\n\n\n\n\n\n*",
+        "title": "Você já avaliou todos os envolvidos, inclusive você?"
+      }
+    ],
+    "sections": [
+      "Faturamento",
+      "Central/Resultado",
+      "Recepção/Triagem",
+      "Técnicas de Exame/Corredor",
+      "Limpeza",
+      "Você ainda deve responder o formulário",
+      "Agradecemos sua participação!"
+    ]
+  },
+  "preview": {
+    "routes": [
+      {
+        "sector": "Faturamento",
+        "section": "Faturamento",
+        "answer": "Sim",
+        "destination": "Agradecemos sua participação!"
+      },
+      {
+        "sector": "Faturamento",
+        "section": "Faturamento",
+        "answer": "Não",
+        "destination": "Você ainda deve responder o formulário",
+        "text": "Você ainda deve responder o formulário\nClique em enviar formulário novamente, para repetir o mesmo processo"
+      },
+      {
+        "sector": "Central/Resultado de Exames",
+        "section": "Central/Resultado",
+        "answer": "Sim",
+        "destination": "Agradecemos sua participação!"
+      },
+      {
+        "sector": "Central/Resultado de Exames",
+        "section": "Central/Resultado",
+        "answer": "Não",
+        "destination": "Você ainda deve responder o formulário",
+        "text": "Você ainda deve responder o formulário\nClique em enviar formulário novamente, para repetir o mesmo processo"
+      },
+      {
+        "sector": "Recepção",
+        "section": "Recepção/Triagem",
+        "answer": "Sim",
+        "destination": "Agradecemos sua participação!"
+      },
+      {
+        "sector": "Recepção",
+        "section": "Recepção/Triagem",
+        "answer": "Não",
+        "destination": "Você ainda deve responder o formulário",
+        "text": "Você ainda deve responder o formulário\nClique em enviar formulário novamente, para repetir o mesmo processo"
+      },
+      {
+        "sector": "Técnicas de Exame/Corredor/Triagem",
+        "section": "Técnicas de Exame/Corredor",
+        "answer": "Sim",
+        "destination": "Agradecemos sua participação!"
+      },
+      {
+        "sector": "Técnicas de Exame/Corredor/Triagem",
+        "section": "Técnicas de Exame/Corredor",
+        "answer": "Não",
+        "destination": "Você ainda deve responder o formulário",
+        "text": "Você ainda deve responder o formulário\nClique em enviar formulário novamente, para repetir o mesmo processo"
+      },
+      {
+        "sector": "Limpeza",
+        "section": "Limpeza",
+        "answer": "Sim",
+        "destination": "Agradecemos sua participação!"
+      },
+      {
+        "sector": "Limpeza",
+        "section": "Limpeza",
+        "answer": "Não",
+        "destination": "Você ainda deve responder o formulário",
+        "text": "Você ainda deve responder o formulário\nClique em enviar formulário novamente, para repetir o mesmo processo"
+      },
+      {
+        "sector": "Resultado de Exame",
+        "section": "Faturamento",
+        "answer": "Sim",
+        "destination": "Agradecemos sua participação!"
+      },
+      {
+        "sector": "Resultado de Exame",
+        "section": "Faturamento",
+        "answer": "Não",
+        "destination": "Você ainda deve responder o formulário",
+        "text": "Você ainda deve responder o formulário\nClique em enviar formulário novamente, para repetir o mesmo processo"
+      }
+    ],
+    "leaders": {
+      "items": [
+        {
+          "hasParagraph": false,
+          "hasShortText": false,
+          "heading": "Agradecemos sua participação!",
+          "level": "2",
+          "options": [],
+          "radios": [],
+          "required": false,
+          "text": "Agradecemos sua participação!"
+        }
+      ],
+      "page": null,
+      "title": "Modo de visualização"
+    },
+    "theme": {
+      "accent": "#0c53ce",
+      "background": "#b6cbf0",
+      "heading": "Lexend 24",
+      "questions": "Roboto 12",
+      "text": "Roboto 11",
+      "progressBar": true
+    }
+  },
+  "sourceRoutesFile": "rotas-originais-verificadas.json",
+  "sourceSubmission": false,
+  "copySubmission": false
+}

@@ -1,0 +1,340 @@
+{
+  "sourceSha256": "7d2010ebf6f66a716093fa0161e1fd6f57faa1602470914fe9779a59511456d7",
+  "rows": [
+    {
+      "id": "ff8d2907-9a88-519b-9b6b-55a3fe98c301",
+      "name": "LIDIA VIANA",
+      "email": "",
+      "form_name": "LIDIA VIANA",
+      "department": "FATURAMENTO E AUXILIARES DE FATURAMENTO",
+      "leader_id": null,
+      "is_leader": true,
+      "active": true
+    },
+    {
+      "id": "e6d56d40-4345-5246-85b2-52439871dc93",
+      "name": "CLEUMA",
+      "email": "",
+      "form_name": "CLEUMA",
+      "department": "COPEIRAS / TÉCNICAS E CORREDOR",
+      "leader_id": null,
+      "is_leader": true,
+      "active": true
+    },
+    {
+      "id": "4fb00df9-e01c-52f0-99c2-07b7486124ad",
+      "name": "GABRIEL",
+      "email": "",
+      "form_name": "GABRIEL",
+      "department": "CENTRAL E RESULTADOS DE EXAMES",
+      "leader_id": null,
+      "is_leader": true,
+      "active": true
+    },
+    {
+      "id": "756dd216-1970-57ec-820b-86c9fc2240e0",
+      "name": "WELISSON",
+      "email": "",
+      "form_name": "WELISSON",
+      "department": "RECEPÇÃO E TRIAGEM",
+      "leader_id": null,
+      "is_leader": true,
+      "active": true
+    },
+    {
+      "id": "b9b7b1f4-9df0-52c8-b2b8-225afbcf6e7c",
+      "name": "MARIA",
+      "email": "",
+      "form_name": "MARIA",
+      "department": "ADM",
+      "leader_id": null,
+      "is_leader": true,
+      "active": true
+    },
+    {
+      "id": "58b87037-c026-5ad7-bfda-f9cb68577e36",
+      "name": "ANA KAROLINA RIBEIRO ALVES VIANA",
+      "email": "",
+      "form_name": "ANA KAROLINA RIBEIRO ALVES VIANA",
+      "department": "FATURAMENTO E AUXILIARES DE FATURAMENTO",
+      "leader_id": "ff8d2907-9a88-519b-9b6b-55a3fe98c301",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "51e2de22-6353-5636-84f0-5ac52d2b5338",
+      "name": "BRUNA ALVES BARBOSA",
+      "email": "",
+      "form_name": "BRUNA ALVES BARBOSA",
+      "department": "FATURAMENTO E AUXILIARES DE FATURAMENTO",
+      "leader_id": "ff8d2907-9a88-519b-9b6b-55a3fe98c301",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "6d8efc86-f339-5266-9e65-6f30d32d8be3",
+      "name": "RAYANE",
+      "email": "",
+      "form_name": "RAYANE",
+      "department": "FATURAMENTO E AUXILIARES DE FATURAMENTO",
+      "leader_id": "ff8d2907-9a88-519b-9b6b-55a3fe98c301",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "7aad872e-be2d-5904-9a61-d9fd316d8413",
+      "name": "YASMIN",
+      "email": "",
+      "form_name": "YASMIN",
+      "department": "FATURAMENTO E AUXILIARES DE FATURAMENTO",
+      "leader_id": "ff8d2907-9a88-519b-9b6b-55a3fe98c301",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "f42fbbfb-f702-523d-afc9-4b2ab1cdd3f7",
+      "name": "adriele",
+      "email": "",
+      "form_name": "adriele",
+      "department": "FATURAMENTO E AUXILIARES DE FATURAMENTO",
+      "leader_id": "ff8d2907-9a88-519b-9b6b-55a3fe98c301",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "fc5a341a-66d8-50f7-8b26-80bb992c24d7",
+      "name": "MARIA DO SOCORRO",
+      "email": "",
+      "form_name": "MARIA DO SOCORRO",
+      "department": "COPEIRAS",
+      "leader_id": "e6d56d40-4345-5246-85b2-52439871dc93",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "ca5a40d6-5079-5880-b922-598becf74317",
+      "name": "Hellen Silva Rodrigues",
+      "email": "",
+      "form_name": "Hellen Silva Rodrigues",
+      "department": "CENTRAL E RESULTADOS DE EXAMES",
+      "leader_id": "4fb00df9-e01c-52f0-99c2-07b7486124ad",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "902c3df1-6ece-510d-abf4-38be8dc5b223",
+      "name": "LUCIANA",
+      "email": "",
+      "form_name": "LUCIANA",
+      "department": "CENTRAL E RESULTADOS DE EXAMES",
+      "leader_id": "4fb00df9-e01c-52f0-99c2-07b7486124ad",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "6f871d68-ae90-55da-9434-faa021e17a76",
+      "name": "Rute dos Santos Silva",
+      "email": "",
+      "form_name": "Rute dos Santos Silva",
+      "department": "CENTRAL E RESULTADOS DE EXAMES",
+      "leader_id": "4fb00df9-e01c-52f0-99c2-07b7486124ad",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "58ca9de1-5b71-5c02-90ab-3793a0693f5a",
+      "name": "JOELSON",
+      "email": "",
+      "form_name": "JOELSON",
+      "department": "CENTRAL E RESULTADOS DE EXAMES",
+      "leader_id": "4fb00df9-e01c-52f0-99c2-07b7486124ad",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "284d40f3-f13a-5100-9210-cd914e62e6b0",
+      "name": "paulo",
+      "email": "",
+      "form_name": "paulo",
+      "department": "CENTRAL E RESULTADOS DE EXAMES",
+      "leader_id": "4fb00df9-e01c-52f0-99c2-07b7486124ad",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "bfd09c35-4f92-532b-b0e8-c644faa46397",
+      "name": "DAIANE RAMOS DOS SANTOS",
+      "email": "",
+      "form_name": "DAIANE RAMOS DOS SANTOS",
+      "department": "TÉCNICAS E CORREDOR",
+      "leader_id": "e6d56d40-4345-5246-85b2-52439871dc93",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "4b88997c-89f5-553b-94c2-d1a5dc7b04d4",
+      "name": "Eliane Batista de Souza",
+      "email": "",
+      "form_name": "Eliane Batista de Souza",
+      "department": "TÉCNICAS E CORREDOR",
+      "leader_id": "e6d56d40-4345-5246-85b2-52439871dc93",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "d3b292b1-9e80-51d5-895a-a4bb7656454d",
+      "name": "Luzia de Moraes Castro",
+      "email": "",
+      "form_name": "Luzia de Moraes Castro",
+      "department": "TÉCNICAS E CORREDOR",
+      "leader_id": "e6d56d40-4345-5246-85b2-52439871dc93",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "44614097-f1c5-5b63-9edf-47cc34bb5289",
+      "name": "MARIA SULAMI RIBEIRO DE ANDRADE",
+      "email": "",
+      "form_name": "MARIA SULAMI RIBEIRO DE ANDRADE",
+      "department": "TÉCNICAS E CORREDOR",
+      "leader_id": "e6d56d40-4345-5246-85b2-52439871dc93",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "f075079d-7b3a-5c7f-8ac6-b0afd3082626",
+      "name": "Onizete Vieira da Silva-",
+      "email": "",
+      "form_name": "Onizete Vieira da Silva-",
+      "department": "TÉCNICAS E CORREDOR",
+      "leader_id": "e6d56d40-4345-5246-85b2-52439871dc93",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "3c0503c1-7c43-5b8b-a54f-dea5d7e8af34",
+      "name": "Renilda Maria Pereira da Silva",
+      "email": "",
+      "form_name": "Renilda Maria Pereira da Silva",
+      "department": "TÉCNICAS E CORREDOR",
+      "leader_id": "e6d56d40-4345-5246-85b2-52439871dc93",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "bc707030-8062-524d-a2b4-a2102c2ee029",
+      "name": "Solange Borges Pimentel",
+      "email": "",
+      "form_name": "Solange Borges Pimentel",
+      "department": "TÉCNICAS E CORREDOR",
+      "leader_id": "e6d56d40-4345-5246-85b2-52439871dc93",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "2280649f-b588-5668-b279-fe864089ffdb",
+      "name": "luiza",
+      "email": "",
+      "form_name": "luiza",
+      "department": "TÉCNICAS E CORREDOR",
+      "leader_id": "e6d56d40-4345-5246-85b2-52439871dc93",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "8bb4c840-d5f7-5266-be14-76619e170c70",
+      "name": "sara",
+      "email": "",
+      "form_name": "sara",
+      "department": "TÉCNICAS E CORREDOR",
+      "leader_id": "e6d56d40-4345-5246-85b2-52439871dc93",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "b366effa-0210-5f78-83c6-d319939fc420",
+      "name": "LUCAS DOS SANTOS REIS",
+      "email": "",
+      "form_name": "LUCAS DOS SANTOS REIS",
+      "department": "RECEPÇÃO E TRIAGEM",
+      "leader_id": "756dd216-1970-57ec-820b-86c9fc2240e0",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "a36e5323-18d2-5123-a773-15ab767a8e4b",
+      "name": "Jaqueline Alves Ribeiro",
+      "email": "",
+      "form_name": "Jaqueline Alves Ribeiro",
+      "department": "RECEPÇÃO E TRIAGEM",
+      "leader_id": "756dd216-1970-57ec-820b-86c9fc2240e0",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "24a6d94b-a662-5694-8e50-92bf01e668b4",
+      "name": "DAYANE MARES",
+      "email": "",
+      "form_name": "DAYANE MARES",
+      "department": "RECEPÇÃO E TRIAGEM",
+      "leader_id": "756dd216-1970-57ec-820b-86c9fc2240e0",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "8d37e5fc-0bfa-5285-ac26-f5239a527e70",
+      "name": "JULIA SANTOS",
+      "email": "",
+      "form_name": "JULIA SANTOS",
+      "department": "RECEPÇÃO E TRIAGEM",
+      "leader_id": "756dd216-1970-57ec-820b-86c9fc2240e0",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "145514d8-18a4-55fd-aec9-3e4cf4540f5a",
+      "name": "KEZIA",
+      "email": "",
+      "form_name": "KEZIA",
+      "department": "RECEPÇÃO E TRIAGEM",
+      "leader_id": "756dd216-1970-57ec-820b-86c9fc2240e0",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "b0c63e1e-37a2-592a-90bb-111cc50487d8",
+      "name": "MARIA LUIZA 2.",
+      "email": "",
+      "form_name": "MARIA LUIZA 2.",
+      "department": "RECEPÇÃO E TRIAGEM",
+      "leader_id": "756dd216-1970-57ec-820b-86c9fc2240e0",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "d4fcd5a0-eca6-5833-9a09-b1a7dc3ac50f",
+      "name": "BRENO",
+      "email": "",
+      "form_name": "BRENO",
+      "department": "RECEPÇÃO E TRIAGEM",
+      "leader_id": "756dd216-1970-57ec-820b-86c9fc2240e0",
+      "is_leader": false,
+      "active": true
+    },
+    {
+      "id": "ede14b30-8675-5c66-a073-1a485abf65a3",
+      "name": "ana carolina reis",
+      "email": "",
+      "form_name": "ana carolina reis",
+      "department": "ADM",
+      "leader_id": "b9b7b1f4-9df0-52c8-b2b8-225afbcf6e7c",
+      "is_leader": false,
+      "active": true
+    }
+  ],
+  "notes": [
+    "Nome no formulário inicialmente igual ao PDF; aliases não confirmados.",
+    "CLEUMA atende dois setores; ambos preservados no setor da liderança.",
+    "Líderes sem liderança superior informada."
+  ]
+}
