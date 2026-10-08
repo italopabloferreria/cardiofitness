@@ -5,6 +5,7 @@ import { assertSyncReady, googleCall, validateMetadataMapping } from '@/lib/serv
 import { ApiError, assertOrigin, databaseError, handle, json, requireId } from '@/lib/server/http';
 import { requireRh } from '@/lib/server/supabase';
 import { cycleStructure, evaluationStructure } from '@/lib/server/validation';
+import { wouldRemoveHistory } from '@/lib/server/integrity';
 
 export const maxDuration = 120;
 export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
@@ -23,6 +24,8 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     validateMetadataMapping(evaluation, metadata);
     const raw = await googleCall(() => getFormResponses(evaluation.googleFormId));
     const { responses, summary } = normalizeResponses(evaluation, cycle, app.employees, raw);
+    if (wouldRemoveHistory(app.responses.filter(r => r.evaluationId === id), responses))
+      return json({ error: 'A consulta deixaria respostas anteriores fora do histórico. Nenhum resultado foi alterado. Confira respostas removidas ou editadas após o ciclo no Google Forms.', summary }, 409);
     if (summary.rejected && app.responses.some(r => r.evaluationId === id))
       return json({ error: 'Há respostas sem identificação ou pontuação válida. O histórico anterior foi preservado. Revise os cadastros e o mapeamento antes de sincronizar novamente.', summary }, 409);
     const { data, error } = await client.rpc('replace_evaluation_cache', {

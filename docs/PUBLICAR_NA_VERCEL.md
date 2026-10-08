@@ -1,6 +1,6 @@
 # Publicação na Vercel
 
-Estado em 08/10/2026: repositório privado https://github.com/italopabloferreria/cardiofitness definido como destino da versão local. Servidor local em http://127.0.0.1:3000. Build e 94 testes aprovados; não substituem homologação do fluxo real de coleta.
+Estado em 08/10/2026: repositório privado https://github.com/italopabloferreria/cardiofitness atualizado com a versão local. Produção em https://cardiofitness-smoky.vercel.app. Oito variáveis de produção configuradas na Vercel, segredos fora do GitHub e novo deploy aprovado. Supabase Site URL e retorno /auth/callback configurados para produção. Login Google de produção validado com conta institucional; 33 cadastros reais carregados, sem demonstrações. Build e 106 testes aprovados; não substituem homologação do fluxo real de coleta. Login por senha requer conferência do responsável.
 
 1. Usar o repositório privado italopabloferreria/cardiofitness com o conteúdo de outputs/cardiofitness-avaliacoes como raiz (onde está package.json). O projeto contém cadastros reais do RH. Não enviar .env.local ou credenciais; .gitignore já os exclui.
 2. Importar repositório na Vercel, selecionar Next.js e manter comandos padrão. Caso envie a pasta externa inteira, configurar Root Directory para a pasta que contém package.json.

@@ -23,4 +23,4 @@ Não reaplicar schema base, não recriar projeto e não executar importação au
 Pendente: listas de coleta alinhadas ao PDF oficial, publicação dos Forms, primeiro ciclo, sincronização real; domínio e callbacks de produção; revisão OAuth Testing. Auditoria do banco não representa conclusão dessas etapas. Senha provisória/flag ainda não ativadas.
 
 Login Google revalidado nesta entrega após salvar novamente o callback exato no cliente Google: retorno ao painel e leitura dos 33 cadastros pelo RH confirmados.
-Validação do código: 102 testes e build de produção aprovados.
+Validação do código: 106 testes e build de produção aprovados.

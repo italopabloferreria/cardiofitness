@@ -8,7 +8,17 @@
   "dashboardUrl": "https://supabase.com/dashboard/project/crqzpadgqbjszywfeuip",
   "region": "sa-east-1",
   "plan": "Free",
-  "status": "GOOGLE_LOGIN_AND_FORMS_CONNECTED_CYCLE_SETUP_PENDING",
+  "status": "PRODUCTION_CONNECTED_CYCLE_SETUP_PENDING",
+  "production": {
+    "url": "https://cardiofitness-smoky.vercel.app",
+    "environmentVariablesConfigured": true,
+    "googleLoginVerified": true,
+    "employeesLoaded": 33,
+    "demoImported": false,
+    "passwordLoginManuallyVerified": false,
+    "firstCycleCollectionVerified": false,
+    "verifiedOn": "2026-10-08"
+  },
   "schema": "supabase/schemas/01_cardiofitness.sql",
   "verification": {
     "tables": 5,
@@ -117,5 +127,12 @@
     "formsMetadataReadVerified": true,
     "googleLoginRetested": true,
     "demoImported": false
+  },
+  "integrityAudit": {
+    "applied": true,
+    "auditComplete": false,
+    "testsPassed": 106,
+    "migration": "supabase/schemas/03_integrity_audit.sql",
+    "passwordRecoveryImplemented": false
   }
 }

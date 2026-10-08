@@ -2,6 +2,7 @@ import 'server-only';
 import { getAppData, employeeToRow, cycleToRow, evaluationToRow, employeeFromRow, cycleFromRow, evaluationFromRow } from './data';
 import { assertOrigin, ApiError, databaseError, json, parseBody, requireId } from './http';
 import { requireRh } from './supabase';
+import { cyclePeriodConflict, formPeriodConflict } from './integrity';
 import { employeeSchema, cycleSchema, evaluationSchema, validateEmployeeRelations, validateParticipants, evaluationStructure, cycleStructure } from './validation';
 
 export async function saveEmployee(request: Request, id?: string) {
@@ -26,6 +27,8 @@ export async function saveCycle(request: Request, id?: string) {
   const app = await getAppData(client);
   const existing = app.cycles.find(c => c.id === id);
   if (id && !existing) throw new ApiError(404, 'Ciclo não encontrado.');
+  const periodProblem = cyclePeriodConflict(input, app, id);
+  if (periodProblem) throw new ApiError(409, periodProblem);
   const structuralChange = !existing || JSON.stringify(cycleStructure(existing)) !== JSON.stringify(cycleStructure(input));
   if (existing && structuralChange && app.responses.some(r => app.evaluations.some(e => e.id === r.evaluationId && e.cycleId === id)))
     throw new ApiError(409, 'Este ciclo possui resultados. Edite apenas o nome para preservar o histórico.');
@@ -48,6 +51,8 @@ export async function saveEvaluation(request: Request, id?: string) {
   const existing = app.evaluations.find(e => e.id === id);
   if (id && !existing) throw new ApiError(404, 'Avaliação não encontrada.');
   if (!app.cycles.some(c => c.id === input.cycleId)) throw new ApiError(409, 'Selecione um ciclo existente.');
+  const periodProblem = formPeriodConflict(input, app, id);
+  if (periodProblem) throw new ApiError(409, periodProblem);
   if (existing && JSON.stringify(evaluationStructure(existing)) !== JSON.stringify(evaluationStructure(input)) && app.responses.some(r => r.evaluationId === id))
     throw new ApiError(409, 'Esta avaliação possui resultados. Crie uma nova avaliação para alterar formulário, ciclo ou mapeamento.');
   const operation = id ? client.from('evaluations').update(evaluationToRow(input)).eq('id', id) : client.from('evaluations').insert(evaluationToRow(input));
