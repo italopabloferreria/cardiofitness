@@ -56,3 +56,5 @@ h1,h2{color:var(--primary)}
 .account-password{max-width:520px;padding:24px;display:grid;gap:18px}.account-password p{color:var(--muted);line-height:1.6;margin:0}.first-password{max-width:620px;margin:50px auto;padding:24px;display:grid;gap:32px}
 
 .recovery-secondary{margin:12px 0;justify-content:center;width:100%;font-size:12px}.recovery-box .notice{margin-bottom:18px}.recovery-box .field small{line-height:1.5}
+
+.score-legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:11px;line-height:1.5;margin:0 0 16px}.question-bars>.score-legend{margin-bottom:0}
