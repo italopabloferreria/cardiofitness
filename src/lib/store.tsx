@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useRef, type ReactNode } from 'react';
 import type { AppData, Bootstrap, Cycle, CycleInput, Employee, EmployeeInput, Evaluation, EvaluationInput, FormMetadata, SyncResult } from './types';
 import { createDemoData } from './demo';
 
@@ -27,6 +27,7 @@ export function AppProvider({children}:{children:ReactNode}) {
   const [mode,setMode]=useState<'demo'|'live'>('live'); const [user,setUser]=useState<Bootstrap['user']|null>(null);
   const [data,setData]=useState<AppData>(EMPTY); const [googleConfigured,setGoogleConfigured]=useState(false);
   const [error,setError]=useState<string|null>(null);
+  const foregroundRequests=useRef(0); const dataRevision=useRef(0);
   const boot=useCallback(async()=>{
     try {
       const recovering=new URLSearchParams(window.location.search).get('recovery')==='1';
@@ -43,6 +44,7 @@ export function AppProvider({children}:{children:ReactNode}) {
     }
   },[]);
   async function authorizedRequest<T>(url:string,options:RequestInit={}):Promise<T> {
+    foregroundRequests.current++;dataRevision.current++;
     try { return await request<T>(url,options); }
     catch(error) {
       if([401,403,428].includes((error as {status?:number}).status??0)) {
@@ -50,9 +52,32 @@ export function AppProvider({children}:{children:ReactNode}) {
         await boot();
       }
       throw error;
-    }
+    } finally {foregroundRequests.current--;dataRevision.current++;}
   }
   useEffect(()=>{void boot();},[boot]);
+  useEffect(()=>{
+    if(status!=='ready'||mode!=='live'||!user)return;
+    let disposed=false;let refreshing=false;let controller:AbortController|undefined;
+    const refresh=async()=>{
+      if(disposed||refreshing||document.visibilityState!=='visible'||foregroundRequests.current)return;
+      refreshing=true;const revision=dataRevision.current;controller=new AbortController();
+      try {
+        const updated=await request<Bootstrap>('/api/bootstrap',{signal:controller.signal});
+        // A response fetched before a save or manual sync must never replace its newer result.
+        if(disposed||foregroundRequests.current||revision!==dataRevision.current)return;
+        if(updated.mode!=='live')return;
+        setData(updated.data);setUser(updated.user);setGoogleConfigured(updated.googleConfigured);setError(null);
+      } catch(error) {
+        if(disposed||foregroundRequests.current||revision!==dataRevision.current)return;
+        if([401,403,428].includes((error as {status?:number}).status??0))await boot();
+        else setError('Não foi possível atualizar o painel automaticamente. Os últimos dados foram preservados.');
+      } finally {refreshing=false;}
+    };
+    const interval=window.setInterval(()=>{void refresh();},30_000);
+    const onVisibility=()=>{if(document.visibilityState==='visible')void refresh();};
+    document.addEventListener('visibilitychange',onVisibility);
+    return ()=>{disposed=true;controller?.abort();window.clearInterval(interval);document.removeEventListener('visibilitychange',onVisibility);};
+  },[status,mode,user?.email,boot]);
   useEffect(()=>{if(status==='ready'&&mode==='demo') {try{localStorage.setItem(DEMO_KEY,JSON.stringify(data));}catch{setError('Não foi possível salvar a demonstração neste navegador. Verifique o espaço disponível.');}}},[data,mode,status]);
   const login=async(email:string,password:string)=>{if(mode!=='demo')await request('/api/auth/login',{method:'POST',body:JSON.stringify({email,password})});await boot();};
   const logout=async()=>{if(mode!=='demo')await authorizedRequest('/api/auth/logout',{method:'POST'});setStatus('login');setUser(null);setData(EMPTY);setError(null);setGoogleConfigured(false);};
