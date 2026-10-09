@@ -45,7 +45,7 @@ export async function syncEvaluation(client: SupabaseClient, app: AppData, evalu
   const metadata = await googleCall(() => getFormMetadata(evaluation.googleFormId));
   validateMetadataMapping(evaluation, metadata);
   const raw = await googleCall(() => getFormResponses(evaluation.googleFormId));
-  const normalized = normalizeResponses(evaluation, cycle, app.employees, raw);
+  const normalized = normalizeResponses(evaluation, cycle, app.employees, raw, metadata);
   const previous = app.responses.filter(r => r.evaluationId === evaluation.id);
   const responses = mergeResponseHistory(previous, normalized.responses);
   if (wouldRemoveHistory(previous, responses)) throw new ApiError(409, 'O histórico anterior foi preservado. Revise a sincronização.');

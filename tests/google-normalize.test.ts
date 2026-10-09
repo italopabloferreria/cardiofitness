@@ -122,3 +122,15 @@ describe('normalizaÃ§Ã£o das avaliaÃ§Ãµes reais', () => {
     expect(() => run([], { cycleId: 'other' })).toThrow('nÃ£o pertence');
   });
 });
+
+it('imports only answered free-text questions, preserves exact text and excludes identification',()=>{
+ const raw=response('text', {feedback:'  Bom trabalho.\nContinuar assim!  ', 'not-text':'Não importar'});
+ const metadata={id:'form',title:'Form',responderUri:'',collectsEmail:false,questions:[
+ {id:'feedback',title:'Deixe um feedback',min:0,max:0,numeric:false,section:'',freeText:true},
+ {id:'name-reception',title:'Nome',min:0,max:0,numeric:false,section:'',freeText:true},
+ {id:'empty',title:'Outra seção',min:0,max:0,numeric:false,section:'',freeText:true},
+ {id:'not-text',title:'Escolha',min:0,max:0,numeric:false,section:''}]};
+ const result=normalizeResponses(evaluation,cycle,employees,[raw],metadata);
+ expect(result.responses[0].textAnswers).toEqual([{questionId:'feedback',question:'Deixe um feedback',answer:'  Bom trabalho.\nContinuar assim!  '}]);
+ expect(result.responses[0].scores).toEqual({'score-reception':4});
+});

@@ -1,4 +1,4 @@
-/** Minimal Google Forms REST response. Text answers exist only during normalization. */
+/** Minimal Google Forms REST response. Free-text responses are stored with their identified evaluation. */
 export interface GoogleFormResponse {
   responseId: string;
   createTime?: string;
@@ -13,6 +13,7 @@ export interface GoogleFormResponse {
 export interface GoogleQuestion {
   questionId?: string;
   scaleQuestion?: { low: number; high: number };
+  textQuestion?: { paragraph?: boolean };
   ratingQuestion?: { ratingScaleLevel: number };
   choiceQuestion?: { type?: string; options?: { value: string }[] };
   rowQuestion?: { title?: string };

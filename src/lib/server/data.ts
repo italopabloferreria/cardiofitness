@@ -24,7 +24,7 @@ export function evaluationToRow(e: Omit<Evaluation, 'id' | 'lastSyncedAt' | 'syn
   return { cycle_id: e.cycleId, name: e.name, kind: e.kind, google_form_id: e.googleFormId, google_form_url: e.googleFormUrl, expected_responses: e.expectedResponses, mapping: e.mapping };
 }
 export function responseFromRow(r: Row): EvaluationResponse {
-  return { id: r.id as string, evaluationId: r.evaluation_id as string, googleResponseId: r.google_response_id as string, respondentId: r.respondent_id as string, subjectId: r.subject_id as string, kind: r.kind as EvaluationResponse['kind'], submittedAt: r.submitted_at as string, scores: r.scores as Record<string, number> };
+  return { id: r.id as string, evaluationId: r.evaluation_id as string, googleResponseId: r.google_response_id as string, respondentId: r.respondent_id as string, subjectId: r.subject_id as string, kind: r.kind as EvaluationResponse['kind'], submittedAt: r.submitted_at as string, scores: r.scores as Record<string, number>, textAnswers: (r.text_answers ?? []) as EvaluationResponse['textAnswers'] };
 }
 export async function readAll(client: SupabaseClient, table: string): Promise<Row[]> {
   const result: Row[] = [];

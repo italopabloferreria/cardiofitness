@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import type { Cycle, Employee, Evaluation, EvaluationResponse, ResponseKind, SyncSummary } from '../types';
+import type { Cycle, Employee, Evaluation, EvaluationResponse, ResponseKind, SyncSummary, FormMetadata } from '../types';
 import type { GoogleFormResponse } from './types';
 
 const localDate = new Intl.DateTimeFormat('en-CA', {
@@ -47,7 +47,7 @@ function responseId(key: string): string {
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-5${hex.slice(13, 16)}-a${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
 }
 
-export function normalizeResponses(evaluation: Evaluation, cycle: Cycle, employees: Employee[], raw: GoogleFormResponse[]): { responses: EvaluationResponse[]; summary: SyncSummary } {
+export function normalizeResponses(evaluation: Evaluation, cycle: Cycle, employees: Employee[], raw: GoogleFormResponse[], metadata?: FormMetadata): { responses: EvaluationResponse[]; summary: SyncSummary } {
   if (evaluation.cycleId !== cycle.id) throw new Error('A avaliação não pertence ao ciclo informado.');
   if (![cycle.startDate, cycle.endDate].every(validDate) || cycle.startDate > cycle.endDate) {
     throw new Error('O período do ciclo é inválido.');
@@ -96,10 +96,19 @@ export function normalizeResponses(evaluation: Evaluation, cycle: Cycle, employe
         scores[question.id] = score;
       }
       if (!Object.keys(scores).length) throw new Error('Resposta sem pontuações mapeadas.');
+      const identificationIds = new Set([...evaluation.mapping.respondentQuestionIds, ...evaluation.mapping.subjectQuestionIds, ...evaluation.mapping.departmentQuestionIds]);
+      const textAnswers = (metadata?.questions ?? []).filter(question => question.freeText && !identificationIds.has(question.id)).flatMap(question => {
+        const answers = response.answers?.[question.id]?.textAnswers?.answers ?? [];
+        return answers.filter(answer => answer.value.trim()).map(answer => {
+          if (answer.value.length > 100000 || question.title.length > 1000) throw new Error('Resposta de texto acima do limite permitido.');
+          return { questionId: question.id, question: question.title, answer: answer.value };
+        });
+      });
+      if (textAnswers.length > 200) throw new Error('Quantidade de respostas de texto acima do limite permitido.');
       const key = JSON.stringify([evaluation.id, respondent.id, subject.id]);
       if (selected.has(key)) { summary.duplicates++; continue; }
       selected.set(key, { id: responseId(key), evaluationId: evaluation.id, googleResponseId: response.responseId,
-        respondentId: respondent.id, subjectId: subject.id, kind, submittedAt: submitted.toISOString(), scores });
+        respondentId: respondent.id, subjectId: subject.id, kind, submittedAt: submitted.toISOString(), scores, textAnswers });
     } catch (error) {
       summary.rejected++;
       const issue = error instanceof Error ? error.message : 'Resposta inválida.';
@@ -110,3 +119,4 @@ export function normalizeResponses(evaluation: Evaluation, cycle: Cycle, employe
   summary.imported = responses.length;
   return { responses, summary };
 }
+

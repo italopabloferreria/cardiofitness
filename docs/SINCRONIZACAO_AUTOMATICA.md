@@ -30,3 +30,11 @@ Ativada em produÃ§Ã£o em 09/10/2026: migraÃ§Ã£o 04 aplicada, credenciais somente
 Teste real em formulÃ¡rio separado: resposta enviada pelo Google Forms e importada pelo agendador, sem clicar em Sincronizar. Resultado no painel: uma resposta, 100% de participaÃ§Ã£o, mÃ©dia 3,00/4, respondente e lÃ­der fictÃ­cios corretos. Outubro mantÃ©m os 33 participantes oficiais; os dois cadastros de teste estÃ£o separados em ciclo sem validade oficial e permanecem para revisÃ£o do responsÃ¡vel. NÃ£o distribuir o formulÃ¡rio de teste ao RH.
 
 Segunda execuÃ§Ã£o automÃ¡tica comprovada Ã s 16:42 UTC: data da sincronizaÃ§Ã£o avanÃ§ou e a contagem permaneceu em uma resposta, sem duplicaÃ§Ã£o.
+
+## Respostas de texto
+
+A partir da migração `05_text_answers.sql`, os campos de resposta curta e parágrafo do Forms são importados junto das notas. Campos usados para identificação não são duplicados como feedback. Perguntas sem resposta e seções condicionais não preenchidas não aparecem. O conteúdo é preservado como texto, sem executar HTML.
+
+No resultado da avaliação, a seção **Respostas de texto** mostra pergunta, resposta, respondente, pessoa avaliada, data e perspectiva. Os filtros de pessoa e perspectiva também se aplicam aos textos. Apenas RH autorizado acessa o conteúdo.
+
+A sincronização consulta novamente o histórico dos ciclos elegíveis, preenchendo os textos das respostas já importadas sem exigir novo envio. As regras de período, identificação, vínculos e deduplicação permanecem. Textos não alteram médias.

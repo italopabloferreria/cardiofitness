@@ -97,7 +97,7 @@ export async function getFormMetadata(formId: string): Promise<FormMetadata> {
     const rows = item.questionItem?.question ? [item.questionItem.question] : item.questionGroupItem?.questions ?? [];
     for (const question of rows) {
       if (!question.questionId) continue;
-      questions.push({ id: question.questionId, title: question.rowQuestion?.title ? `${item.title ?? ''} · ${question.rowQuestion.title}` : item.title ?? 'Pergunta sem título', section, ...scale(question, item.questionGroupItem?.grid?.columns) });
+      questions.push({ id: question.questionId, title: question.rowQuestion?.title ? `${item.title ?? ''} · ${question.rowQuestion.title}` : item.title ?? 'Pergunta sem título', section, freeText: Boolean(question.textQuestion), ...scale(question, item.questionGroupItem?.grid?.columns) });
     }
   }
   return { id: form.formId, title: form.info?.title ?? form.info?.documentTitle ?? 'Formulário', responderUri: form.responderUri ?? '',

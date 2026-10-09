@@ -16,7 +16,7 @@ let db:PGlite;
 beforeAll(async()=>{
   db=new PGlite();
   await db.exec(`create role anon nologin;create role authenticated nologin;create role service_role nologin bypassrls;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;create function auth.role() returns text language sql stable as $$select nullif(current_setting('request.jwt.claim.role',true),'')$$;grant usage on schema auth,public to anon,authenticated,service_role;grant execute on function auth.uid(),auth.role() to anon,authenticated,service_role;insert into auth.users values('${rh}'),('${outsider}');`);
-  for(const file of ['01_cardiofitness.sql','03_integrity_audit.sql','04_automatic_sync.sql'])
+  for(const file of ['01_cardiofitness.sql','03_integrity_audit.sql','04_automatic_sync.sql','05_text_answers.sql'])
     await db.exec(await readFile(new URL(`../supabase/schemas/${file}`,import.meta.url),'utf8'));
   await db.query('insert into public.rh_users(user_id,name) values($1,$2)',[rh,'RH fictício']);
   await db.query("insert into public.employees(id,name,department) values($1,'Pessoa fictícia','Setor'),($2,'Outra fictícia','Setor')",[person,other]);
@@ -87,4 +87,15 @@ describe('sincronização automática',()=>{
     await db.query('select public.release_sync_job($1::uuid)',[anotherToken]);
     expect((await db.query('select public.acquire_sync_job($1::uuid) as acquired',[anotherToken])).rows).toEqual([{acquired:false}]);
   });
+});
+
+it('stores free-text responses with RH protection and rejects malformed payloads atomically', async()=>{
+ await role('service_role');
+ const enriched={...response,submittedAt:'2026-10-07T12:00:00Z',textAnswers:[{questionId:'feedback',question:'Feedback',answer:'Primeira linha\n<script>texto</script>'}]};
+ const next={...response,id:'response-2',googleResponseId:'google-2',respondentId:other,subjectId:other};
+ await sync([enriched,next]);
+ expect((await db.query('select text_answers from public.evaluation_responses where id=$1',[response.id])).rows).toEqual([{text_answers:enriched.textAnswers}]);
+ await expect(sync([{...enriched,textAnswers:[{questionId:'feedback',question:'Feedback',answer:42}]} as unknown as EvaluationResponse,next])).rejects.toThrow();
+ await role('authenticated',outsider);
+ expect((await db.query('select text_answers from public.evaluation_responses')).rows).toEqual([]);
 });

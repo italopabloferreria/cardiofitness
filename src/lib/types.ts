@@ -22,13 +22,14 @@ export interface EvaluationResponse {
   id: string; evaluationId: string; googleResponseId: string;
   respondentId: string; subjectId: string; kind: ResponseKind;
   submittedAt: string; scores: Record<string, number>;
+  textAnswers?: { questionId: string; question: string; answer: string }[];
 }
 export interface AppData { employees: Employee[]; cycles: Cycle[]; evaluations: Evaluation[]; responses: EvaluationResponse[] }
 export interface Bootstrap {
   mode: 'demo' | 'live'; user: { name: string; email: string };
   data: AppData; googleConfigured: boolean;
 }
-export interface FormQuestion extends ScoreQuestion { numeric: boolean; section: string }
+export interface FormQuestion extends ScoreQuestion { numeric: boolean; section: string; freeText?: boolean }
 export interface FormMetadata { id: string; title: string; responderUri: string; collectsEmail: boolean; questions: FormQuestion[] }
 export interface SyncSummary { fetched: number; imported: number; outsideCycle: number; duplicates: number; rejected: number; issues: string[] }
 export interface SyncResult { evaluation: Evaluation; responses: EvaluationResponse[]; summary: SyncSummary }
