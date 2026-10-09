@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } fr
 import { ArrowDownToLine, ArrowLeft, ArrowRight, BarChart3, CalendarDays, Check, ChevronLeft, ChevronRight, ClipboardList, Database, ExternalLink, FileSpreadsheet, LayoutDashboard, LoaderCircle, LockKeyhole, LogOut, Menu, Pencil, Plus, RefreshCw, Search, Settings2, ShieldCheck, UserRoundCheck, UsersRound, X, CircleOff } from 'lucide-react';
 import { useApp } from '@/lib/store';
 import PasswordRecovery from './password-recovery';
-import { bimonthlyEnd, cycleState, formatDate, formatNumber, formatPercent, getEvaluationStats, mean, responseAverage } from '@/lib/analytics';
+import { bimonthlyEnd, cycleState, defaultCycle, formatDate, formatNumber, formatPercent, getEvaluationStats, mean, responseAverage } from '@/lib/analytics';
 import { downloadReport } from '@/lib/export';
 import { resolveFormId, resolveFormLink } from '@/lib/form-link';
 import { KIND_LABELS, PROVIDED_FORMS, type AppData, type Cycle, type CycleInput, type Employee, type EmployeeInput, type Evaluation, type EvaluationInput, type EvaluationKind, type EvaluationResponse, type FormMetadata } from '@/lib/types';
@@ -51,7 +51,7 @@ function AccessScreen() {
 
 export default function Application() {
   const app=useApp();const [view,setView]=useState<View>('dashboard'),[cycleId,setCycleId]=useState(''),[employeeId,setEmployeeId]=useState(''),[evaluationId,setEvaluationId]=useState(''),[editor,setEditor]=useState<Editor>(null),[mobile,setMobile]=useState(false),[notice,setNotice]=useState<{text:string;success:boolean}|null>(null),[syncing,setSyncing]=useState('');
-  const data=app.data;const cycles=[...data.cycles].sort((a,b)=>b.startDate.localeCompare(a.startDate));const selectedCycleId=data.cycles.some(cycle=>cycle.id===cycleId)?cycleId:cycles[0]?.id||'';const selectedCycle=data.cycles.find(cycle=>cycle.id===selectedCycleId);const employee=person(data,employeeId);const evaluation=data.evaluations.find(evaluation=>evaluation.id===evaluationId);
+  const data=app.data;const cycles=[...data.cycles].sort((a,b)=>b.startDate.localeCompare(a.startDate));const selectedCycleId=data.cycles.some(cycle=>cycle.id===cycleId)?cycleId:defaultCycle(cycles)?.id||'';const selectedCycle=data.cycles.find(cycle=>cycle.id===selectedCycleId);const employee=person(data,employeeId);const evaluation=data.evaluations.find(evaluation=>evaluation.id===evaluationId);
   function navigate(next:View){setView(next);setMobile(false);setNotice(null);}
   function openEmployee(id:string){setEmployeeId(id);navigate('employee');}
   function openEvaluation(id:string){const target=data.evaluations.find(item=>item.id===id);if(target)setCycleId(target.cycleId);setEvaluationId(id);navigate('result');}

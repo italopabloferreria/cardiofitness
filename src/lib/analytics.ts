@@ -36,6 +36,12 @@ export function cycleState(cycle: Cycle): 'Em andamento' | 'Encerrado' | 'Progra
   const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Sao_Paulo' }).format(new Date());
   return today < cycle.startDate ? 'Programado' : today > cycle.endDate ? 'Encerrado' : 'Em andamento';
 }
+export function defaultCycle(cycles: Cycle[]): Cycle | undefined {
+  const ordered = [...cycles].sort((a, b) => b.startDate.localeCompare(a.startDate));
+  return ordered.find(cycle => cycleState(cycle) === 'Em andamento')
+    ?? ordered.find(cycle => cycleState(cycle) === 'Encerrado')
+    ?? ordered.at(-1);
+}
 export function reportResponses(data: AppData, filters: { cycleId: string; evaluationId?: string; employeeId?: string }) {
   const evaluations = new Map(data.evaluations.filter(item => item.cycleId === filters.cycleId && (!filters.evaluationId || item.id === filters.evaluationId)).map(item => [item.id, item]));
   return data.responses.filter(item => evaluations.has(item.evaluationId) && (!filters.employeeId || item.subjectId === filters.employeeId)).sort((a, b) => b.submittedAt.localeCompare(a.submittedAt));
