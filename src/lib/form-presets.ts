@@ -74,14 +74,16 @@ export const PROVIDED_FORMS: {name:string;kind:EvaluationKind;googleFormId:strin
         "49e74424",
         "55615372",
         "1a023f2f",
-        "203c49f1"
+        "203c49f1",
+        "18d081de"
       ],
       "subjectQuestionIds": [
         "4bbe8fe9",
         "118d174b",
         "53c8115b",
         "2d0b8252",
-        "41eb6ab5"
+        "41eb6ab5",
+        "7c161523"
       ],
       "departmentQuestionIds": [
         "12f8f9bd"
@@ -269,6 +271,36 @@ export const PROVIDED_FORMS: {name:string;kind:EvaluationKind;googleFormId:strin
         },
         {
           "id": "493bb990",
+          "title": "O funcionário reflete os valores da empresa?",
+          "min": 1,
+          "max": 4
+        },
+        {
+          "id": "0a5876a8",
+          "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+          "min": 1,
+          "max": 4
+        },
+        {
+          "id": "6bd0ad52",
+          "title": "O funcionário tem desempenhado bem sua função?",
+          "min": 1,
+          "max": 4
+        },
+        {
+          "id": "405e85fa",
+          "title": "Passa as informações necessárias para seu grupo de trabalho?",
+          "min": 1,
+          "max": 4
+        },
+        {
+          "id": "4895f49a",
+          "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+          "min": 1,
+          "max": 4
+        },
+        {
+          "id": "6ea20155",
           "title": "O funcionário reflete os valores da empresa?",
           "min": 1,
           "max": 4
