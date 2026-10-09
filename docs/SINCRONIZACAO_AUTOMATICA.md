@@ -38,3 +38,6 @@ A partir da migração `05_text_answers.sql`, os campos de resposta curta e parágr
 No resultado da avaliação, a seção **Respostas de texto** mostra pergunta, resposta, respondente, pessoa avaliada, data e perspectiva. Os filtros de pessoa e perspectiva também se aplicam aos textos. Apenas RH autorizado acessa o conteúdo.
 
 A sincronização consulta novamente o histórico dos ciclos elegíveis, preenchendo os textos das respostas já importadas sem exigir novo envio. As regras de período, identificação, vínculos e deduplicação permanecem. Textos não alteram médias.
+
+## Perguntas por setor/seÃ§Ã£o
+A migraÃ§Ã£o 06 guarda os tÃ­tulos reais das seÃ§Ãµes do Google Forms como metadados separados do mapeamento. Resultado da avaliaÃ§Ã£o e detalhe individual agrupam perguntas por essas seÃ§Ãµes e mostram somente perguntas respondidas no recorte atual. Perguntas de mesmo tÃ­tulo continuam distintas pelo ID, com mÃ©dias e quantidade de respostas prÃ³prias. Nenhuma nota Ã© unificada por tÃ­tulo.

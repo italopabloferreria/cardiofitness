@@ -1,4 +1,4 @@
-import type { AppData, Cycle, EvaluationResponse } from './types';
+import type { AppData, Cycle, EvaluationResponse, ScoreQuestion } from './types';
 
 export function mean(values: number[]): number | null {
   const finite = values.filter(Number.isFinite);
@@ -45,4 +45,18 @@ export function defaultCycle(cycles: Cycle[]): Cycle | undefined {
 export function reportResponses(data: AppData, filters: { cycleId: string; evaluationId?: string; employeeId?: string }) {
   const evaluations = new Map(data.evaluations.filter(item => item.cycleId === filters.cycleId && (!filters.evaluationId || item.id === filters.evaluationId)).map(item => [item.id, item]));
   return data.responses.filter(item => evaluations.has(item.evaluationId) && (!filters.employeeId || item.subjectId === filters.employeeId)).sort((a, b) => b.submittedAt.localeCompare(a.submittedAt));
+}
+
+export function questionGroups(questions: ScoreQuestion[], responses: EvaluationResponse[], sections: Record<string,string> = {}) {
+  const groups = new Map<string, { question: ScoreQuestion; average: number; count: number }[]>();
+  for (const question of questions) {
+    const values = responses.map(response => response.scores[question.id]).filter(value => typeof value === 'number' && Number.isFinite(value));
+    const average = mean(values);
+    if (average === null) continue;
+    const section = sections[question.id]?.trim() || 'Perguntas gerais';
+    const rows = groups.get(section) ?? [];
+    rows.push({ question, average, count: values.length });
+    groups.set(section, rows);
+  }
+  return [...groups].map(([section, rows]) => ({ section, rows }));
 }

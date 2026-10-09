@@ -16,7 +16,7 @@ export interface FormMapping {
 export interface Evaluation {
   id: string; cycleId: string; name: string; kind: EvaluationKind;
   googleFormId: string; googleFormUrl: string; expectedResponses: number | null;
-  mapping: FormMapping; lastSyncedAt: string | null; syncMessage: string | null;
+  mapping: FormMapping; questionSections?: Record<string, string>; lastSyncedAt: string | null; syncMessage: string | null;
 }
 export interface EvaluationResponse {
   id: string; evaluationId: string; googleResponseId: string;
@@ -35,7 +35,7 @@ export interface SyncSummary { fetched: number; imported: number; outsideCycle: 
 export interface SyncResult { evaluation: Evaluation; responses: EvaluationResponse[]; summary: SyncSummary }
 export type EmployeeInput = Omit<Employee, 'id'>;
 export type CycleInput = Omit<Cycle, 'id'>;
-export type EvaluationInput = Omit<Evaluation, 'id' | 'lastSyncedAt' | 'syncMessage'>;
+export type EvaluationInput = Omit<Evaluation, 'id' | 'lastSyncedAt' | 'syncMessage' | 'questionSections'>;
 export const KIND_LABELS: Record<EvaluationKind, string> = {
   leadership: 'Avaliação de líderes', team: 'Avaliação da equipe',
   self: 'Autoavaliação', leader_to_employee: 'Líder → Colaborador',

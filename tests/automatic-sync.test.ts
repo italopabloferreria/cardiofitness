@@ -16,7 +16,7 @@ let db:PGlite;
 beforeAll(async()=>{
   db=new PGlite();
   await db.exec(`create role anon nologin;create role authenticated nologin;create role service_role nologin bypassrls;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;create function auth.role() returns text language sql stable as $$select nullif(current_setting('request.jwt.claim.role',true),'')$$;grant usage on schema auth,public to anon,authenticated,service_role;grant execute on function auth.uid(),auth.role() to anon,authenticated,service_role;insert into auth.users values('${rh}'),('${outsider}');`);
-  for(const file of ['01_cardiofitness.sql','03_integrity_audit.sql','04_automatic_sync.sql','05_text_answers.sql'])
+  for(const file of ['01_cardiofitness.sql','03_integrity_audit.sql','04_automatic_sync.sql','05_text_answers.sql','06_question_sections.sql'])
     await db.exec(await readFile(new URL(`../supabase/schemas/${file}`,import.meta.url),'utf8'));
   await db.query('insert into public.rh_users(user_id,name) values($1,$2)',[rh,'RH fictício']);
   await db.query("insert into public.employees(id,name,department) values($1,'Pessoa fictícia','Setor'),($2,'Outra fictícia','Setor')",[person,other]);
@@ -28,8 +28,8 @@ async function role(name:'authenticated'|'service_role',user=''){
   await db.exec(`reset role;set role ${name}`);
   await db.query("select set_config('request.jwt.claim.sub',$1,false),set_config('request.jwt.claim.role',$2,false)",[user,name]);
 }
-async function sync(responses:EvaluationResponse[], rejected=0){
-  return db.query('select * from public.replace_evaluation_cache($1::uuid,$2::jsonb,$3::jsonb,$4::jsonb,$5::jsonb)',[evaluationId,JSON.stringify({cycleId,kind:'self',googleFormId:'EDITOR_FORM_123456789012345',mapping}),JSON.stringify({startDate:cycle.startDate,endDate:cycle.endDate,participants}),JSON.stringify(responses),JSON.stringify({imported:responses.length,rejected})]);
+async function sync(responses:EvaluationResponse[], rejected=0, questionSections?:Record<string,string>){
+  return db.query('select * from public.replace_evaluation_cache($1::uuid,$2::jsonb,$3::jsonb,$4::jsonb,$5::jsonb)',[evaluationId,JSON.stringify({cycleId,kind:'self',googleFormId:'EDITOR_FORM_123456789012345',mapping}),JSON.stringify({startDate:cycle.startDate,endDate:cycle.endDate,participants}),JSON.stringify(responses),JSON.stringify({imported:responses.length,rejected,questionSections})]);
 }
 describe('sincronização automática',()=>{
   it('mantém pares antigos e não deixa respostas rejeitadas impedir novos pares válidos',()=>{
@@ -98,4 +98,18 @@ it('stores free-text responses with RH protection and rejects malformed payloads
  await expect(sync([{...enriched,textAnswers:[{questionId:'feedback',question:'Feedback',answer:42}]} as unknown as EvaluationResponse,next])).rejects.toThrow();
  await role('authenticated',outsider);
  expect((await db.query('select text_answers from public.evaluation_responses')).rows).toEqual([]);
+});
+
+it('stores section titles without modifying historical mapping and rejects invalid section metadata atomically', async()=>{
+ await role('service_role');
+ const enriched={...response,submittedAt:'2026-10-07T12:00:00Z',textAnswers:[{questionId:'feedback',question:'Feedback',answer:'Primeira linha\n<script>texto</script>'}]};
+ const next={...response,id:'response-2',googleResponseId:'google-2',respondentId:other,subjectId:other};
+ const sections={score:'FATURAMENTO',feedback:'L�DERES'};
+ await sync([enriched,next],0,sections);
+ expect((await db.query('select mapping,question_sections from public.evaluations where id=$1',[evaluationId])).rows).toEqual([{mapping,question_sections:sections}]);
+ await sync([enriched,next]);
+ expect((await db.query('select question_sections from public.evaluations where id=$1',[evaluationId])).rows).toEqual([{question_sections:sections}]);
+ await expect(sync([enriched,next],0,{score:42} as unknown as Record<string,string>)).rejects.toThrow();
+ expect((await db.query('select question_sections from public.evaluations where id=$1',[evaluationId])).rows).toEqual([{question_sections:sections}]);
+ expect((await db.query('select id from public.evaluation_responses')).rows).toHaveLength(2);
 });
