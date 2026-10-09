@@ -25,4 +25,8 @@ Usar formulário, pessoas e ciclo claramente identificados como TESTE, separados
 
 ## Situação desta entrega
 
-Código preparado não significa agendador ativado. Registrar aqui a ativação e o resultado do teste somente depois de comprovados no ambiente publicado.
+Ativada em produção em 09/10/2026: migração 04 aplicada, credenciais somente no servidor da Vercel e Supabase Vault, agendador cardiofitness-forms-sync ativo a cada dois minutos. Deploy de ativação: 5UKQJvZthaqhY1rXopWEqq1omkcG (commit 7815040). Primeira execução comprovada às 16:40 UTC: HTTP 200, três avaliações consultadas, três sincronizadas, nenhuma falha.
+
+Teste real em formulário separado: resposta enviada pelo Google Forms e importada pelo agendador, sem clicar em Sincronizar. Resultado no painel: uma resposta, 100% de participação, média 3,00/4, respondente e líder fictícios corretos. Outubro mantém os 33 participantes oficiais; os dois cadastros de teste estão separados em ciclo sem validade oficial e permanecem para revisão do responsável. Não distribuir o formulário de teste ao RH.
+
+Segunda execução automática comprovada às 16:42 UTC: data da sincronização avançou e a contagem permaneceu em uma resposta, sem duplicação.
