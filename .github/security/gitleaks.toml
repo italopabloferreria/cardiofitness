@@ -1,0 +1,10 @@
+[extend]
+useDefault = true
+
+[[rules]]
+id = "literal-env-application-secret"
+description = "Literal application or database secret in an environment file"
+path = '''(^|/)\.env($|\.(local|production|development|prod|staging|backup)$)'''
+regex = '''(?im)^[ \t]*(?:export[ \t]+)?(?:PG_DATABASE_PASSWORD|POSTGRES_PASSWORD|MYSQL_PASSWORD|DB_PASSWORD|DATABASE_PASSWORD|ENCRYPTION_KEY|JWT_SECRET|SESSION_SECRET|APP_SECRET)[ \t]*=[ \t]*["']?([^"' \t\r\n$]{16,})["']?[ \t]*(?:#.*)?$'''
+secretGroup = 1
+entropy = 3.5
