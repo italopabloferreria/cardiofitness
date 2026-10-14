@@ -12,4 +12,4 @@
 
 Datas, participantes e vínculos ficam protegidos após o ciclo receber respostas. Cadastre o próximo ciclo para refletir mudanças da equipe.
 
-Os nomes exibidos no sistema usam iniciais maiúsculas (por exemplo, Maria do Socorro). A grafia de identificação no Forms e os IDs/vínculos continuam preservados; ninguém precisa responder novamente por causa dessa padronização.
+Os nomes exibidos no sistema usam caixa alta (por exemplo, MARIA DO SOCORRO). A grafia de identificação no Forms e os IDs/vínculos continuam preservados; ninguém precisa responder novamente por causa dessa padronização.
