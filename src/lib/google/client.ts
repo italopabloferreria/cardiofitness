@@ -104,6 +104,26 @@ export async function getFormMetadata(formId: string): Promise<FormMetadata> {
     collectsEmail: ['VERIFIED', 'RESPONDER_INPUT'].includes(form.settings?.emailCollectionType ?? ''), questions };
 }
 
+export async function getRawForm(formId: string): Promise<GoogleForm> {
+  return request<GoogleForm>(validateGoogleFormId(formId), await accessToken(), Date.now() + SYNC_TIMEOUT);
+}
+
+/** Opt-in after obtaining forms.body consent. Existing read authorization stays unchanged. */
+export async function updateRosterChoices(formId: string, revisionId: string, requests: unknown[]): Promise<void> {
+  if (process.env.GOOGLE_FORMS_WRITE_ENABLED !== 'true') throw new Error('A atualização está preparada, mas exige autorizar a edição dos formulários (forms.body) e ativar GOOGLE_FORMS_WRITE_ENABLED no servidor. A leitura continua funcionando.');
+  const token = await accessToken();
+  let response: Response;
+  try {
+    response = await fetch(`https://forms.googleapis.com/v1/forms/${validateGoogleFormId(formId)}:batchUpdate`, {
+      method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ requests, writeControl: { requiredRevisionId: revisionId } }),
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT), cache: 'no-store', redirect: 'error',
+    });
+  } catch { throw new Error('Não foi possível confirmar a alteração no Google. Gere uma nova prévia antes de tentar novamente.'); }
+  if (response.status === 403) throw new Error('Autorize a conta Google com o escopo forms.body e acesso de edição deste formulário. Nenhuma alteração foi confirmada.');
+  if (!response.ok) throw new Error('A alteração não foi confirmada. O formulário pode ter mudado; gere uma nova prévia e confira a autorização de edição.');
+}
+
 export async function getFormResponses(formId: string): Promise<GoogleFormResponse[]> {
   const id = validateGoogleFormId(formId);
   const deadline = Date.now() + SYNC_TIMEOUT;

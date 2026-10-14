@@ -133,7 +133,7 @@ describe('arquivos reais dos relatórios', () => {
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.load(bytes.buffer as ArrayBuffer);
     expect(workbook.creator).toBe('Cardiofitness');
-    expect(workbook.worksheets.map(sheet => sheet.name)).toEqual(['Resumo', 'Respostas', 'Notas por pergunta']);
+    expect(workbook.worksheets.map(sheet => sheet.name)).toEqual(['Resumo', 'Respostas', 'Notas por pergunta', 'Respostas de texto']);
     const summary = new Map(workbook.getWorksheet('Resumo')!.getSheetValues().slice(2).map(row => { const cells = row as ExcelJS.CellValue[]; return [cells[1], cells[2]]; }));
     expect(summary.get('Respostas no relatório')).toBe(2);
     expect(summary.get('Pessoa avaliada')).toBe('Ana Costa');

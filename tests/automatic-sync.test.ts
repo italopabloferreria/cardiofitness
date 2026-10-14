@@ -16,7 +16,7 @@ let db:PGlite;
 beforeAll(async()=>{
   db=new PGlite();
   await db.exec(`create role anon nologin;create role authenticated nologin;create role service_role nologin bypassrls;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;create function auth.role() returns text language sql stable as $$select nullif(current_setting('request.jwt.claim.role',true),'')$$;grant usage on schema auth,public to anon,authenticated,service_role;grant execute on function auth.uid(),auth.role() to anon,authenticated,service_role;insert into auth.users values('${rh}'),('${outsider}');`);
-  for(const file of ['01_cardiofitness.sql','03_integrity_audit.sql','04_automatic_sync.sql','05_text_answers.sql','06_question_sections.sql'])
+  for(const file of ['01_cardiofitness.sql','03_integrity_audit.sql','04_automatic_sync.sql','05_text_answers.sql','06_question_sections.sql','08_prepare_cycle.sql','09_sync_diagnostics.sql'])
     await db.exec(await readFile(new URL(`../supabase/schemas/${file}`,import.meta.url),'utf8'));
   await db.query('insert into public.rh_users(user_id,name) values($1,$2)',[rh,'RH fictício']);
   await db.query("insert into public.employees(id,name,department) values($1,'Pessoa fictícia','Setor'),($2,'Outra fictícia','Setor')",[person,other]);
@@ -104,7 +104,7 @@ it('stores section titles without modifying historical mapping and rejects inval
  await role('service_role');
  const enriched={...response,submittedAt:'2026-10-07T12:00:00Z',textAnswers:[{questionId:'feedback',question:'Feedback',answer:'Primeira linha\n<script>texto</script>'}]};
  const next={...response,id:'response-2',googleResponseId:'google-2',respondentId:other,subjectId:other};
- const sections={score:'FATURAMENTO',feedback:'L�DERES'};
+ const sections={score:'FATURAMENTO',feedback:'L�DERES'};
  await sync([enriched,next],0,sections);
  expect((await db.query('select mapping,question_sections from public.evaluations where id=$1',[evaluationId])).rows).toEqual([{mapping,question_sections:sections}]);
  await sync([enriched,next]);
@@ -112,4 +112,18 @@ it('stores section titles without modifying historical mapping and rejects inval
  await expect(sync([enriched,next],0,{score:42} as unknown as Record<string,string>)).rejects.toThrow();
  expect((await db.query('select question_sections from public.evaluations where id=$1',[evaluationId])).rows).toEqual([{question_sections:sections}]);
  expect((await db.query('select id from public.evaluation_responses')).rows).toHaveLength(2);
+});
+
+it('prepares next cycle and forms atomically without importing history and rejects overlapping periods',async()=>{
+ await role('authenticated',rh);
+ const template={cycleId:'prepared',name:'Auto',kind:'self',googleFormId:'EDITOR_FORM_123456789012345',googleFormUrl:'https://docs.google.com/forms/d/e/exemplo/viewform',mapping,expectedResponses:2};
+ const rpc=(period:object)=>db.query('select public.prepare_evaluation_cycle($1::uuid,$2::jsonb,$3::jsonb) as result',[cycleId,JSON.stringify(period),JSON.stringify([template])]);
+ const result=await rpc({name:'Próximo',startDate:'2026-11-01',endDate:'2026-12-31',participants});
+ const saved=(result.rows[0] as {result:unknown}).result as {cycle:{id:string};evaluations:{cycle_id:string;last_synced_at:null}[]};
+ expect(saved.evaluations).toHaveLength(1);expect(saved.evaluations[0].cycle_id).toBe(saved.cycle.id);expect(saved.evaluations[0].last_synced_at).toBe(null);
+ expect((await db.query('select count(*)::int as total from public.evaluation_responses where evaluation_id in(select id from public.evaluations where cycle_id=$1::uuid)',[saved.cycle.id])).rows[0]).toEqual({total:0});
+ const before=(await db.query('select count(*)::int as total from public.cycles')).rows[0];
+ await expect(rpc({name:'Sobreposto',startDate:'2026-10-15',endDate:'2026-11-30',participants})).rejects.toThrow();
+ expect((await db.query('select count(*)::int as total from public.cycles')).rows[0]).toEqual(before);
+ await role('authenticated',outsider);await expect(rpc({name:'Negado',startDate:'2027-01-01',endDate:'2027-02-28',participants})).rejects.toThrow();
 });

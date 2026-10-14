@@ -56,7 +56,7 @@ export async function syncEvaluation(client: SupabaseClient, app: AppData, evalu
     p_evaluation_id: evaluation.id,
     p_expected_evaluation: evaluationStructure(evaluation),
     p_expected_cycle: cycleStructure(cycle),
-    p_responses: responses, p_summary: { ...summary, retained, questionSections: Object.fromEntries(metadata.questions.map(question => [question.id, question.section])) },
+    p_responses: responses, p_summary: { ...summary, issues: summary.issues.slice(0,12), retained, questionSections: Object.fromEntries(metadata.questions.map(question => [question.id, question.section])) },
   });
   databaseError(error);
   const updated = Array.isArray(data) ? data[0] : data;

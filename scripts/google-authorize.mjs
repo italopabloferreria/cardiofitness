@@ -6,7 +6,8 @@ import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 
 const envPath = fileURLToPath(new URL('../.env.local', import.meta.url));
-const scopes = ['https://www.googleapis.com/auth/forms.body.readonly', 'https://www.googleapis.com/auth/forms.responses.readonly'];
+const allowFormEditing = process.argv.includes('--allow-form-editing');
+const scopes = [allowFormEditing ? 'https://www.googleapis.com/auth/forms.body' : 'https://www.googleapis.com/auth/forms.body.readonly', 'https://www.googleapis.com/auth/forms.responses.readonly'];
 
 async function saveRefreshToken(token) {
   let contents = '';

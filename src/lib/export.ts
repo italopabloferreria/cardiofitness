@@ -3,14 +3,14 @@ import { KIND_LABELS } from './types';
 import { formatDate, formatNumber, reportResponses, responseAverage } from './analytics';
 
 interface Filters { cycleId: string; evaluationId?: string; employeeId?: string }
-function saveFile(bytes: Uint8Array, type: string, name: string) {
+export function saveFile(bytes: Uint8Array, type: string, name: string) {
   const blob = new Blob([new Uint8Array(bytes)], { type });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a'); link.href=url;link.download=name;
   document.body.appendChild(link);link.click();link.remove();
   setTimeout(()=>URL.revokeObjectURL(url),10_000);
 }
-const pdfText = (text: string) => text.normalize('NFC').replace(/→|↔/g,' > ').replace(/[^\x20-\x7E\u00A0-\u00FF]/g,' ');
+export const pdfText = (text: string) => text.normalize('NFC').replace(/→|↔/g,' > ').replace(/[^\x20-\x7E\u00A0-\u00FF]/g,' ');
 
 export async function downloadReport(data: AppData, filters: Filters, format: 'pdf'|'xlsx', demo = false): Promise<void> {
   const cycle=data.cycles.find(cycle=>cycle.id===filters.cycleId);
@@ -32,17 +32,20 @@ export async function downloadReport(data: AppData, filters: Filters, format: 'p
     sheet.columns=[{header:'Ciclo',key:'cycle',width:26},{header:'Formulário',key:'form',width:40},{header:'Tipo',key:'kind',width:26},{header:'Pessoa avaliada',key:'subject',width:30},{header:'Respondente',key:'respondent',width:30},{header:'Setor da pessoa avaliada',key:'department',width:27},{header:'Data da resposta',key:'date',width:20},{header:'Média',key:'average',width:13},{header:'Escala',key:'scale',width:14}];
     const detail=book.addWorksheet('Notas por pergunta',{views:[{state:'frozen',ySplit:1}]});
     detail.columns=[{header:'Ciclo',key:'cycle',width:26},{header:'Formulário',key:'form',width:40},{header:'Pessoa avaliada',key:'subject',width:30},{header:'Respondente',key:'respondent',width:30},{header:'Data',key:'date',width:18},{header:'Pergunta',key:'question',width:80},{header:'Nota',key:'score',width:12},{header:'Mínimo',key:'min',width:12},{header:'Máximo',key:'max',width:12}];
+    const feedback=book.addWorksheet('Respostas de texto',{views:[{state:'frozen',ySplit:1}]});
+    feedback.columns=[{header:'Ciclo',key:'cycle',width:26},{header:'Formulário',key:'form',width:40},{header:'Pessoa avaliada',key:'subject',width:30},{header:'Respondente',key:'respondent',width:30},{header:'Perspectiva',key:'kind',width:26},{header:'Data',key:'date',width:18},{header:'Pergunta',key:'question',width:70},{header:'Texto',key:'answer',width:100}];
     rows.forEach(row=>{
       const evaluation=evaluations.get(row.evaluationId)!;
       const scale=evaluation.mapping.scoreQuestions[0];
       const base={cycle:cycle.name,form:evaluation.name,subject:name(row.subjectId),respondent:name(row.respondentId),date:formatDate(row.submittedAt)};
       sheet.addRow({...base,kind:KIND_LABELS[row.kind],department:employees.get(row.subjectId)?.department??'',average:responseAverage(row),scale:scale?`${scale.min} a ${scale.max}`:'—'});
+      row.textAnswers?.filter(item=>item.answer.trim()).forEach(item=>feedback.addRow({...base,kind:KIND_LABELS[row.kind],question:item.question,answer:item.answer}));
       Object.entries(row.scores).forEach(([questionId,score])=>{
         const question=evaluation.mapping.scoreQuestions.find(question=>question.id===questionId);
         detail.addRow({...base,question:question?.title??questionId,score,min:question?.min??null,max:question?.max??null});
       });
     });
-    for(const sheet of [summary,detail,book.getWorksheet('Respostas')!]) {
+    for(const sheet of [summary,detail,feedback,book.getWorksheet('Respostas')!]) {
       sheet.getRow(1).font={bold:true,color:{argb:'FFFFFFFF'}};
       sheet.getRow(1).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF163064'}};
       sheet.getRow(1).height=25;
@@ -94,6 +97,24 @@ export async function downloadReport(data: AppData, filters: Filters, format: 'p
     wrapped.forEach((lines,i)=>lines.forEach((text,j)=>draw(text,columns[i].x+5,y+7+j*13,9,i===0)));
     draw(`Resposta em ${formatDate(row.submittedAt)}`,margin+5,y+rowHeight-13,8,false,muted);y+=rowHeight;
   });
+  const feedbackRows=rows.filter(row=>row.textAnswers?.some(answer=>answer.answer.trim()));
+  if(feedbackRows.length){
+    function textPage(){page=pdf.addPage([width,height]);pageIndex++;draw('Cardiofitness | Respostas de texto',margin,28,18,true);y=62;}
+    function paragraph(value:string,isBold=false){
+      for(const paragraph of value.split(/\r?\n/)) for(const line of wrap(paragraph,width-margin*2,10,isBold)){
+        if(y+15>height-48) textPage();draw(line,margin,y,10,isBold);y+=15;
+      }
+      y+=8;
+    }
+    textPage();
+    for(const row of feedbackRows){
+      const evaluation=evaluations.get(row.evaluationId)!;
+      paragraph(`${evaluation.name} | ${KIND_LABELS[row.kind]}`,true);
+      paragraph(`Respondente: ${name(row.respondentId)} | Pessoa avaliada: ${name(row.subjectId)} | ${formatDate(row.submittedAt)}`);
+      for(const answer of row.textAnswers??[]){if(!answer.answer.trim())continue;paragraph(answer.question,true);paragraph(answer.answer);}
+      y+=12;
+    }
+  }
   pdf.getPages().forEach((p,i)=>{
     page=p;draw(`${demo?'DADOS FICTÍCIOS | ':''}Cardiofitness | Acesso exclusivo do RH | Médias conforme a escala de cada formulário`,margin,height-30,8,false,muted);
     draw(`${i+1} / ${pageIndex}`,width-72,height-30,8,true,muted);

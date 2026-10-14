@@ -15,16 +15,18 @@ export interface GoogleQuestion {
   scaleQuestion?: { low: number; high: number };
   textQuestion?: { paragraph?: boolean };
   ratingQuestion?: { ratingScaleLevel: number };
-  choiceQuestion?: { type?: string; options?: { value: string }[] };
+  choiceQuestion?: { type?: string; options?: { value: string; isOther?: boolean; goToAction?: string; goToSectionId?: string; image?: unknown }[] };
   rowQuestion?: { title?: string };
 }
 
 export interface GoogleForm {
   formId?: string;
+  revisionId?: string;
   info?: { title?: string; documentTitle?: string };
   responderUri?: string;
   settings?: { emailCollectionType?: string };
   items?: {
+    itemId?: string;
     title?: string;
     pageBreakItem?: object;
     questionItem?: { question?: GoogleQuestion };

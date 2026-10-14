@@ -1,0 +1,26 @@
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { compareCycles } from '../src/lib/comparison';
+import { downloadReport } from '../src/lib/export';
+import { pendingExportRows,downloadPending } from '../src/lib/export-pending';
+import type { AppData } from '../src/lib/types';
+const data=():AppData=>({employees:[{id:'a',name:'ANA',email:'',formName:'ANA',department:'ADM',leaderId:null,isLeader:false,active:true}],cycles:['a','b'].map(id=>({id,name:id,startDate:'2026-10-01',endDate:'2026-10-31',participants:[{employeeId:'a',leaderId:null}]})),evaluations:['a','b'].map(id=>({id,cycleId:id,name:id,kind:'team',googleFormId:id,googleFormUrl:'',expectedResponses:1,lastSyncedAt:null,syncMessage:null,questionSections:{[id]:'ADM'},mapping:{respondentQuestionIds:[],subjectQuestionIds:[],departmentQuestionIds:[],scoreQuestions:[{id,title:'Gestão de tempo?',min:1,max:4}]}})),responses:['a','b'].map((id,i)=>({id,evaluationId:id,googleResponseId:id,respondentId:'a',subjectId:'a',kind:'self',submittedAt:'2026-10-02T12:00:00Z',scores:{[id]:i+2},textAnswers:[{questionId:'text',question:'Feedback',answer:'Ótimo atendimento\nAtenção à comunicação.'}]}))});
+const filters={earlierCycleId:'a',laterCycleId:'b',earlierEvaluationId:'a',laterEvaluationId:'b',kind:'self' as const};
+afterEach(()=>{vi.restoreAllMocks();vi.unstubAllGlobals();});
+describe('comparação equivalente entre ciclos',()=>{
+ it('cruza IDs distintos e preserva perspectiva e contagens',()=>{expect(compareCycles(data(),filters)[0]).toMatchObject({earlierAverage:2,laterAverage:3,delta:1,earlierCount:1,laterCount:1});expect(compareCycles(data(),{...filters,kind:'team'})).toEqual([]);});
+ it('não compara outra seção, escala, modalidade ou ciclo igual',()=>{for(const change of [(d:AppData)=>{d.evaluations[1].questionSections={b:'RECEPÇÃO'};},(d:AppData)=>{d.evaluations[1].mapping.scoreQuestions[0].max=5;},(d:AppData)=>{d.evaluations[1].kind='leadership';}]){const d=data();change(d);expect(compareCycles(d,filters)).toEqual([]);}expect(compareCycles(data(),{...filters,laterCycleId:'a'})).toEqual([]);});
+ it('exclui repetições ambíguas e respeita pessoa e setor',()=>{const d=data();d.evaluations[1].mapping.scoreQuestions.push({...d.evaluations[1].mapping.scoreQuestions[0],id:'other'});d.evaluations[1].questionSections!.other='ADM';expect(compareCycles(d,filters)).toEqual([]);expect(compareCycles(data(),{...filters,employeeId:'other'})).toEqual([]);expect(compareCycles(data(),{...filters,department:'OTHER'})).toEqual([]);});
+});
+async function capture(action:()=>Promise<void>){let saved:Blob|undefined;vi.spyOn(URL,'createObjectURL').mockImplementation(blob=>{saved=blob as Blob;return 'blob:test';});vi.spyOn(URL,'revokeObjectURL').mockImplementation(()=>{});vi.stubGlobal('document',{createElement:()=>({click(){},remove(){}}),body:{appendChild(){}}});await action();return saved!;}
+describe('exportação de feedback e pendências',()=>{
+ it('Excel contém textos íntegros identificados e somente o ciclo selecionado',async()=>{const blob=await capture(()=>downloadReport(data(),{cycleId:'a'},'xlsx'));const ExcelJS=(await import('exceljs')).default;const book=new ExcelJS.Workbook();await book.xlsx.load(await blob.arrayBuffer());const sheet=book.getWorksheet('Respostas de texto')!;expect(sheet.rowCount).toBe(2);expect(sheet.getRow(2).getCell(4).value).toBe('ANA');expect(sheet.getRow(2).getCell(8).value).toBe('Ótimo atendimento\nAtenção à comunicação.');});
+ it('PDF pagina textos longos e mantém o final do conteúdo',async()=>{const {PDFDocument,PDFPage}=await import('pdf-lib');const d=data();d.responses[0].textAnswers![0].answer=('Atenção à comunicação e gestão.\n').repeat(180)+'FIM DO FEEDBACK';const draw=vi.spyOn(PDFPage.prototype,'drawText');const blob=await capture(()=>downloadReport(d,{cycleId:'a'},'pdf'));const pdf=await PDFDocument.load(await blob.arrayBuffer());expect(pdf.getPageCount()).toBeGreaterThan(3);expect(draw.mock.calls.some(([text])=>text.includes('FIM DO FEEDBACK'))).toBe(true);expect(draw.mock.calls.some(([text])=>text.includes('Atenção à comunicação'))).toBe(true);});
+ it('pendências exportam exatamente as linhas filtradas e pessoas restantes',async()=>{const d=data();const rows=[{employee:d.employees[0],evaluation:d.evaluations[0],expected:2,completed:1,pendingSubjects:[d.employees[0]],status:'partial' as const,lastSyncedAt:null}];expect(pendingExportRows(rows)).toEqual([{respondent:'ANA',form:'a',department:'ADM',status:'Parcial',expected:2,completed:1,pending:1,subjects:'ANA'}]);const blob=await capture(()=>downloadPending(rows,'Outubro','xlsx'));const ExcelJS=(await import('exceljs')).default;const book=new ExcelJS.Workbook();await book.xlsx.load(await blob.arrayBuffer());expect(book.getWorksheet('Pendências')!.rowCount).toBe(2);});
+});
+
+
+
+it('does not export inferred missing people as confirmed when configuration is uncertain',()=>{
+ const d=data();const rows=[{employee:d.employees[0],evaluation:d.evaluations[0],expected:2,completed:0,pendingSubjects:[d.employees[0]],status:'unconfigured' as const,lastSyncedAt:null}];
+ expect(pendingExportRows(rows)[0]).toMatchObject({status:'A conferir (não confirmado)',expected:null,completed:null,pending:null,subjects:''});
+});

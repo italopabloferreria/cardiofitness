@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef, type ReactNode } from 'react';
 import type { AppData, Bootstrap, Cycle, CycleInput, Employee, EmployeeInput, Evaluation, EvaluationInput, FormMetadata, SyncResult } from './types';
 import { createDemoData } from './demo';
+import { prepareCycleForms } from './cycle-template';
 
 const EMPTY: AppData = {employees:[],cycles:[],evaluations:[],responses:[]};
 const DEMO_KEY = 'cardiofitness-demo-v1';
@@ -12,6 +13,7 @@ interface AppContext {
   changePassword:(currentPassword:string,newPassword:string,confirmation:string)=>Promise<void>;
   saveEmployee:(input:EmployeeInput,id?:string)=>Promise<Employee>;
   saveCycle:(input:CycleInput,id?:string)=>Promise<Cycle>;
+  prepareCycle:(input:CycleInput,sourceCycleId:string)=>Promise<Cycle>;
   saveEvaluation:(input:EvaluationInput,id?:string)=>Promise<Evaluation>;
   syncEvaluation:(id:string)=>Promise<SyncResult>; inspectForm:(formId:string)=>Promise<FormMetadata>; resetDemo:()=>void;
 }
@@ -100,6 +102,18 @@ export function AppProvider({children}:{children:ReactNode}) {
     const saved=mode==='demo'?{...input,id:id??crypto.randomUUID()}:await authorizedRequest<Cycle>(`/api/cycles${id?`/${id}`:''}`,{method:id?'PATCH':'POST',body:JSON.stringify(input)});
     setData(current=>({...current,cycles:id?current.cycles.map(cycle=>cycle.id===id?saved:cycle):[...current.cycles,saved]}));return saved;
   };
+  const prepareCycle=async(input:CycleInput,sourceCycleId:string)=>{
+    if(!input.participants.length)throw new Error('Selecione os participantes do próximo ciclo.');
+    let prepared:{cycle:Cycle;evaluations:Evaluation[]};
+    if(mode==='demo'){
+      const cycle={...input,id:crypto.randomUUID()};
+      const forms=prepareCycleForms(data,sourceCycleId,input);
+      if(!forms.length)throw new Error('O ciclo de referência não possui formulários.');
+      prepared={cycle,evaluations:forms.map(e=>({...e,id:crypto.randomUUID(),cycleId:cycle.id,lastSyncedAt:null,syncMessage:null}))};
+    } else prepared=await authorizedRequest('/api/cycles/prepare',{method:'POST',body:JSON.stringify({cycle:input,sourceCycleId})});
+    setData(current=>({...current,cycles:[...current.cycles,prepared.cycle],evaluations:[...current.evaluations,...prepared.evaluations]}));
+    return prepared.cycle;
+  };
   const saveEvaluation=async(input:EvaluationInput,id?:string)=>{
     if(!input.name.trim()||!input.cycleId)throw new Error('Informe nome e ciclo da avaliação.');
     if(input.mapping.scoreQuestions.length && input.mapping.scoreQuestions.some(q=>q.min!==input.mapping.scoreQuestions[0].min||q.max!==input.mapping.scoreQuestions[0].max))throw new Error('As perguntas selecionadas precisam usar a mesma escala.');
@@ -123,6 +137,6 @@ export function AppProvider({children}:{children:ReactNode}) {
     return authorizedRequest<FormMetadata>(`/api/google/forms/inspect?formId=${encodeURIComponent(formId)}`);
   };
   const resetDemo=()=>{if(mode!=='demo')return;setData(createDemoData());};
-  return <Context.Provider value={{status,mode,user,data,googleConfigured,error,login,logout,changePassword,saveEmployee,saveCycle,saveEvaluation,syncEvaluation,inspectForm,resetDemo}}>{children}</Context.Provider>;
+  return <Context.Provider value={{status,mode,user,data,googleConfigured,error,login,logout,changePassword,saveEmployee,saveCycle,prepareCycle,saveEvaluation,syncEvaluation,inspectForm,resetDemo}}>{children}</Context.Provider>;
 }
 export function useApp(){const context=useContext(Context);if(!context)throw new Error('AppProvider ausente');return context;}
