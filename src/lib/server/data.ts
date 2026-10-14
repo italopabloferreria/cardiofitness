@@ -2,11 +2,12 @@ import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { AppData, Cycle, Employee, Evaluation, EvaluationInput, EvaluationResponse } from '@/lib/types';
 import { requireRh } from './supabase';
+import { formatPersonName } from '../person-name';
 import { ApiError, databaseError } from './http';
 
 type Row = Record<string, unknown>;
 export function employeeFromRow(r: Row): Employee {
-  return { id: r.id as string, name: r.name as string, email: r.email as string, formName: r.form_name as string, department: r.department as string, leaderId: r.leader_id as string | null, isLeader: r.is_leader as boolean, active: r.active as boolean };
+  return { id: r.id as string, name: formatPersonName(r.name as string), email: r.email as string, formName: r.form_name as string, department: r.department as string, leaderId: r.leader_id as string | null, isLeader: r.is_leader as boolean, active: r.active as boolean };
 }
 export function employeeToRow(e: Omit<Employee, 'id'>) {
   return { name: e.name, email: e.email, form_name: e.formName, department: e.department, leader_id: e.leaderId, is_leader: e.isLeader, active: e.active };
