@@ -13,6 +13,15 @@ const form: GoogleForm = { formId: 'form', revisionId: 'rev', items: [
   { itemId: 'is', title: 'Líder', questionItem: { question: { questionId: 's', choiceQuestion: { type: 'DROP_DOWN', options: [{ value: 'MARIA' }] } } } },
 ] };
 describe('safe Google Forms roster update', () => {
+  it('keeps published names uppercase while preserving accents and explicit Forms names', () => {
+    const mixed = employees.map(e => e.id === 'a' ? { ...e, name: 'OUTRO NOME', formName: '  Ana Lúcia 2. ' } : e);
+    const existing = structuredClone(form);
+    existing.items![0].questionItem!.question!.choiceQuestion!.options = [{ value: 'ANA LÚCIA 2.' }];
+    expect(planRoster(existing, evaluation, mixed, ['a', 'm']).changes).toEqual([]);
+    existing.items![0].questionItem!.question!.choiceQuestion!.options = [{ value: 'Ana Lúcia 2.' }];
+    expect(planRoster(existing, evaluation, mixed, ['a', 'm']).changes[0].after).toEqual(['ANA LÚCIA 2.']);
+    expect(mixed[0].formName).toBe('  Ana Lúcia 2. ');
+  });
   it('blocks editing reused form while a different cycle is collecting', () => {
     const october = { id: 'oct', name: 'Outubro', startDate: '2026-10-08', endDate: '2026-10-20', participants: [] };
     const november = { ...october, id: 'nov', startDate: '2026-11-01', endDate: '2026-12-31' };

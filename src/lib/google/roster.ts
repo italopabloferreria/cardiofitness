@@ -1,5 +1,6 @@
 import type { Cycle, Employee, Evaluation } from '../types';
 import type { GoogleForm } from './types';
+import { formatPersonName } from '../person-name';
 
 export interface RosterChange { questionId: string; title: string; department: string; before: string[]; after: string[]; index: number }
 export interface RosterPreview { formId: string; revisionId: string; changes: RosterChange[]; warnings: string[]; blocked: string[]; signature: string; writeEnabled: boolean }
@@ -36,7 +37,7 @@ export function planRoster(form: GoogleForm, evaluation: Evaluation, employees: 
       department = departments[0];
       candidates = eligible.filter(e => e.active && !e.isLeader && e.department === department);
     }
-    const names = candidates.map(e => (e.formName || e.name).trim());
+    const names = candidates.map(e => formatPersonName(e.formName || e.name));
     if (!names.length || new Set(names.map(key)).size !== names.length) { blocked.push(`${title}: cadastro vazio ou com nomes de identificação ambíguos.`); continue; }
     // Retain existing ordering; append new names alphabetically. Never change historical identifiers.
     const ordered = choice.options.map(o => names.find(n => key(n) === key(o.value))).filter((n): n is string => Boolean(n));
