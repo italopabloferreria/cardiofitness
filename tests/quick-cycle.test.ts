@@ -35,6 +35,19 @@ describe('criação simplificada de ciclos',()=>{
     expect(suggestNextCycle({...base,evaluations:[{...leaderForm,googleFormId:''}]})?.error).toContain('não configurados');
     expect(suggestNextCycle({...base,cycles:[],evaluations:[]}) ).toBeNull();
   });
+  it('preserva a duração bimestral quando a campanha anterior tinha dois meses',()=>{
+    const twoMonths:Cycle={...source,startDate:'2026-11-01',endDate:'2026-12-31'};
+    const result=suggestNextCycle({...base,cycles:[twoMonths]});
+    expect(result?.error).toBeNull();
+    expect(result?.input.startDate).toBe('2027-01-01');
+    expect(result?.input.endDate).toBe('2027-02-28');
+    expect(result?.input.name).toContain('Janeiro');
+    expect(result?.input.name).toContain('fevereiro');
+  });
+  it('exige revisão manual para período anterior com datas irregulares',()=>{
+    const irregular:Cycle={...source,startDate:'2026-11-10',endDate:'2026-11-30'};
+    expect(suggestNextCycle({...base,cycles:[irregular]})?.error).toContain('fora do padrão');
+  });
   it('vira o ano sem sobrepor e divulga apenas liderança, nunca equipe mensal',()=>{
     const december={...source,id:'2026dec',startDate:'2026-12-01',endDate:'2026-12-31'};
     const linked={...leaderForm,id:'form-dec',cycleId:december.id};
