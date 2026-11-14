@@ -6,7 +6,7 @@
 - Somente o link da **Avaliação de líderes** será distribuído aos colaboradores nesta campanha.
 - O RH quer a coleta aberta **até 30/11/2026**.
 - Avaliações de colegas e autoavaliações ocorrem a cada dois meses, **não nesta divulgação de novembro**.
-- A pedido do RH, preparar **um novo formulário, separado**, para **líderes avaliarem seus colaboradores**.
+- Um **outro formulário, de líderes avaliarem colaboradores**, foi solicitado posteriormente pelo usuário do sistema, **não** pela responsável do RH no print. Não o incluir na divulgação de novembro.
 
 ## Link existente para divulgação — colaboradores → líderes
 
@@ -14,7 +14,7 @@ https://docs.google.com/forms/d/e/1FAIpQLScI5us346mhyabPreE4ly7CXXZYBn5wwYBbXj6H
 
 O formulário existente é do Google Forms. O aviso e a ocultação do link de equipe no dashboard **não fecham o Google Forms**, nem alteram seu calendário. O RH deve conferir as opções e ajustar a publicação/encerramento no Google. Não divulgar o link de equipe em novembro. A importação da coleta continua baseada nas datas do ciclo do banco.
 
-## Novo formulário — líderes → colaboradores
+## Formulário adicional separado — líderes → colaboradores (fora da campanha solicitada pelo RH)
 
 O código está em `google-forms/criar-avaliacao-lideres-colaboradores-nov2026.gs`. Ele **não foi executado na conta Google**; não existe um link novo confirmado até sua execução.
 
@@ -22,7 +22,7 @@ O código está em `google-forms/criar-avaliacao-lideres-colaboradores-nov2026.g
 2. Confira as cinco lideranças existentes, os setores, o texto das sete perguntas (escala 1–4) e os campos de identificação. Os nomes estão baseados no cadastro anterior: **LIDIA VIANA, CLEUMA, GABRIEL, WELISSON, MARIA**. Atenção: o print diz «líder Welisson»; não alterar para Wellington por suposição.
 3. O campo de colaborador é texto exato para permitir atualização de nomes **sem divulgar um catálogo desatualizado**. Cada líder deve avaliar somente seu time. A vinculação é conferida quando a resposta é importada pelo dashboard; não há acesso por login individual nesse formulário.
 4. Em Configurações → Formulários, vincule o novo Form ao ciclo apropriado com tipo **Líder → Colaborador**; informe link de preenchimento, ID de edição e use «Ler perguntas». Marque os campos de respondente, pessoa avaliada, setor e as sete perguntas de escala 1–4. Confira a prévia e salve. Sem isso as respostas não aparecem no dashboard.
-5. Se for aberto em novembro, execute `ativarColetaLideresColaboradores` após validar o ciclo e as equipes. Ele programa um gatilho para o encerramento próximo de **01/12/2026 às 00h05 (horário de Brasília)**. O agendamento não garante execução no minuto exato; conferir o fechamento manualmente em 30/11.
+5. Somente se o RH aprovar explicitamente essa avaliação adicional para novembro, execute `ativarColetaLideresColaboradores` após validar o ciclo e as equipes. Ele programa um gatilho para o encerramento próximo de **01/12/2026 às 00h05 (horário de Brasília)**. O agendamento não garante execução no minuto exato; conferir o fechamento manualmente em 30/11.
 6. É possível chamar `encerrarColetaLideresColaboradores` a partir de 01/12. O código não elimina respostas existentes.
 
 ## Movimentações informadas pelo RH
@@ -39,6 +39,7 @@ O código está em `google-forms/criar-avaliacao-lideres-colaboradores-nov2026.g
 
 ## Checklist de ativação
 
+- O usuário pediu para não alterar diretamente o Supabase. **Alterar ou remover o ciclo de novembro na produção depende do cadastro autorizado no próprio sistema**; GitHub e Vercel, isoladamente, não alteram os registros do banco.
 - Confirmar o projeto Supabase institucional **da Cardiofitness**, sem usar o da Thayná.
 - Confirmar nomes e homônimos, desativar pessoas desligadas preservando histórico, cadastrar/atualizar admitidas; revisar vínculos do ciclo e evitar duplicatas.
 - Atualizar nomes nos formulários já existentes, inclusive retirar quem saiu; as opções dos Forms não acompanham automaticamente a tabela de colaboradores.
