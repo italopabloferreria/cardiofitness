@@ -11,6 +11,7 @@ const leaderForm: Evaluation = {
   mapping:{respondentQuestionIds:['respondent'],subjectQuestionIds:['subject'],departmentQuestionIds:[],scoreQuestions:[{id:'q1',title:'Exemplo',min:1,max:4}]},
   lastSyncedAt:null,syncMessage:null
 };
+const inverseForm: Evaluation={...leaderForm,id:'form-c',kind:'leader_to_employee',name:'Líder avalia colaborador',googleFormId:'google_form_id_mock_34567',googleFormUrl:'https://docs.google.com/forms/d/e/ghi/viewform'};
 const teamForm: Evaluation={...leaderForm,id:'form-b',kind:'team',name:'Equipe',googleFormId:'google_form_id_mock_67890',googleFormUrl:'https://docs.google.com/forms/d/e/def/viewform'};
 const base:AppData={employees:[leader,employee],cycles:[source],evaluations:[leaderForm,teamForm],responses:[]};
 
@@ -54,6 +55,7 @@ describe('criação simplificada de ciclos',()=>{
     const next=suggestNextCycle({...base,cycles:[source,december],evaluations:[...base.evaluations,linked]});
     expect(next?.input.startDate).toBe('2027-01-01');
     expect(next?.input.endDate).toBe('2027-01-31');
-    expect(shareableCycleForms([leaderForm,teamForm],source).map(form=>form.kind)).toEqual(['leadership']);
+    expect(shareableCycleForms([leaderForm,teamForm,inverseForm],source).map(form=>form.kind)).toEqual(['leadership']);
+    expect(shareableCycleForms([leaderForm,inverseForm],december).map(form=>form.kind)).toEqual(['leadership','leader_to_employee']);
   });
 });
