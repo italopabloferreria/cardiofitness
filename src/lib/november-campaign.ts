@@ -13,9 +13,9 @@ export function isNovember2026Cycle(cycle: Pick<Cycle, 'startDate' | 'endDate'> 
   return !!cycle && cycle.startDate <= NOVEMBER_2026_END && cycle.endDate >= '2026-11-01';
 }
 export function canShareForNovember2026(kind: EvaluationKind): boolean {
-  return kind === 'leadership' || kind === 'leader_to_employee';
+  return kind === 'leadership';
 }
-export function november2026FormStatus(cycle: Pick<Cycle, 'startDate' | 'endDate'> | undefined, kind: EvaluationKind, today = new Intl.DateTimeFormat('en-CA', {timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())): 'share' | 'bimonthly' | 'normal' {
+export function november2026FormStatus(cycle: Pick<Cycle, 'startDate' | 'endDate'> | undefined, kind: EvaluationKind, today = new Intl.DateTimeFormat('en-CA', {timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())): 'share' | 'bimonthly' | 'separate' | 'normal' {
   if (!isNovember2026Cycle(cycle) || today < '2026-11-01' || today > NOVEMBER_2026_END) return 'normal';
-  return canShareForNovember2026(kind) ? 'share' : 'bimonthly';
+  return canShareForNovember2026(kind) ? 'share' : (kind === 'leader_to_employee' ? 'separate' : 'bimonthly');
 }
