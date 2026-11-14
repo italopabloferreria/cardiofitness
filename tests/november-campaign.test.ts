@@ -11,10 +11,11 @@ describe('campanha novembro 2026', () => {
   });
   it('não compartilha o formulário entre colegas ou autoavaliação em novembro', () => {
     expect(canShareForNovember2026('leadership')).toBe(true);
-    expect(canShareForNovember2026('leader_to_employee')).toBe(true);
+    expect(canShareForNovember2026('leader_to_employee')).toBe(false);
     expect(november2026FormStatus(november,'team','2026-11-14')).toBe('bimonthly');
     expect(november2026FormStatus(november,'self','2026-11-14')).toBe('bimonthly');
     expect(november2026FormStatus(november,'leadership','2026-11-14')).toBe('share');
+    expect(november2026FormStatus(november,'leader_to_employee','2026-11-14')).toBe('separate');
     expect(november2026FormStatus({startDate:'2026-12-01',endDate:'2026-12-31'},'team','2026-11-14')).toBe('normal');
     expect(november2026FormStatus(november,'team','2026-12-01')).toBe('normal');
   });

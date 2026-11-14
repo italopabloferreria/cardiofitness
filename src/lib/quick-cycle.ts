@@ -1,4 +1,5 @@
 import type { AppData, Cycle, CycleInput, Evaluation } from './types';
+import { isNovember2026Cycle } from './november-campaign';
 
 export interface QuickCycleDraft {
   source: Cycle;
@@ -77,6 +78,6 @@ export function suggestNextCycle(data: AppData): QuickCycleDraft | null {
 export function shareableCycleForms(forms: Evaluation[], cycle: Pick<Cycle, 'startDate' | 'endDate'>) {
   // Peer and self forms have a separate bimonthly schedule. Never include them
   // in the simple monthly sharing action.
-  void cycle;
-  return forms.filter(form => (form.kind === 'leadership' || form.kind === 'leader_to_employee') && !!form.googleFormUrl);
+  const allowed = isNovember2026Cycle(cycle) ? ['leadership'] : ['leadership', 'leader_to_employee'];
+  return forms.filter(form => allowed.includes(form.kind) && !!form.googleFormUrl);
 }
