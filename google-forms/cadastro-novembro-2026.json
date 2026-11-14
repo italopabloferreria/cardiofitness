@@ -1,0 +1,104 @@
+{
+  "campaign": "novembro-2026",
+  "source": "Cadastro oficial importado de PDF em 08/10/2026 + movimentações informadas no WhatsApp em 14/11/2026",
+  "status": "DRAFT_REQUIRES_RH_CONFIRMATION",
+  "requiresReview": true,
+  "teams": [
+    {
+      "leader": "LIDIA VIANA",
+      "departments": [
+        "FATURAMENTO E AUXILIARES DE FATURAMENTO"
+      ],
+      "employees": [
+        "ANA KAROLINA RIBEIRO ALVES VIANA",
+        "BRUNA ALVES BARBOSA",
+        "RAYANE",
+        "YASMIN",
+        "adriele"
+      ]
+    },
+    {
+      "leader": "CLEUMA",
+      "departments": [
+        "COPEIRAS",
+        "TÉCNICAS E CORREDOR"
+      ],
+      "employees": [
+        "MARIA DO SOCORRO",
+        "DAIANE RAMOS DOS SANTOS",
+        "Eliane Batista de Souza",
+        "Luzia de Moraes Castro",
+        "MARIA SULAMI RIBEIRO DE ANDRADE",
+        "Onizete Vieira da Silva-",
+        "Renilda Maria Pereira da Silva",
+        "Solange Borges Pimentel",
+        "luiza",
+        "sara"
+      ]
+    },
+    {
+      "leader": "GABRIEL",
+      "departments": [
+        "CENTRAL E RESULTADOS DE EXAMES"
+      ],
+      "employees": [
+        "Hellen Silva Rodrigues",
+        "LUCIANA",
+        "Rute dos Santos Silva",
+        "JOELSON",
+        "paulo",
+        "PAULO GABRIEL",
+        "JOSIANE"
+      ]
+    },
+    {
+      "leader": "WELISSON",
+      "departments": [
+        "RECEPÇÃO E TRIAGEM"
+      ],
+      "employees": [
+        "Jaqueline Alves Ribeiro",
+        "DAYANE MARES",
+        "JULIA SANTOS",
+        "KEZIA",
+        "MARIA LUIZA 2.",
+        "BRENO",
+        "VOTORIA BARROS LIMA"
+      ]
+    },
+    {
+      "leader": "MARIA",
+      "departments": [
+        "ADM"
+      ],
+      "employees": [
+        "ana carolina reis"
+      ]
+    }
+  ],
+  "departures": [
+    {
+      "asReported": "LUCAS",
+      "proposedMatch": "LUCAS DOS SANTOS REIS",
+      "status": "pending_identity_confirmation"
+    },
+    {
+      "asReported": "SUZANA MATIAS DA SILVA BARBOSA",
+      "proposedMatch": null,
+      "status": "not_in_october_pdf"
+    }
+  ],
+  "pendingReview": [
+    "Confirmar se o LUCAS que saiu é LUCAS DOS SANTOS REIS da Recepção antes de atualizar produção. O rascunho não inclui este nome.",
+    "Confirmar nome oficial VOTORIA BARROS LIMA (grafia literal do WhatsApp). Não substituir automaticamente por VITÓRIA.",
+    "Confirmar se PAULO GABRIEL é a mesma pessoa identificada como 'paulo' no cadastro de outubro; enquanto pendente, os dois nomes constam apenas no rascunho e NÃO devem ser publicados juntos.",
+    "Confirmar nome completo de JOSIANE e seu nome cadastrado no Google Forms.",
+    "Confirmar a situação de SUZANA no banco atual; não constava no PDF oficial de outubro.",
+    "Confirmar que cada liderança e seus setores permanecem como no cadastro-base."
+  ],
+  "notes": [
+    "Nenhum banco de produção nem Form do Google foi modificado por este arquivo.",
+    "Todos os nomes nas opções devem coincidir exatamente com employee.form_name ou employee.name do Supabase da Cardiofitness.",
+    "Criar e distribuir listas apenas após resolver pendingReview e atualizar os participantes do ciclo."
+  ]
+}
