@@ -27,3 +27,12 @@ npm test
 npm run build
 
 O primeiro ciclo, publicação da coleta e sincronização real devem ser homologados com o RH. A senha provisória e a marca de troca obrigatória ainda não foram ativadas; a infraestrutura correspondente está implementada.
+
+## Cardiofitness 2.0 — portal nativo (prévia)
+
+O próximo sistema usará **um único endereço /avaliar** que muda as avaliações pelo ciclo, sem gerar novos links. O projeto inclui duas prévias com **dados fictícios e sem gravação**:
+
+- [Prévia da avaliação para colaborador/líder](/preview/avaliar)
+- [Prévia do novo dashboard do RH](/preview/rh)
+
+A arquitetura, cronograma e migração segura estão em [docs/ARQUITETURA_PORTAL_NATIVO.md](docs/ARQUITETURA_PORTAL_NATIVO.md). **Ainda não existe coleta nativa funcional**; o Google Forms atual e os registros legados permanecem intocados.
