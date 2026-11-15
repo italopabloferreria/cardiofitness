@@ -1,0 +1,221 @@
+{
+  "leadership": [
+    {
+      "id": "lideres-2",
+      "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+      "section": "Líderes"
+    },
+    {
+      "id": "lideres-3",
+      "title": "O funcionário tem desempenhado bem sua função?",
+      "section": "Líderes"
+    },
+    {
+      "id": "lideres-5",
+      "title": "Passa as informações necessárias para seu grupo de trabalho?",
+      "section": "Líderes"
+    },
+    {
+      "id": "lideres-6",
+      "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+      "section": "Líderes"
+    },
+    {
+      "id": "lideres-8",
+      "title": "Consegue influenciar os demais colaboradores e motivá-los a participar das atividades propostas?",
+      "section": "Líderes"
+    },
+    {
+      "id": "lideres-9",
+      "title": "Entende a diversidade de personalidades e consegue despertar o melhor de cada uma?",
+      "section": "Líderes"
+    },
+    {
+      "id": "lideres-11",
+      "title": "O funcionário reflete os valores da empresa?",
+      "section": "Líderes"
+    }
+  ],
+  "team": [
+    {
+      "key": "faturamento",
+      "questions": [
+        {
+          "id": "faturamento-4",
+          "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+          "section": "Faturamento"
+        },
+        {
+          "id": "faturamento-5",
+          "title": "O funcionário tem conhecimento amplo dos convênios que fatura/autoriza?",
+          "section": "Faturamento"
+        },
+        {
+          "id": "faturamento-7",
+          "title": "Passa as informações necessárias para seu grupo de trabalho?",
+          "section": "Faturamento"
+        },
+        {
+          "id": "faturamento-8",
+          "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+          "section": "Faturamento"
+        },
+        {
+          "id": "faturamento-10",
+          "title": "O funcionário tem domínio do software MedWare?",
+          "section": "Faturamento"
+        },
+        {
+          "id": "faturamento-11",
+          "title": "O funcionário tem domínio dos sites dos convênios que fatura/autoriza?",
+          "section": "Faturamento"
+        },
+        {
+          "id": "faturamento-13",
+          "title": "O funcionário reflete os valores da empresa?",
+          "section": "Faturamento"
+        }
+      ]
+    },
+    {
+      "key": "central-resultado",
+      "questions": [
+        {
+          "id": "central-resultado-4",
+          "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+          "section": "Central/Resultado"
+        },
+        {
+          "id": "central-resultado-5",
+          "title": "O funcionário tem conhecimento dos convênios credenciados, consultas, exames e respectivos valores?",
+          "section": "Central/Resultado"
+        },
+        {
+          "id": "central-resultado-7",
+          "title": "Passa as informações necessárias para seu grupo de trabalho?",
+          "section": "Central/Resultado"
+        },
+        {
+          "id": "central-resultado-8",
+          "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+          "section": "Central/Resultado"
+        },
+        {
+          "id": "central-resultado-10",
+          "title": "O funcionário tem domínio do software MedWare?",
+          "section": "Central/Resultado"
+        },
+        {
+          "id": "central-resultado-11",
+          "title": "O funcionário tem domínio do software da Fasterisks?",
+          "section": "Central/Resultado"
+        },
+        {
+          "id": "central-resultado-13",
+          "title": "O funcionário reflete os valores da empresa?",
+          "section": "Central/Resultado"
+        }
+      ]
+    },
+    {
+      "key": "recepcao-triagem",
+      "questions": [
+        {
+          "id": "recepcao-triagem-4",
+          "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+          "section": "Recepção/Triagem"
+        },
+        {
+          "id": "recepcao-triagem-5",
+          "title": "O funcionário tem conhecimento dos convênios credenciados, consultas, exames e respectivos valores? ////// O funcionário tem conhecimento técnico dos exames da empresa?",
+          "section": "Recepção/Triagem"
+        },
+        {
+          "id": "recepcao-triagem-7",
+          "title": "Passa as informações necessárias para seu grupo de trabalho?",
+          "section": "Recepção/Triagem"
+        },
+        {
+          "id": "recepcao-triagem-8",
+          "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+          "section": "Recepção/Triagem"
+        },
+        {
+          "id": "recepcao-triagem-10",
+          "title": "O funcionário tem domínio do software MedWare?",
+          "section": "Recepção/Triagem"
+        },
+        {
+          "id": "recepcao-triagem-12",
+          "title": "O funcionário reflete os valores da empresa?",
+          "section": "Recepção/Triagem"
+        }
+      ]
+    },
+    {
+      "key": "tecnicas-de-exame-corredor",
+      "questions": [
+        {
+          "id": "tecnicas-de-exame-corredor-4",
+          "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+          "section": "Técnicas de Exame/Corredor"
+        },
+        {
+          "id": "tecnicas-de-exame-corredor-5",
+          "title": "O funcionário tem conhecimento técnico dos exames da empresa?",
+          "section": "Técnicas de Exame/Corredor"
+        },
+        {
+          "id": "tecnicas-de-exame-corredor-7",
+          "title": "Passa as informações necessárias para seu grupo de trabalho?",
+          "section": "Técnicas de Exame/Corredor"
+        },
+        {
+          "id": "tecnicas-de-exame-corredor-8",
+          "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+          "section": "Técnicas de Exame/Corredor"
+        },
+        {
+          "id": "tecnicas-de-exame-corredor-10",
+          "title": "O funcionário tem domínio do software MedWare?",
+          "section": "Técnicas de Exame/Corredor"
+        },
+        {
+          "id": "tecnicas-de-exame-corredor-12",
+          "title": "O funcionário reflete os valores da empresa?",
+          "section": "Técnicas de Exame/Corredor"
+        }
+      ]
+    },
+    {
+      "key": "limpeza",
+      "questions": [
+        {
+          "id": "limpeza-4",
+          "title": "O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?",
+          "section": "Limpeza"
+        },
+        {
+          "id": "limpeza-5",
+          "title": "O funcionário tem desempenhado bem sua função?",
+          "section": "Limpeza"
+        },
+        {
+          "id": "limpeza-7",
+          "title": "Passa as informações necessárias para seu grupo de trabalho?",
+          "section": "Limpeza"
+        },
+        {
+          "id": "limpeza-8",
+          "title": "Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?",
+          "section": "Limpeza"
+        },
+        {
+          "id": "limpeza-10",
+          "title": "O funcionário reflete os valores da empresa?",
+          "section": "Limpeza"
+        }
+      ]
+    }
+  ]
+}

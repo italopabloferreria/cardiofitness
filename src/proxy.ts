@@ -4,6 +4,10 @@ import { NextResponse, type NextRequest } from 'next/server';
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
   response.headers.set('Cache-Control', 'private, no-store, max-age=0');
+  // Preview is entirely local. Employee sessions are independently verified by
+  // native APIs and must never refresh or replace the RH session cookie.
+  const pathname = request.nextUrl.pathname;
+  if (pathname.startsWith('/preview/') || pathname === '/avaliar' || pathname.startsWith('/api/native/')) return response;
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if (process.env.APP_DEMO_MODE === 'true' || !url || !key) return response;
