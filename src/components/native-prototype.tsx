@@ -17,14 +17,14 @@ function Notice(){return <div className={styles.prototypeNotice}><ShieldCheck si
 function Progress({value}:{value:number}){return <div className={styles.progressBar} role="progressbar" aria-label="Perguntas respondidas" aria-valuenow={value} aria-valuemin={0} aria-valuemax={100}><span style={{width:value+'%'}}/></div>;}
 function Metric({label,value,detail}:{label:string;value:string;detail:string}){return <div className={styles.metric}><span>{label}</span><b>{value}</b><small>{detail}</small></div>;}
 
-export function NativeEvaluationPreview(){
+export function NativeEvaluationPreview({ firstCampaign = false }: { firstCampaign?: boolean } = {}){
   const {state,ready,error,update}=usePreview();
   const [respondent,setRespondent]=useState('ana');
   const [selected,setSelected]=useState('');
   const [scores,setScores]=useState<Record<string,number>>({});
   const [success,setSuccess]=useState(false);
   const person=state.people.find(p=>p.id===respondent)!;
-  const available=state.campaigns.filter(c=>c.status==='open').flatMap(c=>c.assignments.filter(a=>a.respondentId===respondent).map(a=>({campaign:c,...a,id:assignmentKey(c.id,a.respondentId,a.subjectId)})));
+  const available=state.campaigns.filter(c=>c.status==='open'&&(!firstCampaign||c.kind==='leadership'&&c.startDate==='2026-11-01')).flatMap(c=>c.assignments.filter(a=>a.respondentId===respondent).map(a=>({campaign:c,...a,id:assignmentKey(c.id,a.respondentId,a.subjectId)})));
   const pending=available.filter(a=>!state.submissions.some(s=>s.id===a.id));
   const assignment=pending.find(a=>a.id===selected);
   const subject=state.people.find(p=>p.id===assignment?.subjectId);
@@ -35,16 +35,16 @@ export function NativeEvaluationPreview(){
   return <div className={styles.portal}>
     <aside className={styles.portalAside}><Brand/><div className={styles.asideCenter}><div className={styles.asideEyebrow}>ESCUTAR. DESENVOLVER. EVOLUIR.</div><h1>Seu olhar faz a diferença.</h1><p>Uma experiência para avaliar a liderança, os colegas, a equipe e o próprio desenvolvimento.</p><div className={styles.asidePill}><ClipboardCheck size={18}/> Quatro formulários, um só lugar</div></div><span className={styles.asideFooter}>Cardiofitness • Desenvolvimento de pessoas</span></aside>
     <main className={styles.portalMain}>
-      <div className={styles.topLinks}><Link className={styles.textLink} href="/preview/rh"><ArrowLeft size={16}/> Painel do RH</Link><span className={styles.previewChip}>Prévia funcional</span></div><Notice/>
+      <div className={styles.topLinks}><Link className={styles.textLink} href="/preview/rh"><ArrowLeft size={16}/> Painel do RH</Link><span className={styles.previewChip}>Prévia funcional</span></div><Notice/>{firstCampaign&&<section className={styles.formBox}><h2>Avaliação de Líderes · Novembro de 2026</h2><p>Cada colaborador avalia sua própria liderança. Prazo da campanha: 30/11/2026.</p></section>}
       {error&&<p role="alert" className={styles.inlineNotice}>{error}</p>}
       <section className={styles.questionShell}>
         <div className={styles.eyebrow}>PORTAL DO COLABORADOR</div><h2>Olá, {person.name.split(' ')[0]}.</h2>
         <p className={styles.subtle}>Data simulada: {day(state.date)}. Selecione uma pessoa fictícia para experimentar suas avaliações permitidas.</p>
         <label className={styles.fieldLabel} htmlFor="preview-person">Simular sessão de</label>
-        <select id="preview-person" className={styles.input} value={respondent} disabled={!ready} onChange={e=>{setRespondent(e.target.value);select('');}}>{state.people.filter(p=>p.active).map(p=><option key={p.id} value={p.id}>{p.name} — {p.department}{p.isLeader?' (liderança)':''}</option>)}</select>
+        <select id="preview-person" className={styles.input} value={respondent} disabled={!ready} onChange={e=>{setRespondent(e.target.value);select('');}}>{state.people.filter(p=>p.active&&(!firstCampaign||!p.isLeader)).map(p=><option key={p.id} value={p.id}>{p.name} — {p.department}{p.isLeader?' (liderança)':''}</option>)}</select>
         {success&&<div className={styles.inlineNotice} role="status"><CheckCircle2 size={20}/> Avaliação salva na demonstração deste navegador. O painel do RH já pode exibir o resultado.</div>}
         <div className={styles.formBox}><label htmlFor="preview-assignment" className={styles.fieldLabel}>Quem você vai avaliar?</label>
-          <select id="preview-assignment" className={styles.input} value={selected} disabled={!ready||!pending.length} onChange={e=>select(e.target.value)}><option value="">{pending.length?'Selecione pelo nome e tipo de avaliação':'Nenhuma avaliação pendente'}</option>{kinds.map(kind=><optgroup label={NATIVE_TEMPLATES[kind].title} key={kind}>{pending.filter(a=>a.campaign.kind===kind).map(a=><option key={a.id} value={a.id}>{state.people.find(p=>p.id===a.subjectId)?.name} — {day(a.campaign.startDate)}</option>)}</optgroup>)}</select>
+          <select id="preview-assignment" className={styles.input} value={selected} disabled={!ready||!pending.length} onChange={e=>select(e.target.value)}><option value="">{pending.length?'Selecione pelo nome e tipo de avaliação':'Nenhuma avaliação pendente'}</option>{(firstCampaign?kinds.slice(0,1):kinds).map(kind=><optgroup label={NATIVE_TEMPLATES[kind].title} key={kind}>{pending.filter(a=>a.campaign.kind===kind).map(a=><option key={a.id} value={a.id}>{state.people.find(p=>p.id===a.subjectId)?.name} — {day(a.campaign.startDate)}</option>)}</optgroup>)}</select>
           <p className={styles.fieldHelp}>{available.length-pending.length} de {available.length} avaliações concluídas neste período. Apenas pessoas elegíveis aparecem na lista.</p>
         </div>
         {assignment&&<>
@@ -54,7 +54,7 @@ export function NativeEvaluationPreview(){
           <div className={styles.questions}>{questions.map((q,i)=><fieldset className={styles.questionCard} key={q.id}><legend><span className={styles.questionNumber}>{String(i+1).padStart(2,'0')}</span>{q.title}</legend><div className={styles.ratingOptions}>{[1,2,3,4].map(n=><label className={scores[q.id]===n?styles.selectedRating:styles.rating} key={n}><input type="radio" name={q.id} value={n} checked={scores[q.id]===n} onChange={()=>setScores(prev=>({...prev,[q.id]:n}))}/><b>{n}</b><small>{['Precisa melhorar','Em desenvolvimento','Atende','Supera'][n-1]}</small></label>)}</div></fieldset>)}</div>
           <div className={styles.formActions}><button className={styles.secondaryButton} onClick={()=>select('')}>Cancelar preenchimento</button><button className={styles.primaryButton} disabled={!complete||!ready} onClick={submit}><Send size={17}/> Salvar na demonstração</button></div>
         </>}
-        {!assignment&&pending.length>0&&<p className={styles.subtle}>Escolha uma avaliação acima para começar. Para experimentar líder → colaborador, selecione Marina ou Rafael.</p>}
+        {!assignment&&pending.length>0&&<p className={styles.subtle}>Escolha uma avaliação acima para começar. </p>}
         {!pending.length&&<div className={styles.emptyReports}><CheckCircle2 size={36}/><b>Você está em dia nesta demonstração.</b><span>Novas avaliações aparecem quando um novo ciclo é aberto.</span></div>}
       </section>
       <footer className={styles.portalFooter}><ShieldCheck size={16}/> Demonstração local • Nenhum envio para produção</footer>
