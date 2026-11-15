@@ -42,7 +42,7 @@ export function nativePeriodForMonth(schedule: NativeSchedule, targetMonth: stri
   if (first === null || target === null || target < first || ![1,2].includes(schedule.cadenceMonths)) return null;
   if ((target - first) % schedule.cadenceMonths !== 0) return null;
   const [year,month] = targetMonth.split('-').map(Number);
-  const last = new Date(Date.UTC(year, month - 1 + schedule.cadenceMonths + 1, 0));
+  const last = new Date(Date.UTC(year, month - 1 + schedule.cadenceMonths, 0));
   return {
     kind: schedule.kind,
     startDate: targetMonth + '-01',
