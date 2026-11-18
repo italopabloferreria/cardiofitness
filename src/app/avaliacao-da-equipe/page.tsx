@@ -4,7 +4,6 @@ import { Suspense, useMemo, useState } from 'react';
 import {
   CalendarDays,
   CheckCircle2,
-  Clock,
   HeartPulse,
   LoaderCircle,
   Lock,
@@ -13,7 +12,7 @@ import {
   User,
   UsersRound,
 } from 'lucide-react';
-import { useApp } from '@/lib/store';
+import { usePublicForm } from '@/lib/use-public-form';
 import { cycleState, formatDate } from '@/lib/analytics';
 import type { Employee, EvaluationKind, ScoreQuestion } from '@/lib/types';
 import styles from '@/components/native-prototype.module.css';
@@ -74,7 +73,7 @@ const SECTOR_QUESTIONS: Record<string, ScoreQuestion[]> = {
 const DEFAULT_TEAM_QUESTIONS: ScoreQuestion[] = SECTOR_QUESTIONS['Administrativo'];
 
 function TeamEvaluationContent() {
-  const { data, status, submitResponse } = useApp();
+  const { cycle, employees, evaluations, loading, submitResponse } = usePublicForm('team');
 
   const [respondentId, setRespondentId] = useState('');
   const [evaluationMode, setEvaluationMode] = useState<'self' | 'peer' | 'subordinate'>('self');
@@ -87,17 +86,13 @@ function TeamEvaluationContent() {
 
   // Identifica ciclo em andamento
   const activeCycle = useMemo(() => {
-    return data.cycles.find(c => cycleState(c) === 'Em andamento');
-  }, [data.cycles]);
-
-  const lastClosedCycle = useMemo(() => {
-    const closed = data.cycles.filter(c => cycleState(c) === 'Encerrado');
-    return closed.sort((a, b) => b.endDate.localeCompare(a.endDate))[0];
-  }, [data.cycles]);
+    if (!cycle) return undefined;
+    return cycleState(cycle) === 'Em andamento' ? cycle : undefined;
+  }, [cycle]);
 
   const activeEmployees = useMemo(() => {
-    return data.employees.filter(e => e.active).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
-  }, [data.employees]);
+    return employees.filter(e => e.active).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+  }, [employees]);
 
   const respondent = useMemo(() => {
     return activeEmployees.find(e => e.id === respondentId);
@@ -134,10 +129,10 @@ function TeamEvaluationContent() {
   const evaluationObj = useMemo(() => {
     if (!activeCycle) return undefined;
     return (
-      data.evaluations.find(e => e.cycleId === activeCycle.id && e.kind === 'team') ||
-      data.evaluations.find(e => e.cycleId === activeCycle.id)
+      evaluations.find(e => e.cycleId === activeCycle.id && e.kind === 'team') ||
+      evaluations.find(e => e.cycleId === activeCycle.id)
     );
-  }, [activeCycle, data.evaluations]);
+  }, [activeCycle, evaluations]);
 
   const questions: ScoreQuestion[] = useMemo(() => {
     if (evaluationObj?.mapping?.scoreQuestions?.length) {
@@ -200,7 +195,7 @@ function TeamEvaluationContent() {
     }
   }
 
-  if (status === 'loading') {
+  if (loading) {
     return (
       <div className={styles.portal} style={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}>
         <div style={{ textAlign: 'center', padding: 40 }}>
@@ -259,12 +254,6 @@ function TeamEvaluationContent() {
               <p style={{ color: '#475467', fontSize: 15, lineHeight: 1.6, maxWidth: 480, margin: '0 auto 24px' }}>
                 Não há ciclo de avaliação ativo no momento. As avaliações só podem ser preenchidas durante o período oficial definido pelo RH da Cardiofitness.
               </p>
-              {lastClosedCycle && (
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#f8fafc', padding: '10px 18px', borderRadius: 8, fontSize: 13, color: '#64748b' }}>
-                  <Clock size={16} />
-                  <span>Último período encerrado em <b>{formatDate(lastClosedCycle.endDate)}</b> ({lastClosedCycle.name})</span>
-                </div>
-              )}
             </div>
           ) : submitted ? (
             /* Caso 2: Avaliação enviada com sucesso */
