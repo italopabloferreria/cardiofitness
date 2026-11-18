@@ -7,7 +7,7 @@ import type { EvaluationResponse } from '../src/lib/types';
 describe('portal nativo de avaliações e computação de resultados', () => {
   it('computa notas de liderança e atualiza pendências ao registrar resposta nativa', () => {
     const data = createDemoData();
-    const cycle = data.cycles[2]; // Setembro - Outubro / 2026
+    const cycle = data.cycles.find(c => c.name.includes('Outubro')) || data.cycles[0]; // Setembro - Outubro / 2026
     const leadEval = data.evaluations.find(e => e.cycleId === cycle.id && e.kind === 'leadership')!;
 
     // Find a participant whose leadership evaluation is pending in this cycle
@@ -63,7 +63,7 @@ describe('portal nativo de avaliações e computação de resultados', () => {
 
   it('computa autoavaliações e avaliações entre colegas no mesmo setor', () => {
     const data = createDemoData();
-    const cycle = data.cycles[2];
+    const cycle = data.cycles.find(c => c.name.includes('Outubro')) || data.cycles[0];
     const teamEval = data.evaluations.find(e => e.cycleId === cycle.id && e.kind === 'team')!;
 
     const respondent = data.employees.find(e => e.active && !e.isLeader)!;

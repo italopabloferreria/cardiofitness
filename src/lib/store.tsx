@@ -6,7 +6,7 @@ import { prepareCycleForms } from './cycle-template';
 import { cycleState } from './analytics';
 
 const EMPTY: AppData = {employees:[],cycles:[],evaluations:[],responses:[]};
-const DEMO_KEY = 'cardiofitness-demo-v3';
+const DEMO_KEY = 'cardiofitness-app-v1';
 interface AppContext {
   status: 'loading'|'login'|'setup'|'ready'|'password'; mode:'demo'|'live'; user: Bootstrap['user']|null;
   data:AppData; googleConfigured:boolean; error:string|null;
@@ -40,7 +40,30 @@ export function AppProvider({children}:{children:ReactNode}) {
       setMode(boot.mode);setUser(boot.user);setGoogleConfigured(boot.googleConfigured);setError(null);
       let initial=boot.data;
       if(boot.mode==='demo') {
-        try { const stored=localStorage.getItem(DEMO_KEY); if(stored) { const parsed=JSON.parse(stored); if(parsed && ['employees','cycles','evaluations','responses'].every(key=>Array.isArray(parsed[key]))) initial=parsed; } } catch { /* A corrupt local demo never replaces server data. */ }
+        try {
+          ['cardiofitness-demo-v1','cardiofitness-demo-v2','cardiofitness-demo-v3','cardiofitness-demo-v4'].forEach(k=>{try{localStorage.removeItem(k);}catch{}});
+          const stored=localStorage.getItem(DEMO_KEY);
+          if(stored) {
+            const parsed=JSON.parse(stored);
+            if(parsed && ['employees','cycles','evaluations','responses'].every(key=>Array.isArray(parsed[key]))) {
+              const cleanCycles = parsed.cycles.filter((c: Cycle) => {
+                const n = c.name.toLowerCase();
+                if (n.includes('teste') || n.includes('2027') || c.startDate.startsWith('2027')) return false;
+                return n.includes('outubro') || n.includes('novembro');
+              });
+              if (cleanCycles.length === 2) {
+                parsed.cycles = cleanCycles;
+                const cycleIds = new Set(cleanCycles.map((c: Cycle) => c.id));
+                parsed.evaluations = parsed.evaluations.filter((e: Evaluation) => cycleIds.has(e.cycleId));
+                parsed.responses = parsed.responses.filter((r: EvaluationResponse) => parsed.evaluations.some((e: Evaluation) => e.id === r.evaluationId));
+                initial = parsed;
+              } else {
+                initial = boot.data;
+                localStorage.setItem(DEMO_KEY, JSON.stringify(initial));
+              }
+            }
+          }
+        } catch { /* Ignore storage access errors */ }
       }
       if(recovering){setData(EMPTY);setUser(null);setGoogleConfigured(false);setStatus('login');}
       else {setData(initial);setStatus('ready');}

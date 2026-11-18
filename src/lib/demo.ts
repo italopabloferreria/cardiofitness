@@ -37,20 +37,6 @@ export function createDemoData(): AppData {
 
   const cycles: Cycle[] = [
     {
-      id: uid(100),
-      name: 'Maio - Junho / 2026',
-      startDate: '2026-05-01',
-      endDate: '2026-06-30',
-      participants: OFFICIAL_STAFF.map(e => ({ employeeId: e.id, leaderId: e.leaderId })),
-    },
-    {
-      id: uid(101),
-      name: 'Julho - Agosto / 2026',
-      startDate: '2026-07-01',
-      endDate: '2026-08-31',
-      participants: OFFICIAL_STAFF.map(e => ({ employeeId: e.id, leaderId: e.leaderId })),
-    },
-    {
       id: uid(102),
       name: 'Setembro - Outubro / 2026',
       startDate: '2026-09-01',
@@ -90,22 +76,22 @@ export function createDemoData(): AppData {
         kind: form.kind,
         googleFormId: form.googleFormId,
         googleFormUrl: form.url,
-        expectedResponses: formIndex === 0 ? (cycleIndex === 3 ? OFFICIAL_STAFF.length : 20) : 100,
+        expectedResponses: formIndex === 0 ? (cycleIndex === 1 ? OFFICIAL_STAFF.length : 20) : 100,
         mapping: {
           respondentQuestionIds: form.mapping.respondentQuestionIds,
           subjectQuestionIds: form.mapping.subjectQuestionIds,
           departmentQuestionIds: form.mapping.departmentQuestionIds,
           scoreQuestions,
         },
-        lastSyncedAt: cycleIndex === 2 ? '2026-10-07T12:40:00Z' : `${cycle.endDate}T15:00:00Z`,
+        lastSyncedAt: new Date().toISOString(),
         syncMessage: 'Formulário oficial conferido e vinculado ao ciclo.',
       };
       evaluations.push(evaluation);
 
-      // Respostas históricas apenas nos ciclos anteriores (0, 1, 2)
-      if (cycleIndex < 3) {
+      // Respostas históricas no ciclo de Outubro (index 0)
+      if (cycleIndex === 0) {
         if (formIndex === 0) {
-          historicalStaff.slice(0, cycleIndex === 2 ? 18 : 20).forEach((person, index) => {
+          historicalStaff.slice(0, 18).forEach((person, index) => {
             responses.push({
               id: `demo-${id}-${index}`,
               evaluationId: id,
@@ -113,9 +99,9 @@ export function createDemoData(): AppData {
               respondentId: person.id,
               subjectId: person.leaderId || OFFICIAL_LEADERS[0].id,
               kind: 'leadership',
-              submittedAt: cycleIndex === 2 ? `2026-10-0${(index % 7) + 1}T12:00:00Z` : `${cycle.endDate}T12:00:00Z`,
+              submittedAt: `2026-10-0${(index % 7) + 1}T12:00:00Z`,
               scores: Object.fromEntries(
-                scoreQuestions.map((q, j) => [q.id, Math.max(1, Math.min(4, 2 + ((index + j + cycleIndex) % 3)))])
+                scoreQuestions.map((q, j) => [q.id, Math.max(1, Math.min(4, 2 + ((index + j) % 3)))])
               ),
             });
           });
@@ -138,7 +124,7 @@ export function createDemoData(): AppData {
               }
             }
             targets.forEach((subject, j) => {
-              if (cycleIndex === 2 && (index * 5 + j) % 5 === 4) return;
+              if ((index * 5 + j) % 5 === 4) return;
               responses.push({
                 id: `demo-${id}-${index}-${j}`,
                 evaluationId: id,
@@ -146,9 +132,9 @@ export function createDemoData(): AppData {
                 respondentId: person.id,
                 subjectId: subject.id,
                 kind: person.id === subject.id ? 'self' : 'team',
-                submittedAt: cycleIndex === 2 ? `2026-10-0${((index + j) % 7) + 1}T14:00:00Z` : `${cycle.endDate}T14:00:00Z`,
+                submittedAt: `2026-10-0${((index + j) % 7) + 1}T14:00:00Z`,
                 scores: Object.fromEntries(
-                  scoreQuestions.map((q, k) => [q.id, Math.max(1, Math.min(4, 2 + ((index + j + k + cycleIndex) % 3)))])
+                  scoreQuestions.map((q, k) => [q.id, Math.max(1, Math.min(4, 2 + ((index + j + k) % 3)))])
                 ),
               });
             });
