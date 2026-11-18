@@ -338,7 +338,7 @@ function TeamEvaluationContent() {
                   <option value="">-- Selecione seu nome na lista --</option>
                   {activeEmployees.map(emp => (
                     <option key={emp.id} value={emp.id}>
-                      {emp.name} — {emp.department} {emp.isLeader ? '(Líder)' : ''}
+                      {emp.name}
                     </option>
                   ))}
                 </select>
@@ -435,7 +435,7 @@ function TeamEvaluationContent() {
                     {evaluationMode === 'peer' && (
                       <div style={{ marginTop: 12, padding: '14px 16px', background: '#f8fafc', borderRadius: 10, border: '1px solid #e2e8f0' }}>
                         <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#334155', marginBottom: 6 }}>
-                          Selecione qual colega do setor {respondent.department} você vai avaliar: *
+                          Selecione qual colega você vai avaliar: *
                         </label>
                         <select
                           className={styles.input}
@@ -457,7 +457,7 @@ function TeamEvaluationContent() {
                     {evaluationMode === 'subordinate' && (
                       <div style={{ marginTop: 12, padding: '14px 16px', background: '#f8fafc', borderRadius: 10, border: '1px solid #e2e8f0' }}>
                         <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#334155', marginBottom: 6 }}>
-                          Selecione qual liderado da sua equipe você vai avaliar: *
+                          Selecione qual colaborador da sua equipe você vai avaliar: *
                         </label>
                         <select
                           className={styles.input}
@@ -468,7 +468,7 @@ function TeamEvaluationContent() {
                           <option value="">-- Escolha o colaborador --</option>
                           {subordinates.map(s => (
                             <option key={s.id} value={s.id}>
-                              {s.name} ({s.department})
+                              {s.name}
                             </option>
                           ))}
                         </select>

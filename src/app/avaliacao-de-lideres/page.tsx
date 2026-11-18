@@ -12,8 +12,6 @@ import {
   Lock,
   Send,
   ShieldCheck,
-  User,
-  UsersRound,
 } from 'lucide-react';
 import { useApp } from '@/lib/store';
 import { cycleState, formatDate } from '@/lib/analytics';
@@ -27,14 +25,84 @@ const SCALE_LABELS: Record<number, string> = {
   4: 'Supera',
 };
 
-const DEFAULT_LEADER_QUESTIONS: ScoreQuestion[] = [
-  { id: 'l1', title: 'O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?', min: 1, max: 4 },
-  { id: 'l2', title: 'O funcionário tem desempenhado bem sua função?', min: 1, max: 4 },
-  { id: 'l3', title: 'Passa as informações necessárias para seu grupo de trabalho?', min: 1, max: 4 },
-  { id: 'l4', title: 'Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?', min: 1, max: 4 },
-  { id: 'l5', title: 'Consegue influenciar os demais colaboradores e motivá-los a participar das atividades propostas?', min: 1, max: 4 },
-  { id: 'l6', title: 'Entende a diversidade de personalidades e consegue despertar o melhor de cada uma?', min: 1, max: 4 },
-  { id: 'l7', title: 'O funcionário reflete os valores da empresa?', min: 1, max: 4 },
+// Blocos e perguntas exatas do formulário de líderes oficial (Google Forms)
+interface LeaderSection {
+  title: string;
+  questions: ScoreQuestion[];
+}
+
+const LEADER_SECTIONS: LeaderSection[] = [
+  {
+    title: 'DESEMPENHO',
+    questions: [
+      {
+        id: '1860caa3',
+        title: 'O FUNCIONÁRIO FAZ UMA BOA GESTÃO DE TEMPO E CONSEGUE ENTREGAR SUAS ATIVIDADES DENTRO DO PRAZO?',
+        min: 1,
+        max: 4,
+      },
+      {
+        id: '08d6ea80',
+        title: 'O FUNCIONÁRIO TEM DESEMPENHADO BEM SUA FUNÇÃO?',
+        min: 1,
+        max: 4,
+      },
+    ],
+  },
+  {
+    title: 'TRABALHO EM EQUIPE',
+    questions: [
+      {
+        id: '3321e5a8',
+        title: 'PASSA AS INFORMAÇÕES NECESSÁRIAS PARA SEU GRUPO DE TRABALHO?',
+        min: 1,
+        max: 4,
+      },
+      {
+        id: '43bd2532',
+        title: 'BUSCA O DIÁLOGO E A TROCA DE OPINIÕES NO GRUPO PARA QUE TODOS ENCONTREM JUNTOS A MELHOR SOLUÇÃO?',
+        min: 1,
+        max: 4,
+      },
+    ],
+  },
+  {
+    title: 'LIDERANÇA',
+    questions: [
+      {
+        id: '3bcd842e',
+        title: 'CONSEGUE INFLUENCIAR OS DEMAIS COLABORADORES E MOTIVÁ-LOS A PARTICIPAR DAS ATIVIDADES PROPOSTAS?',
+        min: 1,
+        max: 4,
+      },
+      {
+        id: '485e3858',
+        title: 'ENTENDE A DIVERSIDADE DE PERSONALIDADES E CONSEGUE DESPERTAR O MELHOR DE CADA UMA?',
+        min: 1,
+        max: 4,
+      },
+    ],
+  },
+  {
+    title: 'CULTURA',
+    questions: [
+      {
+        id: '580fe4fc',
+        title: 'O FUNCIONÁRIO REFLETE OS VALORES DA EMPRESA?',
+        min: 1,
+        max: 4,
+      },
+    ],
+  },
+];
+
+// As 5 líderes oficiais que aparecem no Google Forms
+const FORMS_LEADERS = [
+  { displayName: 'LIDIA VIANA', searchKey: 'Lídia' },
+  { displayName: 'CLEUMA', searchKey: 'Cleuma' },
+  { displayName: 'GABRIEL', searchKey: 'Gabriel' },
+  { displayName: 'WELISSON', searchKey: 'Welisson' },
+  { displayName: 'MARIA', searchKey: 'Maria Alzirene' },
 ];
 
 function LeadershipEvaluationContent() {
@@ -59,7 +127,9 @@ function LeadershipEvaluationContent() {
   }, [data.cycles]);
 
   const activeEmployees = useMemo(() => {
-    return data.employees.filter(e => e.active).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+    return data.employees
+      .filter(e => e.active)
+      .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
   }, [data.employees]);
 
   const activeLeaders = useMemo(() => {
@@ -72,15 +142,16 @@ function LeadershipEvaluationContent() {
 
   // Líder a ser avaliado
   const targetLeader = useMemo((): Employee | undefined => {
-    if (!respondent) return undefined;
     if (selectedLeaderId) {
       return activeLeaders.find(l => l.id === selectedLeaderId);
     }
-    if (respondent.leaderId) {
+    if (respondent?.leaderId) {
       return activeEmployees.find(e => e.id === respondent.leaderId);
     }
-    // Se for líder, avalia outro líder
-    return activeLeaders.find(l => l.id !== respondent.id);
+    if (respondent?.isLeader) {
+      return activeLeaders.find(l => l.id !== respondent.id);
+    }
+    return undefined;
   }, [respondent, selectedLeaderId, activeLeaders, activeEmployees]);
 
   // Avaliação do ciclo correspondente
@@ -92,38 +163,33 @@ function LeadershipEvaluationContent() {
     );
   }, [activeCycle, data.evaluations]);
 
-  const questions: ScoreQuestion[] = useMemo(() => {
-    if (evaluationObj?.mapping?.scoreQuestions?.length) {
-      return evaluationObj.mapping.scoreQuestions;
-    }
-    return DEFAULT_LEADER_QUESTIONS;
-  }, [evaluationObj]);
+  const allQuestions = useMemo(() => {
+    return LEADER_SECTIONS.flatMap(s => s.questions);
+  }, []);
 
   const isFormComplete = useMemo(() => {
-    if (!respondent || !targetLeader || !questions.length) return false;
-    return questions.every(q => scores[q.id] >= 1 && scores[q.id] <= 4);
-  }, [respondent, targetLeader, questions, scores]);
+    if (!respondent || !targetLeader || !allQuestions.length) return false;
+    return allQuestions.every(q => scores[q.id] >= 1 && scores[q.id] <= 4);
+  }, [respondent, targetLeader, allQuestions, scores]);
 
   function handleRespondentChange(id: string) {
     setRespondentId(id);
-    setSelectedLeaderId('');
     setScores({});
     setObservation('');
     setSubmitted(false);
     setErrorMessage('');
 
     const person = activeEmployees.find(e => e.id === id);
-    if (person && evaluationObj) {
-      const leader = person.leaderId ? activeEmployees.find(e => e.id === person.leaderId) : null;
-      if (leader) {
-        const existing = data.responses.find(
-          r => r.evaluationId === evaluationObj.id && r.respondentId === id && r.subjectId === leader.id
-        );
-        if (existing) {
-          setScores(existing.scores || {});
-          setObservation(existing.textAnswers?.[0]?.answer || '');
-        }
+    if (person) {
+      // Auto-seleciona a líder vinculada ao colaborador
+      if (person.leaderId) {
+        setSelectedLeaderId(person.leaderId);
+      } else if (person.isLeader) {
+        const otherLeader = activeLeaders.find(l => l.id !== person.id);
+        if (otherLeader) setSelectedLeaderId(otherLeader.id);
       }
+    } else {
+      setSelectedLeaderId('');
     }
   }
 
@@ -143,7 +209,7 @@ function LeadershipEvaluationContent() {
         kind: 'leadership',
         scores,
         textAnswers: observation.trim()
-          ? [{ questionId: 'feedback', question: 'Observações sobre a liderança', answer: observation.trim() }]
+          ? [{ questionId: 'feedback', question: 'DEIXE UM FEEDBACKS PARA SEU LÍDER?', answer: observation.trim() }]
           : [],
       });
       setSubmitted(true);
@@ -175,15 +241,15 @@ function LeadershipEvaluationContent() {
         </div>
 
         <div className={styles.asideCenter}>
-          <div className={styles.asideEyebrow}>FORMULÁRIO OFICIAL 1</div>
-          <h1>Avaliação de Líderes</h1>
+          <div className={styles.asideEyebrow}>FORMULÁRIO OFICIAL</div>
+          <h1>AVALIAÇÃO | LÍDERES</h1>
           <p>
-            Seu canal para avaliar a comunicação, clareza, suporte e gestão da liderança do seu setor. Todas as respostas alimentam diretamente o desenvolvimento e aprimoramento da nossa equipe.
+            Avaliação das lideranças da Cardiofitness. Suas respostas apoiam o desenvolvimento contínuo da nossa gestão.
           </p>
 
           <div className={styles.asidePill}>
             <ShieldCheck size={16} />
-            <span>Escala oficial de 1 a 4 · Respostas computadas pelo RH</span>
+            <span>Escala oficial de 1 a 4 · Conforme Google Forms</span>
           </div>
         </div>
 
@@ -224,16 +290,16 @@ function LeadershipEvaluationContent() {
               )}
             </div>
           ) : submitted ? (
-            /* Caso 2: Avaliação enviada com sucesso */
+            /* Caso 2: Avaliação enviada com sucesso (Seção 3: Agradecemos sua participação) */
             <div style={{ background: '#fff', border: '1px solid #d1fae5', borderRadius: 16, padding: '48px 32px', textAlign: 'center' }}>
               <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#ecfdf5', color: '#059669', display: 'grid', placeItems: 'center', margin: '0 auto 20px' }}>
                 <CheckCircle2 size={38} />
               </div>
               <h2 style={{ fontSize: 26, fontWeight: 700, color: '#065f46', marginBottom: 12 }}>
-                Avaliação enviada com sucesso!
+                AGRADECEMOS SUA PARTICIPAÇÃO!
               </h2>
               <p style={{ color: '#047857', fontSize: 15, lineHeight: 1.6, maxWidth: 500, margin: '0 auto 28px' }}>
-                Obrigado por sua avaliação de <b>{targetLeader?.name}</b>. Suas respostas foram registradas e computadas com sucesso no <b>{activeCycle.name}</b>.
+                Sua avaliação sobre <b>{targetLeader?.name}</b> foi registrada com sucesso no <b>{activeCycle.name}</b>.
               </p>
 
               <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -271,126 +337,154 @@ function LeadershipEvaluationContent() {
                 </span>
               </div>
 
-              {/* Bloco 1: Seleção de quem está avaliando */}
-              <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 14, padding: '24px', marginBottom: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
-                <label className={styles.fieldLabel} style={{ fontSize: 15, color: '#0f172a', marginBottom: 6 }}>
-                  1. Quem está avaliando? (Selecione seu nome) *
-                </label>
-                <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 14px' }}>
-                  Escolha seu nome na lista para vincular a avaliação à liderança responsável pelo seu setor.
+              {/* Cabeçalho do Forms */}
+              <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderTop: '8px solid #0573b9', borderRadius: 14, padding: '24px', marginBottom: 20 }}>
+                <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', margin: '0 0 6px', letterSpacing: '-0.02em' }}>
+                  AVALIAÇÃO | LÍDERES
+                </h2>
+                <p style={{ fontSize: 13, color: '#64748b', margin: 0 }}>
+                  Selecione seu nome e responda aos critérios de avaliação da liderança.
                 </p>
+              </div>
 
-                <select
-                  className={styles.input}
-                  style={{ fontSize: 15, fontWeight: 500 }}
-                  value={respondentId}
-                  onChange={e => handleRespondentChange(e.target.value)}
-                  required
-                >
-                  <option value="">-- Selecione seu nome na lista --</option>
-                  {activeEmployees.map(emp => (
-                    <option key={emp.id} value={emp.id}>
-                      {emp.name} — {emp.department} {emp.isLeader ? '(Líder)' : ''}
-                    </option>
-                  ))}
-                </select>
+              {/* Seção 1: Identificação */}
+              <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 14, padding: '24px', marginBottom: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                {/* 1. QUAL O SEU NOME? */}
+                <div style={{ marginBottom: 24 }}>
+                  <label className={styles.fieldLabel} style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', marginBottom: 8, display: 'block' }}>
+                    QUAL O SEU NOME? *
+                  </label>
+                  <select
+                    className={styles.input}
+                    style={{ fontSize: 15, fontWeight: 500 }}
+                    value={respondentId}
+                    onChange={e => handleRespondentChange(e.target.value)}
+                    required
+                  >
+                    <option value="">-- Selecione seu nome na lista --</option>
+                    {activeEmployees.map(emp => (
+                      <option key={emp.id} value={emp.id}>
+                        {emp.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-                {/* Resumo automático do setor e líder */}
+                {/* 2. QUAL É A LÍDER RESPONSÁVEL PELO SEU SETOR? */}
                 {respondent && (
-                  <div style={{ marginTop: 18, padding: '14px 18px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 10 }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, fontSize: 13 }}>
-                      <div>
-                        <span style={{ color: '#64748b', display: 'block', fontSize: 11, textTransform: 'uppercase', fontWeight: 600 }}>Seu setor</span>
-                        <b style={{ color: '#0f172a' }}>{respondent.department}</b>
-                      </div>
-                      <div>
-                        <span style={{ color: '#64748b', display: 'block', fontSize: 11, textTransform: 'uppercase', fontWeight: 600 }}>Líder do seu setor</span>
-                        <b style={{ color: '#0573b9', fontSize: 14 }}>
-                          {targetLeader?.name || 'Selecione abaixo'}
-                        </b>
-                      </div>
-                    </div>
+                  <div>
+                    <label className={styles.fieldLabel} style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', marginBottom: 8, display: 'block' }}>
+                      QUAL É A LÍDER RESPONSÁVEL PELO SEU SETOR? *
+                    </label>
+                    <div style={{ display: 'grid', gap: 8 }}>
+                      {FORMS_LEADERS.map(fl => {
+                        const leaderObj = activeLeaders.find(l => l.name.toLowerCase().includes(fl.searchKey.toLowerCase()));
+                        const leaderId = leaderObj?.id || '';
+                        const isSelected = (selectedLeaderId || targetLeader?.id) === leaderId;
 
-                    {/* Caso a pessoa selecionada seja um líder, ela pode escolher outro líder para avaliar */}
-                    {respondent.isLeader && (
-                      <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid #e2e8f0' }}>
-                        <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#334155', marginBottom: 6 }}>
-                          Como líder, selecione qual colega de liderança deseja avaliar:
-                        </label>
-                        <select
-                          className={styles.input}
-                          value={selectedLeaderId || targetLeader?.id || ''}
-                          onChange={e => setSelectedLeaderId(e.target.value)}
-                        >
-                          {activeLeaders
-                            .filter(l => l.id !== respondent.id)
-                            .map(l => (
-                              <option key={l.id} value={l.id}>
-                                {l.name} ({l.department})
-                              </option>
-                            ))}
-                        </select>
-                      </div>
-                    )}
+                        return (
+                          <label
+                            key={fl.displayName}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 12,
+                              padding: '12px 16px',
+                              borderRadius: 10,
+                              border: `2px solid ${isSelected ? '#0573b9' : '#e2e8f0'}`,
+                              background: isSelected ? '#f0f7fd' : '#fff',
+                              cursor: 'pointer',
+                              fontWeight: isSelected ? 700 : 500,
+                              color: isSelected ? '#0573b9' : '#334155',
+                              transition: 'all 0.15s ease',
+                            }}
+                          >
+                            <input
+                              type="radio"
+                              name="leaderSelection"
+                              value={leaderId}
+                              checked={isSelected}
+                              onChange={() => setSelectedLeaderId(leaderId)}
+                              required
+                            />
+                            <span>{fl.displayName}</span>
+                            {isSelected && (
+                              <span style={{ marginLeft: 'auto', fontSize: 12, color: '#0573b9', fontWeight: 600 }}>
+                                Selecionada
+                              </span>
+                            )}
+                          </label>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* Bloco 2: Perguntas de Avaliação */}
+              {/* Seção 2: LÍDERES (Critérios com títulos de blocos) */}
               {respondent && targetLeader && (
                 <>
-                  <div style={{ marginBottom: 20 }}>
-                    <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0f172a', margin: '0 0 6px' }}>
-                      2. Questões de Avaliação da Liderança
+                  <div style={{ background: '#0573b9', borderRadius: 12, padding: '16px 20px', color: '#fff', marginBottom: 20 }}>
+                    <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em', opacity: 0.85, fontWeight: 700 }}>
+                      SEÇÃO 2 DE 3
+                    </div>
+                    <h3 style={{ fontSize: 20, fontWeight: 800, margin: '4px 0 0' }}>
+                      LÍDERES
                     </h3>
-                    <p style={{ fontSize: 13, color: '#64748b', margin: 0 }}>
-                      Avalie cada competência de <b>{targetLeader.name}</b> conforme a escala de 1 a 4.
-                    </p>
                   </div>
 
-                  <div className={styles.questions}>
-                    {questions.map((q, idx) => (
-                      <fieldset key={q.id} className={styles.questionCard}>
-                        <legend>
-                          <span className={styles.questionNumber}>Pergunta {idx + 1} de {questions.length}</span>
-                          <br />
-                          {q.title}
-                        </legend>
+                  {LEADER_SECTIONS.map((section, sIdx) => (
+                    <div key={section.title} style={{ marginBottom: 28 }}>
+                      {/* Título do Bloco (DESEMPENHO, TRABALHO EM EQUIPE, LIDERANÇA, CULTURA) */}
+                      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 10, padding: '12px 18px', marginBottom: 14 }}>
+                        <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#334155', letterSpacing: '0.04em' }}>
+                          {section.title}
+                        </h4>
+                      </div>
 
-                        <div className={styles.ratingOptions}>
-                          {[1, 2, 3, 4].map(val => {
-                            const isSelected = scores[q.id] === val;
-                            return (
-                              <label
-                                key={val}
-                                className={isSelected ? styles.selectedRating : styles.rating}
-                              >
-                                <input
-                                  type="radio"
-                                  name={`score-${q.id}`}
-                                  value={val}
-                                  checked={isSelected}
-                                  onChange={() => setScores(prev => ({ ...prev, [q.id]: val }))}
-                                  required
-                                />
-                                <b>{val}</b>
-                                <small>{SCALE_LABELS[val]}</small>
-                              </label>
-                            );
-                          })}
-                        </div>
-                      </fieldset>
-                    ))}
-                  </div>
+                      <div className={styles.questions}>
+                        {section.questions.map(q => (
+                          <fieldset key={q.id} className={styles.questionCard}>
+                            <legend style={{ fontWeight: 600, color: '#0f172a', fontSize: 14, lineHeight: 1.5 }}>
+                              {q.title} *
+                            </legend>
 
-                  {/* Bloco 3: Observações opcionais */}
+                            <div className={styles.ratingOptions}>
+                              {[1, 2, 3, 4].map(val => {
+                                const isSelected = scores[q.id] === val;
+                                return (
+                                  <label
+                                    key={val}
+                                    className={isSelected ? styles.selectedRating : styles.rating}
+                                  >
+                                    <input
+                                      type="radio"
+                                      name={`score-${q.id}`}
+                                      value={val}
+                                      checked={isSelected}
+                                      onChange={() => setScores(prev => ({ ...prev, [q.id]: val }))}
+                                      required
+                                    />
+                                    <b>{val}</b>
+                                    <small>{SCALE_LABELS[val]}</small>
+                                  </label>
+                                );
+                              })}
+                            </div>
+                          </fieldset>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Campo de Feedback Aberto do Google Forms */}
                   <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 14, padding: '24px', marginBottom: 24 }}>
-                    <label className={styles.fieldLabel} style={{ fontSize: 14, color: '#0f172a' }}>
-                      3. Observações e Pontos de Desenvolvimento (Opcional)
+                    <label className={styles.fieldLabel} style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', marginBottom: 8, display: 'block' }}>
+                      DEIXE UM FEEDBACKS PARA SEU LÍDER?
                     </label>
                     <textarea
                       className={styles.textarea}
-                      placeholder="Deixe comentários construtivos sobre a comunicação, liderança ou sugestões de melhoria..."
+                      placeholder="Texto de resposta curta..."
                       value={observation}
                       onChange={e => setObservation(e.target.value)}
                       rows={3}
@@ -409,7 +503,7 @@ function LeadershipEvaluationContent() {
                       type="submit"
                       className={styles.primaryButton}
                       disabled={!isFormComplete || submitting}
-                      style={{ minWidth: 240, height: 50, fontSize: 15 }}
+                      style={{ minWidth: 260, height: 50, fontSize: 15 }}
                     >
                       {submitting ? (
                         <>
@@ -417,7 +511,7 @@ function LeadershipEvaluationContent() {
                         </>
                       ) : (
                         <>
-                          <Send size={18} /> Enviar Avaliação de {targetLeader.name.split(' ')[0]}
+                          <Send size={18} /> Enviar Avaliação
                         </>
                       )}
                     </button>
