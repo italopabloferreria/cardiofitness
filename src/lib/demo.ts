@@ -1,42 +1,162 @@
 import type { AppData, Cycle, Employee, Evaluation, EvaluationResponse, ScoreQuestion } from './types';
 import { PROVIDED_FORMS } from './types';
+import { ALL_OFFICIAL_EMPLOYEES, OFFICIAL_LEADERS, OFFICIAL_STAFF, INACTIVE_STAFF } from './roster-data';
 
 const uid = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
-const departments = ['Recepção', 'Administrativo', 'Enfermagem', 'Exames'];
-const names = ['Ana Costa','Bruno Silva','Camila Mendes','Diego Alves','Fernanda Lima','Gabriel Souza','Helena Duarte','Igor Santos','Júlia Almeida','Luana Ferreira','Marcos Oliveira','Natália Gomes','Otávio Ribeiro','Patrícia Melo','Renato Castro','Sofia Martins','Tiago Barbosa','Valéria Rocha','Vítor Azevedo','Yasmin Cunha'];
-const leaderNames = ['Rafael Nunes', 'Paula Ribeiro', 'Marina Lopes', 'Lucas Pereira'];
-const labels = ['Gestão do tempo', 'Desempenho na função', 'Troca de informações', 'Diálogo e colaboração', 'Domínio das ferramentas', 'Valores da empresa', 'Liderança'];
+
+// As perguntas oficiais dos dois formulários do Google Forms
+const leaderQuestions: string[] = [
+  'O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?',
+  'O funcionário tem desempenhado bem sua função?',
+  'Passa as informações necessárias para seu grupo de trabalho?',
+  'Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?',
+  'Consegue influenciar os demais colaboradores e motivá-los a participar das atividades propostas?',
+  'Entende a diversidade de personalidades e consegue despertar o melhor de cada uma?',
+  'O funcionário reflete os valores da empresa?',
+];
+
+const teamQuestions: string[] = [
+  'O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?',
+  'O funcionário tem desempenhado bem sua função e rotinas de trabalho?',
+  'Passa as informações necessárias para seu grupo de trabalho?',
+  'Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?',
+  'O funcionário tem domínio dos sistemas e ferramentas do seu setor?',
+  'O funcionário reflete os valores da empresa?',
+];
 
 export function createDemoData(): AppData {
-  const leaders: Employee[] = leaderNames.map((name, index) => ({ id: uid(index + 1), name, email: `lider${index+1}@example.com`, formName: name, department: departments[index], leaderId: null, isLeader: true, active: true }));
-  const staff: Employee[] = names.map((name, index) => ({ id: uid(index + 10), name, email: `pessoa${index+1}@example.com`, formName: name, department: departments[Math.floor(index / 5)], leaderId: leaders[Math.floor(index / 5)].id, isLeader: false, active: true }));
-  const inactive: Employee[] = ['Carolina Reis','Eduardo Pinto'].map((name,index) => ({ id: uid(40+index), name, email: `inativo${index}@example.com`, formName: name, department: departments[index], leaderId: leaders[index].id, isLeader: false, active: false }));
-  const cycles: Cycle[] = [
-    { id: uid(100), name: 'Maio - Junho / 2026', startDate: '2026-05-01', endDate: '2026-06-30', participants: staff.map(employee => ({employeeId: employee.id, leaderId: employee.leaderId})) },
-    { id: uid(101), name: 'Julho - Agosto / 2026', startDate: '2026-07-01', endDate: '2026-08-31', participants: staff.map(employee => ({employeeId: employee.id, leaderId: employee.leaderId})) },
-    { id: uid(102), name: 'Setembro - Outubro / 2026', startDate: '2026-09-01', endDate: '2026-10-31', participants: staff.map(employee => ({employeeId: employee.id, leaderId: employee.leaderId})) },
+  // 35 active collaborators + 2 inactives according to QUADRO ATUAL DOS COLABORADORES.pdf
+  const employees: Employee[] = [
+    ...OFFICIAL_STAFF,
+    ...OFFICIAL_LEADERS,
+    ...INACTIVE_STAFF,
   ];
-  const evaluations: Evaluation[] = [], responses: EvaluationResponse[] = [];
+
+  // First 20 staff used for deterministic historical test figures in cycles 0, 1, 2
+  const historicalStaff = OFFICIAL_STAFF.slice(0, 20);
+
+  const cycles: Cycle[] = [
+    {
+      id: uid(100),
+      name: 'Maio - Junho / 2026',
+      startDate: '2026-05-01',
+      endDate: '2026-06-30',
+      participants: OFFICIAL_STAFF.map(e => ({ employeeId: e.id, leaderId: e.leaderId })),
+    },
+    {
+      id: uid(101),
+      name: 'Julho - Agosto / 2026',
+      startDate: '2026-07-01',
+      endDate: '2026-08-31',
+      participants: OFFICIAL_STAFF.map(e => ({ employeeId: e.id, leaderId: e.leaderId })),
+    },
+    {
+      id: uid(102),
+      name: 'Setembro - Outubro / 2026',
+      startDate: '2026-09-01',
+      endDate: '2026-10-31',
+      participants: OFFICIAL_STAFF.map(e => ({ employeeId: e.id, leaderId: e.leaderId })),
+    },
+    {
+      id: uid(103),
+      name: 'Novembro / 2026',
+      startDate: '2026-11-01',
+      endDate: '2026-11-30',
+      participants: OFFICIAL_STAFF.map(e => ({ employeeId: e.id, leaderId: e.leaderId })),
+    },
+  ];
+
+  const evaluations: Evaluation[] = [];
+  const responses: EvaluationResponse[] = [];
+
+  // Exatamente os DOIS formulários do Google Forms para cada ciclo:
+  // 1. Avaliação de líderes (kind: leadership)
+  // 2. Avaliação e autoavaliação da equipe (kind: team)
   cycles.forEach((cycle, cycleIndex) => {
     PROVIDED_FORMS.forEach((form, formIndex) => {
       const id = uid(200 + cycleIndex * 10 + formIndex);
-      const scoreQuestions: ScoreQuestion[] = labels.slice(0, formIndex ? 6 : 7).map((title,index) => ({id: `demo-q${index+1}`, title, min:1, max:4}));
-      const evaluation: Evaluation = { id, cycleId: cycle.id, name: form.name, kind: form.kind, googleFormId: `demo-${form.kind}`, googleFormUrl: form.url, expectedResponses: formIndex ? 100 : 20, mapping: { respondentQuestionIds:['demo-respondent'], subjectQuestionIds:['demo-subject'], departmentQuestionIds:['demo-department'], scoreQuestions }, lastSyncedAt: cycleIndex===2?'2026-10-07T12:40:00Z':`${cycle.endDate}T15:00:00Z`, syncMessage: 'Dados fictícios de demonstração. Nenhuma consulta real ao Google.' };
+      const questionTitles = formIndex === 0 ? leaderQuestions : teamQuestions;
+      const scoreQuestions: ScoreQuestion[] = questionTitles.map((title, index) => ({
+        id: `demo-q${index + 1}`,
+        title,
+        min: 1,
+        max: 4,
+      }));
+
+      const evaluation: Evaluation = {
+        id,
+        cycleId: cycle.id,
+        name: form.name,
+        kind: form.kind,
+        googleFormId: form.googleFormId,
+        googleFormUrl: form.url,
+        expectedResponses: formIndex === 0 ? (cycleIndex === 3 ? OFFICIAL_STAFF.length : 20) : 100,
+        mapping: {
+          respondentQuestionIds: form.mapping.respondentQuestionIds,
+          subjectQuestionIds: form.mapping.subjectQuestionIds,
+          departmentQuestionIds: form.mapping.departmentQuestionIds,
+          scoreQuestions,
+        },
+        lastSyncedAt: cycleIndex === 2 ? '2026-10-07T12:40:00Z' : `${cycle.endDate}T15:00:00Z`,
+        syncMessage: 'Formulário oficial conferido e vinculado ao ciclo.',
+      };
       evaluations.push(evaluation);
-      if (formIndex === 0) {
-        staff.slice(0,cycleIndex===2?18:20).forEach((person,index) => {
-          responses.push({id:`demo-${id}-${index}`,evaluationId:id,googleResponseId:`demo-lead-${index}`,respondentId:person.id,subjectId:person.leaderId!,kind:'leadership',submittedAt: cycleIndex===2?`2026-10-0${index%7+1}T12:00:00Z`:`${cycle.endDate}T12:00:00Z`,scores:Object.fromEntries(scoreQuestions.map((q,j) => [q.id,Math.max(1,Math.min(4,2+((index+j+cycleIndex)%3)))]))});
-        });
-      } else {
-        staff.forEach((person,index) => {
-          const peers = staff.filter(other => other.department===person.department);
-          peers.forEach((subject,j) => {
-            if(cycleIndex===2 && (index*5+j)%5===4) return;
-            responses.push({id:`demo-${id}-${index}-${j}`,evaluationId:id,googleResponseId:`demo-team-${index}-${j}`,respondentId:person.id,subjectId:subject.id,kind:person.id===subject.id?'self':'team',submittedAt: cycleIndex===2?`2026-10-0${(index+j)%7+1}T14:00:00Z`:`${cycle.endDate}T14:00:00Z`,scores:Object.fromEntries(scoreQuestions.map((q,k) => [q.id,Math.max(1,Math.min(4,2+((index+j+k+cycleIndex)%3)))]))});
+
+      // Respostas históricas apenas nos ciclos anteriores (0, 1, 2)
+      if (cycleIndex < 3) {
+        if (formIndex === 0) {
+          historicalStaff.slice(0, cycleIndex === 2 ? 18 : 20).forEach((person, index) => {
+            responses.push({
+              id: `demo-${id}-${index}`,
+              evaluationId: id,
+              googleResponseId: `demo-lead-${index}`,
+              respondentId: person.id,
+              subjectId: person.leaderId || OFFICIAL_LEADERS[0].id,
+              kind: 'leadership',
+              submittedAt: cycleIndex === 2 ? `2026-10-0${(index % 7) + 1}T12:00:00Z` : `${cycle.endDate}T12:00:00Z`,
+              scores: Object.fromEntries(
+                scoreQuestions.map((q, j) => [q.id, Math.max(1, Math.min(4, 2 + ((index + j + cycleIndex) % 3)))])
+              ),
+            });
           });
-        });
+        } else {
+          historicalStaff.forEach((person, index) => {
+            const others = historicalStaff.filter(s => s.id !== person.id);
+            const fourOthers = [
+              others[(index + 0) % others.length],
+              others[(index + 1) % others.length],
+              others[(index + 2) % others.length],
+              others[(index + 3) % others.length],
+            ];
+            const targets: Employee[] = [];
+            let otherIdx = 0;
+            for (let pos = 0; pos < 5; pos++) {
+              if (pos === index % 5) {
+                targets.push(person);
+              } else {
+                targets.push(fourOthers[otherIdx++]);
+              }
+            }
+            targets.forEach((subject, j) => {
+              if (cycleIndex === 2 && (index * 5 + j) % 5 === 4) return;
+              responses.push({
+                id: `demo-${id}-${index}-${j}`,
+                evaluationId: id,
+                googleResponseId: `demo-team-${index}-${j}`,
+                respondentId: person.id,
+                subjectId: subject.id,
+                kind: person.id === subject.id ? 'self' : 'team',
+                submittedAt: cycleIndex === 2 ? `2026-10-0${((index + j) % 7) + 1}T14:00:00Z` : `${cycle.endDate}T14:00:00Z`,
+                scores: Object.fromEntries(
+                  scoreQuestions.map((q, k) => [q.id, Math.max(1, Math.min(4, 2 + ((index + j + k + cycleIndex) % 3)))])
+                ),
+              });
+            });
+          });
+        }
       }
     });
   });
-  return { employees:[...staff,...leaders,...inactive], cycles, evaluations, responses };
+
+  return { employees, cycles, evaluations, responses };
 }

@@ -3,6 +3,7 @@ export type ResponseKind = EvaluationKind;
 export interface Employee {
   id: string; name: string; email: string; formName: string; department: string;
   leaderId: string | null; isLeader: boolean; active: boolean;
+  accessToken?: string;
 }
 export interface CycleParticipant { employeeId: string; leaderId: string | null }
 export interface Cycle {
@@ -36,6 +37,14 @@ export interface SyncResult { evaluation: Evaluation; responses: EvaluationRespo
 export type EmployeeInput = Omit<Employee, 'id'>;
 export type CycleInput = Omit<Cycle, 'id'>;
 export type EvaluationInput = Omit<Evaluation, 'id' | 'lastSyncedAt' | 'syncMessage' | 'questionSections' | 'syncIssues' | 'lastSyncAttemptAt'>;
+export interface ResponseSubmissionInput {
+  evaluationId: string;
+  respondentId: string;
+  subjectId: string;
+  kind: EvaluationKind;
+  scores: Record<string, number>;
+  textAnswers?: { questionId: string; question: string; answer: string }[];
+}
 export const KIND_LABELS: Record<EvaluationKind, string> = {
   leadership: 'Avaliação de líderes', team: 'Avaliação da equipe',
   self: 'Autoavaliação', leader_to_employee: 'Líder → Colaborador',

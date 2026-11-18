@@ -1,21 +1,23 @@
 'use client';
 import { createContext, useContext, useEffect, useState, useCallback, useRef, type ReactNode } from 'react';
-import type { AppData, Bootstrap, Cycle, CycleInput, Employee, EmployeeInput, Evaluation, EvaluationInput, FormMetadata, SyncResult } from './types';
+import type { AppData, Bootstrap, Cycle, CycleInput, Employee, EmployeeInput, Evaluation, EvaluationInput, EvaluationResponse, FormMetadata, ResponseSubmissionInput, SyncResult } from './types';
 import { createDemoData } from './demo';
 import { prepareCycleForms } from './cycle-template';
 
 const EMPTY: AppData = {employees:[],cycles:[],evaluations:[],responses:[]};
-const DEMO_KEY = 'cardiofitness-demo-v1';
+const DEMO_KEY = 'cardiofitness-demo-v3';
 interface AppContext {
   status: 'loading'|'login'|'setup'|'ready'|'password'; mode:'demo'|'live'; user: Bootstrap['user']|null;
   data:AppData; googleConfigured:boolean; error:string|null;
   login:(email:string,password:string)=>Promise<void>; logout:()=>Promise<void>;
   changePassword:(currentPassword:string,newPassword:string,confirmation:string)=>Promise<void>;
   saveEmployee:(input:EmployeeInput,id?:string)=>Promise<Employee>;
+  deleteEmployee:(id:string)=>Promise<void>;
   saveCycle:(input:CycleInput,id?:string)=>Promise<Cycle>;
   prepareCycle:(input:CycleInput,sourceCycleId:string)=>Promise<Cycle>;
   saveEvaluation:(input:EvaluationInput,id?:string)=>Promise<Evaluation>;
   syncEvaluation:(id:string)=>Promise<SyncResult>; inspectForm:(formId:string)=>Promise<FormMetadata>; resetDemo:()=>void;
+  submitResponse:(input:ResponseSubmissionInput)=>Promise<EvaluationResponse>;
 }
 const Context=createContext<AppContext|null>(null);
 async function request<T>(url:string, options:RequestInit={}):Promise<T> {
@@ -91,8 +93,43 @@ export function AppProvider({children}:{children:ReactNode}) {
     if(input.email&&data.employees.some(employee=>employee.id!==id&&employee.email.toLowerCase()===input.email.toLowerCase()))throw new Error('Este e-mail já está cadastrado.');
     if(input.leaderId&&!data.employees.some(employee=>employee.id===input.leaderId&&employee.active&&employee.isLeader))throw new Error('Selecione uma liderança ativa.');
     if(id&&(!input.active||!input.isLeader)&&data.employees.some(employee=>employee.leaderId===id&&employee.active))throw new Error('Atualize os vínculos dos colaboradores antes de desativar esta liderança.');
-    const saved=mode==='demo'?{...input,id:id??crypto.randomUUID()}:await authorizedRequest<Employee>(`/api/employees${id?`/${id}`:''}`,{method:id?'PATCH':'POST',body:JSON.stringify(input)});
-    setData(current=>({...current,employees:id?current.employees.map(employee=>employee.id===id?saved:employee):[...current.employees,saved]}));return saved;
+    const slug = (input.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const toSave: Employee = mode === 'demo'
+      ? { ...input, id: id ?? crypto.randomUUID(), accessToken: input.accessToken || slug }
+      : await authorizedRequest<Employee>(`/api/employees${id ? `/${id}` : ''}`, { method: id ? 'PATCH' : 'POST', body: JSON.stringify(input) });
+    if (!toSave.accessToken) toSave.accessToken = slug;
+    setData(current => ({ ...current, employees: id ? current.employees.map(employee => employee.id === id ? toSave : employee) : [...current.employees, toSave] }));
+    return toSave;
+  };
+  const deleteEmployee = async (id: string) => {
+    const emp = data.employees.find(e => e.id === id);
+    if (!emp) return;
+    if (data.responses.some(r => r.respondentId === id || r.subjectId === id)) {
+      throw new Error('Este colaborador possui avaliações no histórico. Para preservar os dados, use "Desativar" em vez de excluir.');
+    }
+    if (data.employees.some(e => e.leaderId === id && e.active)) {
+      throw new Error('Atualize os vínculos dos colaboradores antes de remover esta liderança.');
+    }
+    if (mode === 'demo') {
+      setData(current => ({
+        ...current,
+        employees: current.employees.filter(e => e.id !== id),
+        cycles: current.cycles.map(c => ({
+          ...c,
+          participants: c.participants.filter(p => p.employeeId !== id),
+        })),
+      }));
+    } else {
+      await authorizedRequest(`/api/employees/${id}`, { method: 'DELETE' });
+      setData(current => ({
+        ...current,
+        employees: current.employees.filter(e => e.id !== id),
+        cycles: current.cycles.map(c => ({
+          ...c,
+          participants: c.participants.filter(p => p.employeeId !== id),
+        })),
+      }));
+    }
   };
   const saveCycle=async(input:CycleInput,id?:string)=>{
     if(!input.name.trim()||!input.startDate||!input.endDate||input.startDate>input.endDate)throw new Error('Informe nome e um período válido para o ciclo.');
@@ -137,6 +174,46 @@ export function AppProvider({children}:{children:ReactNode}) {
     return authorizedRequest<FormMetadata>(`/api/google/forms/inspect?formId=${encodeURIComponent(formId)}`);
   };
   const resetDemo=()=>{if(mode!=='demo')return;setData(createDemoData());};
-  return <Context.Provider value={{status,mode,user,data,googleConfigured,error,login,logout,changePassword,saveEmployee,saveCycle,prepareCycle,saveEvaluation,syncEvaluation,inspectForm,resetDemo}}>{children}</Context.Provider>;
+  const submitResponse=async(input:ResponseSubmissionInput)=>{
+    if(!input.evaluationId||!input.respondentId||!input.subjectId)throw new Error('Identificação ou avaliação incompleta.');
+    if(!input.scores||!Object.keys(input.scores).length)throw new Error('Responda às perguntas com notas de 1 a 4.');
+    for(const val of Object.values(input.scores)){
+      if(!Number.isInteger(val)||val<1||val>4)throw new Error('Todas as notas devem ser inteiras de 1 a 4.');
+    }
+    const newResponse:EvaluationResponse={
+      id:crypto.randomUUID(),
+      evaluationId:input.evaluationId,
+      googleResponseId:`native-${Date.now()}-${input.respondentId.slice(0,8)}`,
+      respondentId:input.respondentId,
+      subjectId:input.subjectId,
+      kind:input.kind,
+      submittedAt:new Date().toISOString(),
+      scores:input.scores,
+      textAnswers:input.textAnswers||[]
+    };
+    if(mode==='demo'){
+      setData(current=>({
+        ...current,
+        responses:[
+          ...current.responses.filter(r=>!(r.evaluationId===input.evaluationId&&r.respondentId===input.respondentId&&r.subjectId===input.subjectId)),
+          newResponse
+        ]
+      }));
+      return newResponse;
+    }
+    const saved=await request<EvaluationResponse>('/api/evaluations/submit',{
+      method:'POST',
+      body:JSON.stringify(newResponse)
+    });
+    setData(current=>({
+      ...current,
+      responses:[
+        ...current.responses.filter(r=>!(r.evaluationId===input.evaluationId&&r.respondentId===input.respondentId&&r.subjectId===input.subjectId)),
+        saved
+      ]
+    }));
+    return saved;
+  };
+  return <Context.Provider value={{status,mode,user,data,googleConfigured,error,login,logout,changePassword,saveEmployee,deleteEmployee,saveCycle,prepareCycle,saveEvaluation,syncEvaluation,inspectForm,resetDemo,submitResponse}}>{children}</Context.Provider>;
 }
 export function useApp(){const context=useContext(Context);if(!context)throw new Error('AppProvider ausente');return context;}

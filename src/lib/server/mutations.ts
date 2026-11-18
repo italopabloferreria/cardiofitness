@@ -19,6 +19,23 @@ export async function saveEmployee(request: Request, id?: string) {
   databaseError(error);
   return json(employeeFromRow(data!), id ? 200 : 201);
 }
+export async function deleteEmployee(request: Request, id: string) {
+  assertOrigin(request);
+  requireId(id);
+  const { client } = await requireRh();
+  const app = await getAppData(client);
+  const employee = app.employees.find(e => e.id === id);
+  if (!employee) throw new ApiError(404, 'Colaborador não encontrado.');
+  if (app.responses.some(r => r.respondentId === id || r.subjectId === id)) {
+    throw new ApiError(409, 'Este colaborador possui avaliações no histórico. Desative o cadastro para preservar os registros.');
+  }
+  if (app.employees.some(e => e.leaderId === id && e.active)) {
+    throw new ApiError(409, 'Atualize os vínculos dos colaboradores antes de remover esta liderança.');
+  }
+  const { error } = await client.from('employees').delete().eq('id', id);
+  databaseError(error);
+  return json({ ok: true, id }, 200);
+}
 export async function saveCycle(request: Request, id?: string) {
   assertOrigin(request);
   if (id) requireId(id);

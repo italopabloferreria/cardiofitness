@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { ArrowDownToLine, ArrowLeft, ArrowRight, BarChart3, CalendarDays, Check, ChevronLeft, ChevronRight, ClipboardList, Copy, Database, ExternalLink, FileSpreadsheet, LayoutDashboard, LoaderCircle, LockKeyhole, LogOut, Menu, Pencil, Plus, RefreshCw, Search, Settings2, ShieldCheck, UserRoundCheck, UsersRound, X, CircleOff } from 'lucide-react';
+import { ArrowDownToLine, ArrowLeft, ArrowRight, BarChart3, CalendarDays, Check, ChevronLeft, ChevronRight, ClipboardList, Copy, Database, ExternalLink, FileSpreadsheet, LayoutDashboard, LoaderCircle, LockKeyhole, LogOut, Menu, Pencil, Plus, RefreshCw, Search, Settings2, ShieldCheck, UserRoundCheck, UsersRound, X, CircleOff, Trash2 } from 'lucide-react';
 import { useApp } from '@/lib/store';
 import PasswordRecovery from './password-recovery';
 import SyncCenter from './sync-center';
@@ -15,13 +15,14 @@ import { getParticipation } from '@/lib/participation';
 import { isNovember2026Cycle, november2026FormStatus, NOVEMBER_2026_END } from '@/lib/november-campaign';
 import { shareableCycleForms, suggestNextCycle } from '@/lib/quick-cycle';
 import { resolveFormId, resolveFormLink } from '@/lib/form-link';
+import { getPermanentEvaluationUrl } from '@/lib/roster-data';
 import { KIND_LABELS, PROVIDED_FORMS, type AppData, type Cycle, type CycleInput, type Employee, type EmployeeInput, type Evaluation, type EvaluationInput, type EvaluationKind, type EvaluationResponse, type FormMetadata } from '@/lib/types';
 
-type View = 'dashboard' | 'employees' | 'employee' | 'evaluations' | 'pending' | 'result' | 'reports' | 'sync' | 'settings';
-type Editor = { type: 'quick-cycle' } | { type: 'employee'; item?: Employee } | { type: 'deactivate'; item: Employee } | { type: 'cycle'; item?: Cycle; sourceCycleId?:string } | { type: 'evaluation'; item?: Evaluation; preset?: typeof PROVIDED_FORMS[number] } | null;
-const NAV = [{ id:'dashboard', label:'Dashboard', icon:LayoutDashboard }, { id:'employees', label:'Colaboradores', icon:UsersRound }, { id:'evaluations', label:'Avaliações', icon:ClipboardList }, { id:'pending', label:'Pendências', icon:UserRoundCheck }, { id:'reports', label:'Relatórios', icon:BarChart3 }, { id:'sync', label:'Sincronização', icon:RefreshCw }, { id:'settings', label:'Configurações', icon:Settings2 }] as const;
-const titles: Record<View,string> = {dashboard:'Dashboard',employees:'Colaboradores',employee:'Detalhe do colaborador',evaluations:'Avaliações',pending:'Pendências',result:'Resultado da avaliação',reports:'Relatórios',sync:'Sincronização',settings:'Configurações'};
-const subtitles: Record<View,string> = {dashboard:'Uma visão clara das pessoas, das avaliações e de cada ciclo.',employees:'Cadastre, selecione e acompanhe as pessoas da Cardiofitness.',employee:'Resultados individuais e histórico ao longo dos ciclos.',evaluations:'O Google Forms coleta. Aqui, o RH acompanha os resultados.',pending:'Veja quem ainda precisa responder às avaliações do ciclo.',result:'Notas e respostas de texto identificadas do formulário selecionado.',reports:'Selecione o recorte e exporte os resultados do ciclo.',sync:'Confira a conexão, as consultas e as respostas a revisar.',settings:'Organize ciclos, participantes e os formulários de avaliação.'};
+type View = 'dashboard' | 'links' | 'employees' | 'employee' | 'evaluations' | 'pending' | 'result' | 'reports' | 'sync' | 'settings';
+type Editor = { type: 'quick-cycle' } | { type: 'employee'; item?: Employee } | { type: 'deactivate'; item: Employee } | { type: 'delete-employee'; item: Employee } | { type: 'cycle'; item?: Cycle; sourceCycleId?:string } | { type: 'evaluation'; item?: Evaluation; preset?: typeof PROVIDED_FORMS[number] } | null;
+const NAV = [{ id:'dashboard', label:'Dashboard', icon:LayoutDashboard }, { id:'links', label:'Links de Avaliação', icon:ExternalLink }, { id:'employees', label:'Colaboradores', icon:UsersRound }, { id:'evaluations', label:'Avaliações', icon:ClipboardList }, { id:'pending', label:'Pendências', icon:UserRoundCheck }, { id:'reports', label:'Relatórios', icon:BarChart3 }, { id:'sync', label:'Sincronização', icon:RefreshCw }, { id:'settings', label:'Configurações', icon:Settings2 }] as const;
+const titles: Record<View,string> = {dashboard:'Dashboard',links:'Links de Avaliação',employees:'Colaboradores',employee:'Detalhe do colaborador',evaluations:'Avaliações',pending:'Pendências',result:'Resultado da avaliação',reports:'Relatórios',sync:'Sincronização',settings:'Configurações'};
+const subtitles: Record<View,string> = {dashboard:'Uma visão clara das pessoas, das avaliações e de cada ciclo.',links:'Links individuais permanentes para cada colaborador ativo.',employees:'Cadastre, selecione e acompanhe as pessoas da Cardiofitness.',employee:'Resultados individuais e histórico ao longo dos ciclos.',evaluations:'Respostas e médias de cada avaliação do ciclo.',pending:'Veja quem ainda precisa responder às avaliações do ciclo.',result:'Notas e respostas de texto identificadas do formulário selecionado.',reports:'Selecione o recorte e exporte os resultados do ciclo.',sync:'Confira a conexão, as consultas e as respostas a revisar.',settings:'Organize ciclos, participantes e os formulários de avaliação.'};
 const initials = (name:string) => name.split(' ').filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
 const person = (data:AppData,id:string) => data.employees.find(employee=>employee.id===id);
 const cycleEvaluations = (data:AppData,cycleId:string) => data.evaluations.filter(evaluation=>evaluation.cycleId===cycleId);
@@ -71,9 +72,15 @@ export default function Application() {
   if(app.status==='password')return <main className="first-password"><Brand/><PasswordSettings required/></main>;
   if(app.status!=='ready')return <AccessScreen/>;
   const activeNav=view==='employee'?'employees':view==='result'?'evaluations':view;
-  return <div className="app-shell"><a className="skip-link" href="#main">Ir para o conteúdo</a>{mobile&&<button className="sidebar-shade" aria-label="Fechar navegação" onClick={()=>setMobile(false)}/>}<aside className={`sidebar ${mobile?'sidebar-open':''}`}><Brand/><div className="sidebar-label">GESTÃO DE PESSOAS</div><nav aria-label="Menu principal">{NAV.map(item=><button type="button" key={item.id} className={`nav-item ${activeNav===item.id?'active':''}`} aria-current={activeNav===item.id?'page':undefined} onClick={()=>navigate(item.id)}><item.icon size={20}/>{item.label}{activeNav===item.id&&<span className="nav-dot"/>}</button>)}</nav><div className="sidebar-bottom"><div className="access-note"><LockKeyhole size={19}/><div><b>Acesso exclusivo do RH</b><span>Respostas identificadas</span></div></div><div className="sidebar-profile"><Avatar name="Recursos Humanos"/><div><b>Recursos Humanos</b><small>Cardiofitness</small></div></div></div></aside><div className="workspace"><header className="topbar"><div className="breadcrumb"><button type="button" className="icon-button mobile-toggle" aria-label="Abrir menu" onClick={()=>setMobile(true)}><Menu size={21}/></button><span>Gestão de pessoas</span><span className="breadcrumb-slash">/</span><b>{titles[view]}</b></div><div className="topbar-right">{app.mode==='demo'?<><Pill kind="amber">DEMONSTRAÇÃO LOCAL</Pill><span className="topbar-muted">Dados fictícios</span></>:<><Pill>RH autorizado</Pill><span className="topbar-muted">{app.user?.email}</span></>}<Avatar name={app.user?.name||'Recursos Humanos'}/>{app.mode==='live'&&<button type="button" className="icon-button" title="Sair da conta" aria-label="Sair da conta" onClick={()=>void app.logout().catch(error=>setNotice({text:errorMessage(error),success:false}))}><LogOut size={18}/></button>}</div></header><main id="main" className="main"><div className="page-heading"><div>{(view==='employee'||view==='result')&&<button type="button" className="back-link" onClick={()=>navigate(view==='employee'?'employees':'evaluations')}><ArrowLeft size={16}/>Voltar para {view==='employee'?'colaboradores':'avaliações'}</button>}<h1>{view==='employee'&&employee?employee.name:view==='result'&&evaluation?evaluation.name:titles[view]}</h1><p>{subtitles[view]}</p></div><div className="page-actions">{view==='employees'?<button className="button primary" onClick={()=>setEditor({type:'employee'})}><Plus size={18}/>Adicionar colaborador</button>:view==='settings'?null:view==='result'?null:<Field label="Ciclo" className="cycle-select"><select value={selectedCycleId} onChange={event=>setCycleId(event.target.value)} aria-label="Selecionar ciclo">{!cycles.length&&<option value="">Nenhum ciclo cadastrado</option>}{cycles.map(cycle=><option key={cycle.id} value={cycle.id}>{cycle.name}</option>)}</select></Field>}</div></div>{notice&&<Notice message={notice.text} success={notice.success} onClose={()=>setNotice(null)}/ >}{app.error&&<Notice message={app.error}/ >}
-      {view==='dashboard'&&<Dashboard data={data} cycle={selectedCycle} onQuickCycle={()=>setEditor({type:'quick-cycle'})} onConfigure={()=>navigate('settings')} onResults={openEvaluation}/>}
-      {view==='employees'&&<Employees data={data} cycle={selectedCycle} onOpen={openEmployee} onEdit={item=>setEditor({type:'employee',item})} onDeactivate={item=>setEditor({type:'deactivate',item})}/>}
+  return <div className="app-shell"><a className="skip-link" href="#main">Ir para o conteúdo</a>{mobile&&<button className="sidebar-shade" aria-label="Fechar navegação" onClick={()=>setMobile(false)}/>}<aside className={`sidebar ${mobile?'sidebar-open':''}`}><Brand/><div className="sidebar-label">GESTÃO DE PESSOAS</div><nav aria-label="Menu principal">{NAV.map(item=><button type="button" key={item.id} className={`nav-item ${activeNav===item.id?'active':''}`} aria-current={activeNav===item.id?'page':undefined} onClick={()=>navigate(item.id)}><item.icon size={20}/>{item.label}{activeNav===item.id&&<span className="nav-dot"/>}</button>)}</nav><div className="sidebar-bottom"><div className="access-note"><LockKeyhole size={19}/><div><b>Acesso exclusivo do RH</b><span>Respostas identificadas</span></div></div><div className="sidebar-profile"><Avatar name="Recursos Humanos"/><div><b>Recursos Humanos</b><small>Cardiofitness</small></div></div></div></aside><div className="workspace"><header className="topbar"><div className="breadcrumb"><button type="button" className="icon-button mobile-toggle" aria-label="Abrir menu" onClick={()=>setMobile(true)}><Menu size={21}/></button><span>Gestão de pessoas</span><span className="breadcrumb-slash">/</span><b>{titles[view]}</b></div>    <div className="topbar-right">
+      <a href="/avaliar" target="_blank" rel="noopener noreferrer" className="button small" style={{display:'inline-flex',alignItems:'center',gap:6}}><ClipboardList size={16}/>Portal de Avaliação</a>
+      {app.mode==='demo'?<><Pill kind="amber">DEMONSTRAÇÃO LOCAL</Pill><span className="topbar-muted">Dados fictícios</span></>:<><Pill>RH autorizado</Pill><span className="topbar-muted">{app.user?.email}</span></>}
+      <Avatar name={app.user?.name||'Recursos Humanos'}/>
+      {app.mode==='live'&&<button type="button" className="icon-button" title="Sair da conta" aria-label="Sair da conta" onClick={()=>void app.logout().catch(error=>setNotice({text:errorMessage(error),success:false}))}><LogOut size={18}/></button>}
+    </div></header><main id="main" className="main"><div className="page-heading"><div>{(view==='employee'||view==='result')&&<button type="button" className="back-link" onClick={()=>navigate(view==='employee'?'employees':'evaluations')}><ArrowLeft size={16}/>Voltar para {view==='employee'?'colaboradores':'avaliações'}</button>}<h1>{view==='employee'&&employee?employee.name:view==='result'&&evaluation?evaluation.name:titles[view]}</h1><p>{subtitles[view]}</p></div><div className="page-actions">{view==='employees'?<button className="button primary" onClick={()=>setEditor({type:'employee'})}><Plus size={18}/>Adicionar colaborador</button>:view==='settings'?null:view==='result'?null:<Field label="Ciclo" className="cycle-select"><select value={selectedCycleId} onChange={event=>setCycleId(event.target.value)} aria-label="Selecionar ciclo">{!cycles.length&&<option value="">Nenhum ciclo cadastrado</option>}{cycles.map(cycle=><option key={cycle.id} value={cycle.id}>{cycle.name}</option>)}</select></Field>}</div></div>{notice&&<Notice message={notice.text} success={notice.success} onClose={()=>setNotice(null)}/ >}{app.error&&<Notice message={app.error}/ >}
+      {view==='dashboard'&&<Dashboard data={data} cycle={selectedCycle} onQuickCycle={()=>setEditor({type:'quick-cycle'})} onConfigure={()=>navigate('settings')} onResults={openEvaluation} onOpenLinks={()=>navigate('links')}/>}
+      {view==='links'&&<PermanentLinksPanel data={data} cycle={selectedCycle} onAddEmployee={()=>setEditor({type:'employee'})} onEditEmployee={item=>setEditor({type:'employee',item})} onDeleteEmployee={item=>setEditor({type:'delete-employee',item})}/>}
+      {view==='employees'&&<Employees data={data} cycle={selectedCycle} onOpen={openEmployee} onEdit={item=>setEditor({type:'employee',item})} onDeactivate={item=>setEditor({type:'deactivate',item})} onDelete={item=>setEditor({type:'delete-employee',item})}/>}
       {view==='employee'&&(employee?<EmployeeDetail data={data} employee={employee} cycleId={selectedCycleId} onEdit={()=>setEditor({type:'employee',item:employee})} onResults={openEvaluation}/>:<Empty title="Selecione um colaborador" action={<button className="button" onClick={()=>navigate('employees')}>Ver colaboradores</button>}/>)}
       {view==='evaluations'&&<Evaluations data={data} cycle={selectedCycle} onResults={openEvaluation} onConfigure={()=>navigate('settings')} onSync={sync} syncing={syncing} canSync={app.googleConfigured&&app.mode==='live'} demo={app.mode==='demo'}/>}
       {view==='pending'&&<Pending data={data} cycleId={selectedCycleId} onPerson={openEmployee} onConfigure={()=>navigate('settings')}/>}
@@ -85,52 +92,298 @@ export default function Application() {
       {editor?.type==='quick-cycle'&&<QuickCycleEditor data={data} onClose={()=>setEditor(null)} onConfigure={()=>{setEditor(null);navigate('settings');}} onCreated={id=>{setCycleId(id);setNotice({text:'Novo ciclo criado com os mesmos links do Google Forms.',success:true});}}/>}
       {editor?.type==='employee'&&<EmployeeEditor data={data} employee={editor.item} onClose={()=>setEditor(null)} onSaved={name=>{setEditor(null);setNotice({text:`Cadastro de ${name} salvo.`,success:true});}}/>}
       {editor?.type==='deactivate'&&<Deactivate employee={editor.item} onClose={()=>setEditor(null)} onSaved={()=>{setEditor(null);setNotice({text:'Colaborador desativado. O histórico foi preservado.',success:true});}}/>}
+      {editor?.type==='delete-employee'&&<DeleteEmployeeModal data={data} employee={editor.item} onClose={()=>setEditor(null)} onDeleted={()=>{setEditor(null);setNotice({text:'Colaborador excluído com sucesso.',success:true});}} onDeactivated={()=>{setEditor(null);setNotice({text:'Colaborador desativado. O histórico foi preservado.',success:true});}}/>}
       {editor?.type==='cycle'&&<CycleEditor data={data} cycle={editor.item} sourceCycleId={editor.sourceCycleId} onClose={()=>setEditor(null)} onSaved={id=>{setEditor(null);setCycleId(id);setNotice({text:'Ciclo salvo.',success:true});}}/>}
       {editor?.type==='evaluation'&&<EvaluationEditor data={data} cycleId={selectedCycleId} evaluation={editor.item} preset={editor.preset} onClose={()=>setEditor(null)} onSaved={()=>{setEditor(null);setNotice({text:'Configuração do formulário salva.',success:true});}}/>}
     </div>;
 }
 
-function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults}:{data:AppData;cycle?:Cycle;onQuickCycle:()=>void;onConfigure:()=>void;onResults:(id:string)=>void}) {
+function PermanentLinksPanel({data, cycle, onAddEmployee, onEditEmployee, onDeleteEmployee}:{data:AppData; cycle?:Cycle; onAddEmployee:()=>void; onEditEmployee:(e:Employee)=>void; onDeleteEmployee:(e:Employee)=>void}) {
+  const [query, setQuery] = useState('');
+  const [department, setDepartment] = useState('');
+  const [roleFilter, setRoleFilter] = useState<'all'|'leader'|'staff'|'intern'>('all');
+  const [copiedLink, setCopiedLink] = useState('');
+  const [copiedType, setCopiedType] = useState<'url'|'whatsapp'|'all'|null>(null);
+  const [page, setPage] = useState(1);
+
+  const activeEmployees = data.employees.filter(e => e.active);
+  const departments = [...new Set(activeEmployees.map(e => e.department))].sort((a,b)=>a.localeCompare(b, 'pt-BR'));
+
+  const filtered = activeEmployees.filter(e => {
+    const q = query.trim().toLowerCase();
+    const matchesQ = !q || e.name.toLowerCase().includes(q) || e.department.toLowerCase().includes(q) || (e.accessToken && e.accessToken.toLowerCase().includes(q));
+    const matchesDept = !department || e.department === department;
+    const isIntern = e.formName.toLowerCase().includes('estagi');
+    const matchesRole = roleFilter === 'all'
+      ? true
+      : roleFilter === 'leader'
+      ? e.isLeader
+      : roleFilter === 'intern'
+      ? isIntern
+      : (!e.isLeader && !isIntern);
+    return matchesQ && matchesDept && matchesRole;
+  });
+
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+
+  async function handleCopy(text: string, id: string, type: 'url'|'whatsapp'|'all') {
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('Clipboard indisponível');
+      await navigator.clipboard.writeText(text);
+      setCopiedLink(id);
+      setCopiedType(type);
+      setTimeout(() => {
+        setCopiedLink('');
+        setCopiedType(null);
+      }, 3000);
+    } catch {
+      // fallback
+    }
+  }
+
+  function handleExportCsv() {
+    const header = 'Nome,Setor,Função,Liderança,Código / Token,Link Permanente\n';
+    const rows = filtered.map(e => {
+      const role = e.isLeader ? 'Líder' : (e.formName.includes('Estagi') ? 'Estagiário' : 'Colaborador');
+      const leader = e.leaderId ? (activeEmployees.find(l => l.id === e.leaderId)?.name || '') : 'Próprio Líder';
+      const link = getPermanentEvaluationUrl(e, origin);
+      return `"${e.name}","${e.department}","${role}","${leader}","${e.accessToken || e.id}","${link}"`;
+    }).join('\n');
+    const blob = new Blob(['\uFEFF' + header + rows], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `links-permanentes-cardiofitness.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function handleCopyAll() {
+    const list = filtered.map(e => {
+      const link = getPermanentEvaluationUrl(e, origin);
+      return `• ${e.name} (${e.department}${e.isLeader ? ' - Líder' : ''}): ${link}`;
+    }).join('\n');
+    const text = `CARDIOFITNESS - LINKS DE AVALIAÇÃO (${cycle?.name || 'Ciclo Ativo'})\n\n${list}`;
+    void handleCopy(text, 'all', 'all');
+  }
+
+  return (
+    <>
+      <div className="info-banner" style={{background:'#f0f7fd',borderColor:'#c5def1',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:16}}>
+        <div style={{maxWidth:720}}>
+          <b style={{fontSize:15,color:'#0573b9',display:'flex',alignItems:'center',gap:8}}>
+            <ExternalLink size={18}/> Links Individuais Permanentes (/avaliar?p=[token])
+          </b>
+          <p style={{margin:'6px 0 0',fontSize:13,lineHeight:1.6,color:'#365977'}}>
+            Cada colaborador possui um endereço fixo de avaliação. <b>O RH não precisa gerar nem reenviar links novos a cada ciclo:</b> basta definir o ciclo ativo (atualmente: <b>{cycle?.name || 'Sem ciclo'}</b>). Quando o colaborador abre o link dele, o sistema carrega automaticamente as avaliações daquele momento.
+          </p>
+        </div>
+        <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+          <button type="button" className="button primary" onClick={onAddEmployee}>
+            <Plus size={16}/>Adicionar colaborador
+          </button>
+          <button type="button" className="button" onClick={handleCopyAll}>
+            <Copy size={16}/>{copiedType==='all'?'Lista copiada!':'Copiar lista completa'}
+          </button>
+          <button type="button" className="button" onClick={handleExportCsv}>
+            <FileSpreadsheet size={16}/>Exportar Planilha (CSV)
+          </button>
+        </div>
+      </div>
+
+      <div className="stat-grid four">
+        <Stat label="Colaboradores Ativos" value={activeEmployees.length} note="Conforme quadro oficial" icon={<UsersRound size={19}/>}/>
+        <Stat label="Lideranças" value={activeEmployees.filter(e=>e.isLeader).length} note="Avaliam liderados e a si mesmos" icon={<Check size={19}/>}/>
+        <Stat label="Colaboradores & Estagiários" value={activeEmployees.filter(e=>!e.isLeader).length} note="Avaliam líderes e a si mesmos" icon={<UserRoundCheck size={19}/>}/>
+        <Stat label="Ciclo Ativo" value={cycle?.name || 'Nenhum'} note={cycle ? `${formatDate(cycle.startDate)} a ${formatDate(cycle.endDate)}` : 'Defina um ciclo'} icon={<CalendarDays size={19}/>}/>
+      </div>
+
+      <Panel title="Tabela de Links por Colaborador" subtitle={`${quantity(filtered.length, 'colaborador ativo', 'colaboradores ativos')} listados`}>
+        <div className="table-filters">
+          <label className="search-field">
+            <Search size={18}/>
+            <span className="sr-only">Buscar colaborador</span>
+            <input placeholder="Buscar por nome, setor ou código..." value={query} onChange={e=>{setQuery(e.target.value);setPage(1);}}/>
+          </label>
+          <select aria-label="Filtrar por setor" value={department} onChange={e=>{setDepartment(e.target.value);setPage(1);}}>
+            <option value="">Todos os setores</option>
+            {departments.map(d=><option key={d} value={d}>{d}</option>)}
+          </select>
+          <select aria-label="Filtrar por função" value={roleFilter} onChange={e=>{setRoleFilter(e.target.value as any);setPage(1);}}>
+            <option value="all">Todas as funções</option>
+            <option value="leader">Apenas Líderes</option>
+            <option value="staff">Apenas Colaboradores</option>
+            <option value="intern">Apenas Estagiários</option>
+          </select>
+          <span className="record-count">{quantity(filtered.length,'pessoa')}</span>
+        </div>
+
+        <div className="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Colaborador</th>
+                <th>Setor</th>
+                <th>Função / Papel</th>
+                <th>Liderança no Ciclo</th>
+                <th>Link Permanente</th>
+                <th style={{textAlign:'right'}}>Ações Rápidas</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.slice((page-1)*8, page*8).map(emp => {
+                const url = getPermanentEvaluationUrl(emp, origin);
+                const isIntern = emp.formName.includes('Estagi');
+                const leader = emp.leaderId ? person(data, emp.leaderId)?.name : null;
+                const waMessage = `Olá, ${emp.name.split(' ')[0]}! 👋\n\nEstá aberto o ciclo de avaliação de desempenho *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse seu link individual exclusivo para responder suas avaliações:\n${url}\n\n⚠️ Este link é permanente e exclusivo para você. Sua participação é fundamental!\nCardiofitness — Gestão de Pessoas`;
+
+                return (
+                  <tr key={emp.id}>
+                    <td>
+                      <div className="person-button" style={{cursor:'default'}}>
+                        <Avatar name={emp.name}/>
+                        <span>
+                          <b>{emp.name}</b>
+                          <small>{emp.accessToken || emp.id}</small>
+                        </span>
+                      </div>
+                    </td>
+                    <td>{emp.department}</td>
+                    <td>
+                      <Pill kind={emp.isLeader ? 'green' : isIntern ? 'amber' : 'muted'}>
+                        {emp.isLeader ? 'Líder' : isIntern ? 'Estagiário' : 'Colaborador'}
+                      </Pill>
+                    </td>
+                    <td>
+                      {emp.isLeader ? <span style={{color:'var(--muted)',fontSize:12}}>Equipe subordinada</span> : (leader || '—')}
+                    </td>
+                    <td>
+                      <code style={{fontSize:11,background:'#f4f7fa',padding:'4px 8px',borderRadius:6,color:'#0573b9'}}>
+                        /avaliar?p={emp.accessToken || emp.id}
+                      </code>
+                    </td>
+                    <td style={{textAlign:'right'}}>
+                      <div style={{display:'inline-flex',gap:6}}>
+                        <button
+                          type="button"
+                          className="button small"
+                          title="Copiar link individual"
+                          onClick={() => void handleCopy(url, emp.id, 'url')}
+                        >
+                          <Copy size={14}/>
+                          {copiedLink === emp.id && copiedType === 'url' ? 'Copiado!' : 'Copiar link'}
+                        </button>
+                        <button
+                          type="button"
+                          className="button small"
+                          title="Copiar mensagem formatada para WhatsApp"
+                          onClick={() => void handleCopy(waMessage, emp.id, 'whatsapp')}
+                          style={{color:'#067647'}}
+                        >
+                          {copiedLink === emp.id && copiedType === 'whatsapp' ? '✓ Mensagem copiada!' : 'WhatsApp'}
+                        </button>
+                        <a
+                          className="button small"
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Abrir em nova aba"
+                        >
+                          <ExternalLink size={14}/>
+                        </a>
+                        <button
+                          type="button"
+                          className="button small"
+                          title="Editar colaborador"
+                          onClick={() => onEditEmployee(emp)}
+                        >
+                          <Pencil size={14}/>
+                        </button>
+                        <button
+                          type="button"
+                          className="button small"
+                          title="Remover ou desativar colaborador"
+                          style={{color:'#b42318'}}
+                          onClick={() => onDeleteEmployee(emp)}
+                        >
+                          <Trash2 size={14}/>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        {!filtered.length && <Empty title="Nenhum colaborador encontrado com estes filtros."/>}
+        <Pager total={filtered.length} page={page} setPage={setPage}/>
+      </Panel>
+    </>
+  );
+}
+
+function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks}:{data:AppData;cycle?:Cycle;onQuickCycle:()=>void;onConfigure:()=>void;onResults:(id:string)=>void;onOpenLinks:()=>void}) {
   if(!cycle)return <Panel><Empty title="Vamos organizar o primeiro ciclo" action={<button className="button primary" onClick={onConfigure}><Plus size={18}/>Configurar o ciclo</button>}>Cadastre os colaboradores, selecione os participantes e vincule os formulários de avaliação.</Empty></Panel>;
   const evaluations=cycleEvaluations(data,cycle.id),responses=cycleResponses(data,cycle.id),expected=expectedTotal(evaluations);const leaderIds=new Set(cycle.participants.map(item=>item.leaderId).filter(Boolean));
   const kinds:EvaluationKind[]=['leadership','team','self','leader_to_employee'];
-  return <><QuickCycleHome data={data} cycle={cycle} onQuickCycle={onQuickCycle} onConfigure={onConfigure}/><div className="stat-grid"><Stat label="Participantes do ciclo" value={cycle.participants.length} note={`${quantity(leaderIds.size,'liderança vinculada','lideranças vinculadas')}`} icon={<UsersRound size={19}/>}/><Stat label="Respostas recebidas" value={<>{responses.length}<em>{expected!==null?` / ${expected}`:''}</em></>} note={`${quantity(evaluations.length,'formulário vinculado','formulários vinculados')}`} icon={<ClipboardList size={19}/>}/><Stat label="Conclusão do ciclo" value={formatPercent(responses.length,expected)} note={expected===null?'Defina o total esperado por formulário':`${quantity(Math.max(0,expected-responses.length),'resposta pendente','respostas pendentes')}`}/><Stat label="Colaboradores ativos" value={data.employees.filter(employee=>employee.active).length} note={`${quantity(data.employees.length,'pessoa')} no cadastro`} icon={<UserRoundCheck size={19}/>}/></div><div className="dashboard-grid"><Panel title="Participação por avaliação" subtitle="Respostas recebidas em cada formulário do ciclo" className="participation-panel">{evaluations.length?evaluations.map(evaluation=>{const stats=getEvaluationStats(data,evaluation.id);return <div className="participation-row" key={evaluation.id}><div><button className="text-button" onClick={()=>onResults(evaluation.id)}>{evaluation.name}<ArrowRight size={15}/></button><b>{stats.received}<span>{stats.expected!==null?` / ${stats.expected}`:stats.received===1?' resposta':' respostas'}</span></b></div><div><Progress received={stats.received} expected={stats.expected}/><small>{stats.expected===null?'Esperado não definido':formatPercent(stats.received,stats.expected)}</small></div></div>;}):<Empty title="Nenhum formulário vinculado" action={<button className="button" onClick={onConfigure}>Vincular formulários</button>}/> }</Panel><Panel title="Ciclo de avaliação" subtitle={cycle.name}><div className="cycle-summary"><Pill kind={cycleState(cycle)==='Em andamento'?'green':'muted'}>{cycleState(cycle)}</Pill><dl><div><dt>Período</dt><dd>{formatDate(cycle.startDate)}<br/>{formatDate(cycle.endDate)}</dd></div><div><dt>Participantes</dt><dd>{quantity(cycle.participants.length,'pessoa')}</dd></div><div><dt>Coleta</dt><dd>Google Forms</dd></div></dl><div className="mini-note"><ShieldCheck size={17}/>Acompanhamento exclusivo do RH</div></div></Panel></div><Panel title="Perspectivas do ciclo" subtitle="Médias calculadas separadamente · Escala de 1 a 4"><div className="perspective-grid">{kinds.filter(kind=>responses.some(response=>response.kind===kind)||evaluations.some(evaluation=>evaluation.kind===kind)).map(kind=>{const subset=responses.filter(response=>response.kind===kind);return <div className="perspective" key={kind}><span>{KIND_LABELS[kind]}</span><strong>{formatNumber(mean(subset.map(responseAverage).filter((value):value is number=>value!==null)))}<small> / 4</small></strong><p>{quantity(subset.length,'resposta')}{kind==='self'?(subset.length===1?' própria':' próprias'):kind==='team'?' entre colegas':''}</p></div>;})}{!responses.length&&!evaluations.length&&<p className="muted padded">As médias aparecerão após a importação das respostas.</p>}</div></Panel></>;
+  return <><QuickCycleHome data={data} cycle={cycle} onQuickCycle={onQuickCycle} onConfigure={onConfigure} onOpenLinks={onOpenLinks}/><div className="stat-grid"><Stat label="Participantes do ciclo" value={cycle.participants.length} note={`${quantity(leaderIds.size,'liderança vinculada','lideranças vinculadas')}`} icon={<UsersRound size={19}/>}/><Stat label="Respostas recebidas" value={<>{responses.length}<em>{expected!==null?` / ${expected}`:''}</em></>} note={`${quantity(evaluations.length,'formulário vinculado','formulários vinculados')}`} icon={<ClipboardList size={19}/>}/><Stat label="Conclusão do ciclo" value={formatPercent(responses.length,expected)} note={expected===null?'Defina o total esperado por formulário':`${quantity(Math.max(0,expected-responses.length),'resposta pendente','respostas pendentes')}`}/><Stat label="Colaboradores ativos" value={data.employees.filter(employee=>employee.active).length} note={`${quantity(data.employees.length,'pessoa')} no cadastro`} icon={<UserRoundCheck size={19}/>}/></div><div className="dashboard-grid"><Panel title="Participação por avaliação" subtitle="Respostas recebidas em cada formulário do ciclo" className="participation-panel">{evaluations.length?evaluations.map(evaluation=>{const stats=getEvaluationStats(data,evaluation.id);return <div className="participation-row" key={evaluation.id}><div><button className="text-button" onClick={()=>onResults(evaluation.id)}>{evaluation.name}<ArrowRight size={15}/></button><b>{stats.received}<span>{stats.expected!==null?` / ${stats.expected}`:stats.received===1?' resposta':' respostas'}</span></b></div><div><Progress received={stats.received} expected={stats.expected}/><small>{stats.expected===null?'Esperado não definido':formatPercent(stats.received,stats.expected)}</small></div></div>;}):<Empty title="Nenhum formulário vinculado" action={<button className="button" onClick={onConfigure}>Vincular formulários</button>}/> }</Panel><Panel title="Ciclo de avaliação" subtitle={cycle.name}><div className="cycle-summary"><Pill kind={cycleState(cycle)==='Em andamento'?'green':'muted'}>{cycleState(cycle)}</Pill><dl><div><dt>Período</dt><dd>{formatDate(cycle.startDate)}<br/>{formatDate(cycle.endDate)}</dd></div><div><dt>Participantes</dt><dd>{quantity(cycle.participants.length,'pessoa')}</dd></div><div><dt>Coleta</dt><dd>Portal Nativo (/avaliar)</dd></div></dl><div className="mini-note"><ShieldCheck size={17}/>Acompanhamento exclusivo do RH</div></div></Panel></div><Panel title="Perspectivas do ciclo" subtitle="Médias calculadas separadamente · Escala de 1 a 4"><div className="perspective-grid">{kinds.filter(kind=>responses.some(response=>response.kind===kind)||evaluations.some(evaluation=>evaluation.kind===kind)).map(kind=>{const subset=responses.filter(response=>response.kind===kind);return <div className="perspective" key={kind}><span>{KIND_LABELS[kind]}</span><strong>{formatNumber(mean(subset.map(responseAverage).filter((value):value is number=>value!==null)))}<small> / 4</small></strong><p>{quantity(subset.length,'resposta')}{kind==='self'?(subset.length===1?' própria':' próprias'):kind==='team'?' entre colegas':''}</p></div>;})}{!responses.length&&!evaluations.length&&<p className="muted padded">As médias aparecerão após a importação das respostas.</p>}</div></Panel></>;
 }
 
-/** The primary RH workflow: create a cycle, then send the same Forms link. */
-function CycleLinks({forms,cycle}:{forms:Evaluation[];cycle:Pick<Cycle,'startDate'|'endDate'>}) {
+/** The primary RH workflow: share the native evaluation link for the cycle. */
+function CycleLinks({forms,cycle}:{forms:Evaluation[];cycle:Pick<Cycle,'startDate'|'endDate'> & {id?:string}}) {
   const [copied,setCopied]=useState(''),[error,setError]=useState('');
-  const links=shareableCycleForms(forms,cycle);
+  const portalUrl = typeof window !== 'undefined' ? `${window.location.origin}/avaliar` : '/avaliar';
   async function copyLink(url:string){
     try {
       if(!navigator.clipboard?.writeText)throw new Error('Clipboard indisponível');
       await navigator.clipboard.writeText(url);setCopied(url);setError('');
-    } catch {setError('Não foi possível copiar automaticamente. Abra o formulário e copie o link da barra do navegador.');}
+    } catch {setError('Não foi possível copiar automaticamente. Endereço: ' + url);}
   }
   return <div className="quick-link-list">
-    {links.map(form=><div className="quick-link" key={form.id}>
-      <div><b>{KIND_LABELS[form.kind]}</b><small>Mesmo endereço em cada ciclo · {form.name}</small></div>
-      <div className="quick-actions">
-        <button type="button" className="button small" onClick={()=>void copyLink(form.googleFormUrl)}><Copy size={15}/>{copied===form.googleFormUrl?'Link copiado!':'Copiar link'}</button>
-        <a className="button small" href={form.googleFormUrl} target="_blank" rel="noopener noreferrer" aria-label={`Abrir ${form.name} no Google Forms`}><ExternalLink size={15}/>Abrir</a>
+    <div className="quick-link" style={{background:'#f0f7fd',borderColor:'#c5def1',padding:'12px 16px',borderRadius:8}}>
+      <div>
+        <b style={{color:'#0573b9',fontSize:14}}>Portal de Avaliações (Link Direto)</b>
+        <small style={{display:'block',marginTop:2}}>Envie este link aos colaboradores para responder todas as avaliações do ciclo · {portalUrl}</small>
       </div>
-    </div>)}
-    {!links.length&&<p className="muted">Vincule uma avaliação de liderança válida para liberar o link de compartilhamento.</p>}
+      <div className="quick-actions">
+        <button type="button" className="button small primary" onClick={()=>void copyLink(portalUrl)}>
+          <Copy size={15}/>{copied===portalUrl?'Link copiado!':'Copiar link do portal'}
+        </button>
+        <a className="button small" href={portalUrl} target="_blank" rel="noopener noreferrer">
+          <ExternalLink size={15}/>Abrir portal
+        </a>
+      </div>
+    </div>
+    {forms.map(form=>{
+      const directUrl = `${portalUrl}?avaliacao=${form.id}`;
+      return <div className="quick-link" key={form.id}>
+        <div><b>{KIND_LABELS[form.kind]}</b><small>{form.name}</small></div>
+        <div className="quick-actions">
+          <button type="button" className="button small" onClick={()=>void copyLink(directUrl)}><Copy size={15}/>{copied===directUrl?'Link copiado!':'Copiar link'}</button>
+          <a className="button small" href={directUrl} target="_blank" rel="noopener noreferrer"><ExternalLink size={15}/>Abrir</a>
+        </div>
+      </div>;
+    })}
+    {!forms.length&&<p className="muted">Vincule os formulários de avaliação nas configurações para liberar os links do ciclo.</p>}
     {error&&<Notice message={error}/>}
   </div>;
 }
-function QuickCycleHome({data,cycle,onQuickCycle,onConfigure}:{data:AppData;cycle:Cycle;onQuickCycle:()=>void;onConfigure:()=>void}) {
+function QuickCycleHome({data,cycle,onQuickCycle,onConfigure,onOpenLinks}:{data:AppData;cycle:Cycle;onQuickCycle:()=>void;onConfigure:()=>void;onOpenLinks:()=>void}) {
   const forms=cycleEvaluations(data,cycle.id);
   const next=suggestNextCycle(data);
   return <section className="quick-launch" aria-labelledby="quick-launch-title">
     <div className="quick-launch-head">
-      <div><span className="quick-kicker">GESTÃO SIMPLIFICADA</span><h2 id="quick-launch-title">Criar ciclo e compartilhar o mesmo link</h2><p>O sistema reaproveita as perguntas e os links existentes. Cada envio é contabilizado no período correto.</p></div>
-      <button type="button" className="button primary" disabled={!next} onClick={onQuickCycle}><Plus size={18}/>Criar próximo ciclo</button>
+      <div><span className="quick-kicker">PORTAL DE AVALIAÇÕES</span><h2 id="quick-launch-title">Links de avaliação do ciclo</h2><p>Compartilhe o link do portal nativo com os colaboradores. Todas as avaliações respondidas são computadas em tempo real.</p></div>
+      <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+        <button type="button" className="button" onClick={onOpenLinks}><ExternalLink size={17}/>Ver links dos colaboradores (35)</button>
+        <button type="button" className="button primary" disabled={!next} onClick={onQuickCycle}><Plus size={18}/>Criar próximo ciclo</button>
+      </div>
     </div>
     <div className="quick-launch-bottom">
       <div className="quick-link-title"><b>Links do ciclo: {cycle.name}</b><small>{formatDate(cycle.startDate)} a {formatDate(cycle.endDate)}</small></div>
       <CycleLinks forms={forms} cycle={cycle}/>
-      <p className="quick-help">Antes de divulgar, confira se o Google Forms está aceitando respostas e se a lista de nomes corresponde ao cadastro. <button className="text-button" type="button" onClick={onConfigure}>Configurações avançadas</button></p>
+      <p className="quick-help">Cada colaborador acessa seu link permanente (/avaliar?p=[token]) e responde suas avaliações. As notas alimentam as médias, os gráficos e os relatórios automaticamente. <button className="text-button" type="button" onClick={onConfigure}>Configurações avançadas</button></p>
     </div>
   </section>;
 }
@@ -148,11 +401,11 @@ function QuickCycleEditor({data,onClose,onConfigure,onCreated}:{data:AppData;onC
   return <Modal title={created?'Ciclo criado com sucesso':'Criar próximo ciclo'} subtitle="Um ciclo novo, os mesmos formulários" onClose={onClose}>
     <div className="modal-body quick-modal-body">
       {!draft?<><Notice message="Cadastre o primeiro ciclo e configure um formulário uma única vez."/ ><button className="button" type="button" onClick={onConfigure}>Ir para configurações</button></>:
-      <>{created?<Notice success message={`${draft.input.name} criado. Nenhum Google Forms novo foi gerado.`}/>:<p>Confira o período sugerido. Ao confirmar, o sistema registra os participantes ativos e copia os vínculos dos formulários existentes.</p>}
-      <div className="quick-cycle-summary"><div><small>Próximo período</small><b>{draft.input.name}</b><span>{formatDate(draft.input.startDate)} a {formatDate(draft.input.endDate)}</span></div><div><small>Colaboradores ativos</small><b>{draft.input.participants.length}</b><span>Vínculos atuais do cadastro</span></div><div><small>Links reaproveitados</small><b>{draft.forms.length}</b><span>Sem criar formulários no Google</span></div></div>
+      <>{created?<Notice success message={`${draft.input.name} criado. Formulários vinculados ao novo ciclo.`}/>:<p>Confira o período sugerido. Ao confirmar, o sistema registra os participantes ativos e vincula os formulários de avaliação.</p>}
+      <div className="quick-cycle-summary"><div><small>Próximo período</small><b>{draft.input.name}</b><span>{formatDate(draft.input.startDate)} a {formatDate(draft.input.endDate)}</span></div><div><small>Colaboradores ativos</small><b>{draft.input.participants.length}</b><span>Vínculos atuais do cadastro</span></div><div><small>Formulários</small><b>{draft.forms.length}</b><span>Avaliações vinculadas</span></div></div>
       {!created&&draft.error&&<Notice message={draft.error}/>}
       {!created&&draft.warnings.map((warning,i)=><p className="quick-warning" key={i}><ShieldCheck size={16}/>{warning}</p>)}
-      {created&&<><h3>Links prontos para encaminhar</h3><CycleLinks forms={draft.forms} cycle={draft.input}/><p className="quick-help">O mesmo formulário precisa continuar habilitado no Google. As respostas fora do período não entram nesse ciclo.</p></>}
+      {created&&<><h3>Links de avaliação</h3><CycleLinks forms={draft.forms} cycle={draft.input}/><p className="quick-help">Compartilhe o link do portal com os colaboradores para responderem as avaliações deste período.</p></>}
       </>}
       {error&&<Notice message={error}/>}
     </div>
@@ -165,12 +418,12 @@ function QuickCycleEditor({data,onClose,onConfigure,onCreated}:{data:AppData;onC
   </Modal>;
 }
 
-function Employees({data,cycle,onOpen,onEdit,onDeactivate}:{data:AppData;cycle?:Cycle;onOpen:(id:string)=>void;onEdit:(employee:Employee)=>void;onDeactivate:(employee:Employee)=>void}) {
+function Employees({data,cycle,onOpen,onEdit,onDeactivate,onDelete}:{data:AppData;cycle?:Cycle;onOpen:(id:string)=>void;onEdit:(employee:Employee)=>void;onDeactivate:(employee:Employee)=>void;onDelete:(employee:Employee)=>void}) {
   const [query,setQuery]=useState(''),[status,setStatus]=useState('all'),[leader,setLeader]=useState('all'),[selected,setSelected]=useState(''),[page,setPage]=useState(1);
   const filtered=data.employees.filter(employee=>(`${employee.name} ${employee.email} ${employee.department}`.toLocaleLowerCase('pt-BR').includes(query.toLocaleLowerCase('pt-BR')))&&(status==='all'||(status==='active'?employee.active:!employee.active))&&(leader==='all'||employee.leaderId===leader));
   const effectivePage=Math.min(page,Math.max(1,Math.ceil(filtered.length/8)));
   const chosen=person(data,selected);const active=data.employees.filter(employee=>employee.active).length;
-  return <><div className="stat-grid"><Stat label="Total cadastrado" value={data.employees.length} note="Todos os registros" icon={<UsersRound size={19}/>}/><Stat label="Ativos" value={active} note={`${quantity(data.employees.filter(employee=>employee.active&&employee.isLeader).length,'liderança ativa','lideranças ativas')}`} icon={<Check size={19}/>}/><Stat label="Inativos" value={data.employees.length-active} note="Histórico preservado" icon={<CircleOff size={19}/>}/><Stat label="Neste ciclo" value={cycle?.participants.length??'—'} note={cycle?.name||'Sem ciclo configurado'} icon={<CalendarDays size={19}/>}/></div><Panel><div className="table-filters"><label className="search-field"><Search size={18}/><span className="sr-only">Buscar colaborador</span><input placeholder="Buscar nome, e-mail ou setor" value={query} onChange={event=>{setQuery(event.target.value);setPage(1);}}/></label><select aria-label="Filtrar por status" value={status} onChange={event=>{setStatus(event.target.value);setPage(1);}}><option value="all">Todos os status</option><option value="active">Ativos</option><option value="inactive">Inativos</option></select><select aria-label="Filtrar por liderança" value={leader} onChange={event=>{setLeader(event.target.value);setPage(1);}}><option value="all">Todas as lideranças</option>{data.employees.filter(employee=>employee.isLeader).map(employee=><option key={employee.id} value={employee.id}>{employee.name}</option>)}</select><span className="record-count">{quantity(filtered.length,'pessoa')}</span></div><div className="table-scroll"><table><thead><tr><th><span className="sr-only">Selecionar</span></th><th>Colaborador</th><th>Setor</th><th>Liderança</th><th>Status</th><th><span className="sr-only">Detalhe</span></th></tr></thead><tbody>{filtered.slice((effectivePage-1)*8,effectivePage*8).map(employee=><tr key={employee.id} className={selected===employee.id?'selected':''}><td><input type="radio" name="selected-employee" aria-label={`Selecionar ${employee.name}`} checked={selected===employee.id} onChange={()=>setSelected(employee.id)}/></td><td><button className="person-button" onClick={()=>onOpen(employee.id)}><Avatar name={employee.name}/><span><b>{employee.name}</b><small>{employee.isLeader?'Liderança':employee.email||'E-mail não informado'}</small></span></button></td><td>{employee.department}</td><td>{employee.leaderId?person(data,employee.leaderId)?.name||'Não encontrada':'—'}</td><td><Pill kind={employee.active?'green':'muted'}>{employee.active?'Ativo':'Inativo'}</Pill></td><td><button className="icon-button" aria-label={`Ver detalhe de ${employee.name}`} onClick={()=>onOpen(employee.id)}><ArrowRight size={18}/></button></td></tr>)}</tbody></table></div>{!filtered.length&&<Empty title="Nenhum colaborador encontrado">Ajuste os filtros ou adicione uma pessoa ao cadastro.</Empty>}<Pager total={filtered.length} page={effectivePage} setPage={setPage}/>{chosen&&<div className="selection-toolbar"><b>{chosen.name} selecionado(a)</b><div><button className="button" onClick={()=>onOpen(chosen.id)}><ArrowRight size={17}/>Ver detalhe</button><button className="button" onClick={()=>onEdit(chosen)}><Pencil size={16}/>Editar</button>{chosen.active&&<button className="button danger-outline" onClick={()=>onDeactivate(chosen)}><CircleOff size={17}/>Desativar</button>}</div></div>}</Panel></>;
+  return <><div className="stat-grid"><Stat label="Total cadastrado" value={data.employees.length} note="Todos os registros" icon={<UsersRound size={19}/>}/><Stat label="Ativos" value={active} note={`${quantity(data.employees.filter(employee=>employee.active&&employee.isLeader).length,'liderança ativa','lideranças ativas')}`} icon={<Check size={19}/>}/><Stat label="Inativos" value={data.employees.length-active} note="Histórico preservado" icon={<CircleOff size={19}/>}/><Stat label="Neste ciclo" value={cycle?.participants.length??'—'} note={cycle?.name||'Sem ciclo configurado'} icon={<CalendarDays size={19}/>}/></div><Panel><div className="table-filters"><label className="search-field"><Search size={18}/><span className="sr-only">Buscar colaborador</span><input placeholder="Buscar nome, e-mail ou setor" value={query} onChange={event=>{setQuery(event.target.value);setPage(1);}}/></label><select aria-label="Filtrar por status" value={status} onChange={event=>{setStatus(event.target.value);setPage(1);}}><option value="all">Todos os status</option><option value="active">Ativos</option><option value="inactive">Inativos</option></select><select aria-label="Filtrar por liderança" value={leader} onChange={event=>{setLeader(event.target.value);setPage(1);}}><option value="all">Todas as lideranças</option>{data.employees.filter(employee=>employee.isLeader).map(employee=><option key={employee.id} value={employee.id}>{employee.name}</option>)}</select><span className="record-count">{quantity(filtered.length,'pessoa')}</span></div><div className="table-scroll"><table><thead><tr><th><span className="sr-only">Selecionar</span></th><th>Colaborador</th><th>Setor</th><th>Liderança</th><th>Status</th><th><span className="sr-only">Detalhe</span></th></tr></thead><tbody>{filtered.slice((effectivePage-1)*8,effectivePage*8).map(employee=><tr key={employee.id} className={selected===employee.id?'selected':''}><td><input type="radio" name="selected-employee" aria-label={`Selecionar ${employee.name}`} checked={selected===employee.id} onChange={()=>setSelected(employee.id)}/></td><td><button className="person-button" onClick={()=>onOpen(employee.id)}><Avatar name={employee.name}/><span><b>{employee.name}</b><small>{employee.isLeader?'Liderança':employee.email||'E-mail não informado'}</small></span></button></td><td>{employee.department}</td><td>{employee.leaderId?person(data,employee.leaderId)?.name||'Não encontrada':'—'}</td><td><Pill kind={employee.active?'green':'muted'}>{employee.active?'Ativo':'Inativo'}</Pill></td><td><button className="icon-button" aria-label={`Ver detalhe de ${employee.name}`} onClick={()=>onOpen(employee.id)}><ArrowRight size={18}/></button></td></tr>)}</tbody></table></div>{!filtered.length&&<Empty title="Nenhum colaborador encontrado">Ajuste os filtros ou adicione uma pessoa ao cadastro.</Empty>}<Pager total={filtered.length} page={effectivePage} setPage={setPage}/>{chosen&&<div className="selection-toolbar"><b>{chosen.name} selecionado(a)</b><div><button className="button" onClick={()=>onOpen(chosen.id)}><ArrowRight size={17}/>Ver detalhe</button><button className="button" onClick={()=>onEdit(chosen)}><Pencil size={16}/>Editar</button>{chosen.active&&<button className="button danger-outline" onClick={()=>onDeactivate(chosen)}><CircleOff size={17}/>Desativar</button>}<button className="button danger-outline" onClick={()=>onDelete(chosen)}><Trash2 size={17}/>Remover</button></div></div>}</Panel></>;
 }
 
 function EmployeeDetail({data,employee,cycleId,onEdit,onResults}:{data:AppData;employee:Employee;cycleId:string;onEdit:()=>void;onResults:(id:string)=>void}) {
@@ -266,6 +519,105 @@ function EmployeeEditor({data,employee,onClose,onSaved}:{data:AppData;employee?:
 function Deactivate({employee,onClose,onSaved}:{employee:Employee;onClose:()=>void;onSaved:()=>void}) {
   const {saveEmployee}=useApp();const [busy,setBusy]=useState(false),[error,setError]=useState('');async function save(){setBusy(true);try{await saveEmployee({...employeeInput(employee),active:false},employee.id);onSaved();}catch(error){setError(errorMessage(error));}finally{setBusy(false);}}
   return <Modal title={`Desativar ${employee.name}?`} onClose={onClose}><div className="modal-body">{error&&<Notice message={error}/>}<p className="modal-intro">A pessoa ficará inativa no cadastro. As avaliações e os resultados anteriores serão preservados.</p><div className="deactivate-person"><Avatar name={employee.name}/><div><b>{employee.name}</b><small>{employee.department}</small></div></div></div><div className="modal-actions"><button type="button" className="button" onClick={onClose}>Cancelar</button><button className="button danger" onClick={()=>void save()} disabled={busy}>{busy?<LoaderCircle className="spin" size={17}/>:<CircleOff size={17}/>}Desativar colaborador</button></div></Modal>;
+}
+
+function DeleteEmployeeModal({data,employee,onClose,onDeleted,onDeactivated}:{data:AppData;employee:Employee;onClose:()=>void;onDeleted:()=>void;onDeactivated:()=>void}) {
+  const {saveEmployee,deleteEmployee}=useApp();
+  const [busy,setBusy]=useState<'deactivate'|'delete'|null>(null);
+  const [error,setError]=useState('');
+  const hasResponses = data.responses.some(r => r.respondentId === employee.id || r.subjectId === employee.id);
+  const activeSubordinates = data.employees.filter(e => e.active && e.leaderId === employee.id);
+
+  async function handleDeactivate() {
+    setBusy('deactivate');
+    setError('');
+    try {
+      await saveEmployee({...employeeInput(employee), active: false}, employee.id);
+      onDeactivated();
+    } catch(err) {
+      setError(errorMessage(err));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function handleDelete() {
+    setBusy('delete');
+    setError('');
+    try {
+      await deleteEmployee(employee.id);
+      onDeleted();
+    } catch(err) {
+      setError(errorMessage(err));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  return (
+    <Modal title={`Remover colaborador: ${employee.name}`} onClose={onClose}>
+      <div className="modal-body">
+        {error && <Notice message={error}/>}
+        <div className="deactivate-person" style={{marginBottom:16}}>
+          <Avatar name={employee.name}/>
+          <div>
+            <b>{employee.name}</b>
+            <small>{employee.department} {employee.isLeader ? '· Líder' : ''}</small>
+          </div>
+        </div>
+
+        {hasResponses ? (
+          <div className="notice" style={{background:'#fef6ee',borderColor:'#f9dbaf',color:'#93370d',display:'block',padding:'12px 14px',borderRadius:6}}>
+            <p style={{margin:0,fontWeight:600,fontSize:14}}>⚠️ Colaborador com avaliações no histórico</p>
+            <p style={{margin:'6px 0 0',fontSize:13,lineHeight:1.5}}>
+              Este colaborador possui respostas registradas no sistema. Excluí-lo permanentemente removeria dados de médias e relatórios de ciclos anteriores.
+              Para preservar a integridade histórica, <b>desative o colaborador</b>. Ele não receberá novas avaliações, mas seu histórico permanecerá seguro.
+            </p>
+          </div>
+        ) : activeSubordinates.length > 0 ? (
+          <div className="notice" style={{background:'#fef6ee',borderColor:'#f9dbaf',color:'#93370d',display:'block',padding:'12px 14px',borderRadius:6}}>
+            <p style={{margin:0,fontWeight:600,fontSize:14}}>⚠️ Liderança com subordinados vinculados</p>
+            <p style={{margin:'6px 0 0',fontSize:13,lineHeight:1.5}}>
+              Existem {activeSubordinates.length} colaboradores ativos vinculados a esta liderança ({activeSubordinates.map(s => s.name.split(' ')[0]).join(', ')}). Altere a liderança desses colaboradores antes de remover.
+            </p>
+          </div>
+        ) : (
+          <p className="modal-intro" style={{fontSize:13,lineHeight:1.5}}>
+            Este colaborador <b>não possui avaliações no histórico</b>. Você pode desativá-lo (recomendado) ou excluí-lo permanentemente do cadastro.
+          </p>
+        )}
+      </div>
+
+      <div className="modal-actions" style={{justifyContent:'flex-end',gap:8}}>
+        <button type="button" className="button" onClick={onClose} disabled={busy !== null}>
+          Cancelar
+        </button>
+        {employee.active && (
+          <button
+            type="button"
+            className="button"
+            style={{color:'#b42318',borderColor:'#fda29b'}}
+            onClick={() => void handleDeactivate()}
+            disabled={busy !== null}
+          >
+            {busy === 'deactivate' ? <LoaderCircle className="spin" size={16}/> : <CircleOff size={16}/>}
+            {hasResponses ? 'Desativar colaborador (Recomendado)' : 'Apenas desativar'}
+          </button>
+        )}
+        {!hasResponses && activeSubordinates.length === 0 && (
+          <button
+            type="button"
+            className="button danger"
+            onClick={() => void handleDelete()}
+            disabled={busy !== null}
+          >
+            {busy === 'delete' ? <LoaderCircle className="spin" size={16}/> : <Trash2 size={16}/>}
+            Excluir permanentemente
+          </button>
+        )}
+      </div>
+    </Modal>
+  );
 }
 
 function CycleEditor({data,cycle,sourceCycleId,onClose,onSaved}:{data:AppData;cycle?:Cycle;sourceCycleId?:string;onClose:()=>void;onSaved:(id:string)=>void}) {
