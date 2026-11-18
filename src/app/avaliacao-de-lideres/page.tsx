@@ -29,6 +29,7 @@ const DEPARTMENTS = [
   'Recepção e Triagem',
   'Técnicas e Corredor / Copeiras',
   'Administrativo',
+  'Suporte',
 ];
 
 interface LeaderSection {

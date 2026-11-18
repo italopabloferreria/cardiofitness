@@ -3,6 +3,7 @@ import type { Employee } from './types';
 export function normalizeDepartment(dept: string | null | undefined): string {
   if (!dept) return 'Administrativo';
   const d = dept.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+  if (d.includes('SUPORT')) return 'Suporte';
   if (d.includes('FATURA')) return 'Faturamento';
   if (d.includes('CENTRAL') || d.includes('RESULTADO')) return 'Central e Resultados';
   if (d.includes('RECEP') || d.includes('TRIAGEM')) return 'Recepção e Triagem';
@@ -70,6 +71,17 @@ export const OFFICIAL_LEADERS: Employee[] = [
     isLeader: true,
     active: true,
     accessToken: 'maria-alzirene',
+  },
+  {
+    id: uid(1000, 6),
+    name: 'Ítalo Pablo Ferreira',
+    email: 'italopablo01@gmail.com',
+    formName: 'Ítalo Pablo Ferreira',
+    department: 'Suporte',
+    leaderId: uid(1000, 6),
+    isLeader: true,
+    active: true,
+    accessToken: 'italo-pablo',
   },
 ];
 
@@ -407,7 +419,7 @@ export const OFFICIAL_STAFF: Employee[] = [
     accessToken: 'maria-luiza',
   },
 
-  // --- Administrativo (Líder Maria Alzirene, Colaborador/Líder de teste Ítalo, e 1 liderada Ana) ---
+  // --- Administrativo (Líder Maria Alzirene + 1 liderada Ana) ---
   {
     id: uid(6000, 1),
     name: 'Ana Carolina',
@@ -418,17 +430,6 @@ export const OFFICIAL_STAFF: Employee[] = [
     isLeader: false,
     active: true,
     accessToken: 'ana-carolina',
-  },
-  {
-    id: uid(6000, 2),
-    name: 'Ítalo Pablo Ferreira',
-    email: 'italopablo01@gmail.com',
-    formName: 'Ítalo Pablo Ferreira',
-    department: 'Administrativo',
-    leaderId: uid(6000, 2),
-    isLeader: true,
-    active: true,
-    accessToken: 'italo-pablo',
   },
 ];
 

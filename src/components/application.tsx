@@ -142,7 +142,7 @@ function LeaderRosterAccordion({
 
   // Group leaders with their subordinates
   const leaderGroups = leaders.map(leader => {
-    const directSubs = allEmployees.filter(e => e.leaderId === leader.id && e.id !== leader.id);
+    const directSubs = allEmployees.filter(e => e.leaderId === leader.id && (e.id !== leader.id || e.leaderId === e.id));
     const visibleSubs = directSubs.filter(matchEmp);
     const leaderSelfMatches = matchEmp(leader);
     const visible = leaderSelfMatches || visibleSubs.length > 0;
@@ -394,8 +394,8 @@ function LeaderRosterAccordion({
                                     </td>
                                     <td>{sub.department}</td>
                                     <td>
-                                      <Pill kind={isIntern ? 'amber' : 'muted'}>
-                                        {isIntern ? 'Estagiário' : 'Colaborador'}
+                                      <Pill kind={sub.isLeader ? 'green' : isIntern ? 'amber' : 'muted'}>
+                                        {sub.isLeader ? 'Líder / Colaborador' : isIntern ? 'Estagiário' : 'Colaborador'}
                                       </Pill>
                                     </td>
                                     <td>

@@ -32,6 +32,7 @@ const DEPARTMENTS = [
   'Recepção e Triagem',
   'Técnicas e Corredor / Copeiras',
   'Administrativo',
+  'Suporte',
 ];
 
 // Perguntas oficiais por setor
@@ -73,6 +74,13 @@ const SECTOR_QUESTIONS: Record<string, ScoreQuestion[]> = {
   'Administrativo': [
     { id: 'q1', title: 'O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?', min: 1, max: 4 },
     { id: 'q2', title: 'O funcionário tem desempenhado bem sua função?', min: 1, max: 4 },
+    { id: 'q3', title: 'Passa as informações necessárias para seu grupo de trabalho?', min: 1, max: 4 },
+    { id: 'q4', title: 'Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?', min: 1, max: 4 },
+    { id: 'q5', title: 'O funcionário reflete os valores da empresa?', min: 1, max: 4 },
+  ],
+  'Suporte': [
+    { id: 'q1', title: 'O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?', min: 1, max: 4 },
+    { id: 'q2', title: 'O funcionário tem desempenhado bem sua função no suporte e rotinas técnicas?', min: 1, max: 4 },
     { id: 'q3', title: 'Passa as informações necessárias para seu grupo de trabalho?', min: 1, max: 4 },
     { id: 'q4', title: 'Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?', min: 1, max: 4 },
     { id: 'q5', title: 'O funcionário reflete os valores da empresa?', min: 1, max: 4 },

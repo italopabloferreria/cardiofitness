@@ -6,7 +6,7 @@ import { prepareCycleForms } from './cycle-template';
 import { cycleState } from './analytics';
 
 const EMPTY: AppData = {employees:[],cycles:[],evaluations:[],responses:[]};
-const DEMO_KEY = 'cardiofitness-app-v1';
+const DEMO_KEY = 'cardiofitness-app-v3';
 interface AppContext {
   status: 'loading'|'login'|'setup'|'ready'|'password'; mode:'demo'|'live'; user: Bootstrap['user']|null;
   data:AppData; googleConfigured:boolean; error:string|null;
@@ -41,11 +41,21 @@ export function AppProvider({children}:{children:ReactNode}) {
       let initial=boot.data;
       if(boot.mode==='demo') {
         try {
-          ['cardiofitness-demo-v1','cardiofitness-demo-v2','cardiofitness-demo-v3','cardiofitness-demo-v4'].forEach(k=>{try{localStorage.removeItem(k);}catch{}});
+          ['cardiofitness-app-v1','cardiofitness-app-v2','cardiofitness-demo-v1','cardiofitness-demo-v2','cardiofitness-demo-v3','cardiofitness-demo-v4'].forEach(k=>{try{localStorage.removeItem(k);}catch{}});
           const stored=localStorage.getItem(DEMO_KEY);
           if(stored) {
             const parsed=JSON.parse(stored);
             if(parsed && ['employees','cycles','evaluations','responses'].every(key=>Array.isArray(parsed[key]))) {
+              // Sincroniza colaboradores para incluir novos setores/líderes (Suporte, Ítalo Pablo)
+              const empMap = new Map<string, Employee>();
+              for (const e of parsed.employees) {
+                empMap.set(e.id, e);
+              }
+              for (const e of boot.data.employees) {
+                empMap.set(e.id, e);
+              }
+              parsed.employees = Array.from(empMap.values());
+
               const cleanCycles = parsed.cycles.filter((c: Cycle) => {
                 const n = c.name.toLowerCase();
                 if (n.includes('teste') || n.includes('2027') || c.startDate.startsWith('2027')) return false;
@@ -123,7 +133,7 @@ export function AppProvider({children}:{children:ReactNode}) {
   const changePassword=async(currentPassword:string,newPassword:string,confirmation:string)=>{await authorizedRequest('/api/auth/password',{method:'POST',body:JSON.stringify({currentPassword,newPassword,confirmation})});await boot();};
   const saveEmployee=async(input:EmployeeInput,id?:string)=>{
     if(!input.name.trim()||!input.formName.trim()||!input.department.trim()) throw new Error('Informe nome, nome no formulário e setor.');
-    if(input.leaderId===id && !id?.endsWith('000060000002')) throw new Error('Uma pessoa não pode ser sua própria liderança.');
+    if(input.leaderId===id && !id?.endsWith('000010000006') && !id?.endsWith('000060000002')) throw new Error('Uma pessoa não pode ser sua própria liderança.');
     if(input.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.email))throw new Error('Informe um e-mail válido ou deixe o campo vazio.');
     if(input.email&&data.employees.some(employee=>employee.id!==id&&employee.email.toLowerCase()===input.email.toLowerCase()))throw new Error('Este e-mail já está cadastrado.');
     if(input.leaderId&&!data.employees.some(employee=>employee.id===input.leaderId&&employee.active&&employee.isLeader))throw new Error('Selecione uma liderança ativa.');
