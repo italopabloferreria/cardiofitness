@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { ArrowDownToLine, ArrowLeft, ArrowRight, BarChart3, Bell, CalendarDays, Check, ChevronLeft, ChevronRight, ClipboardList, Copy, Database, ExternalLink, FileSpreadsheet, LayoutDashboard, LoaderCircle, LockKeyhole, LogOut, Menu, Pencil, Plus, RefreshCw, Search, Settings2, ShieldCheck, UserRoundCheck, UsersRound, X, CircleOff, Trash2, TrendingUp } from 'lucide-react';
+import { ArrowDownToLine, ArrowLeft, ArrowRight, BarChart3, Bell, CalendarDays, Check, ChevronLeft, ChevronRight, ClipboardList, Copy, Database, ExternalLink, FileSpreadsheet, LayoutDashboard, LoaderCircle, LockKeyhole, LogOut, Menu, MessageCircle, Pencil, Plus, RefreshCw, Search, Settings2, ShieldCheck, UserRoundCheck, UsersRound, X, CircleOff, Trash2, TrendingUp } from 'lucide-react';
 import { useApp } from '@/lib/store';
 import PasswordRecovery from './password-recovery';
 import RhAccess from './rh-access';
@@ -556,9 +556,79 @@ function LeaderRosterAccordion({
   );
 }
 
+function WhatsAppModal({cycle,leadUrl,teamUrl,onClose}:{cycle?:Pick<Cycle,'name'|'endDate'>;leadUrl:string;teamUrl:string;onClose:()=>void}) {
+  const [copiedIndex, setCopiedIndex] = useState<number|null>(null);
+
+  const messages = [
+    {
+      title: '1. Mensagem Geral (2 Formulários + Prazo)',
+      badge: 'Recomendada',
+      description: 'Ideal para enviar no grupo da clínica ou aviso geral para todos os colaboradores.',
+      text: `Olá, equipe Cardiofitness! 👋\n\nEstá aberto o ciclo de avaliação de desempenho *${cycle?.name || 'Cardiofitness'}*.\n\nPreencham os dois formulários nos links fixos abaixo (basta selecionar seu próprio nome na lista):\n\n1️⃣ *Avaliação de Líderes:*\n${leadUrl}\n\n2️⃣ *Avaliação e Autoavaliação da Equipe:*\n${teamUrl}\n\n⏰ Disponível até ${cycle ? formatDate(cycle.endDate) : 'o prazo do ciclo'}.\nCardiofitness — Gestão de Pessoas`,
+    },
+    {
+      title: '2. Formulário 1 — Avaliação de Líderes',
+      badge: 'Liderança',
+      description: 'Mensagem focada exclusivamente no link de avaliação de líderes do setor.',
+      text: `Olá! 👋\n\nEstá aberto o ciclo de avaliação *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse o link abaixo para preencher a *Avaliação de Líderes* (basta selecionar seu nome na lista):\n${leadUrl}\n\nPeríodo aberto até ${cycle ? formatDate(cycle.endDate) : 'o encerramento'}.\nCardiofitness — Gestão de Pessoas`,
+    },
+    {
+      title: '3. Formulário 2 — Avaliação e Autoavaliação da Equipe',
+      badge: 'Equipe',
+      description: 'Mensagem focada na autoavaliação e avaliação entre colegas de setor.',
+      text: `Olá! 👋\n\nEstá aberto o ciclo de avaliação *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse o link abaixo para preencher a *Avaliação e Autoavaliação da Equipe* (basta selecionar seu nome na lista):\n${teamUrl}\n\nPeríodo aberto até ${cycle ? formatDate(cycle.endDate) : 'o encerramento'}.\nCardiofitness — Gestão de Pessoas`,
+    },
+  ];
+
+  async function copyMsg(text: string, index: number) {
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('Clipboard indisponível');
+      await navigator.clipboard.writeText(text);
+      setCopiedIndex(index);
+      setTimeout(() => setCopiedIndex(null), 3000);
+    } catch {}
+  }
+
+  return (
+    <Modal wide title="3 Mensagens Prontas para WhatsApp" subtitle="Copie o modelo de mensagem adequado e cole no WhatsApp para os colaboradores." onClose={onClose}>
+      <div className="modal-body" style={{display:'flex',flexDirection:'column',gap:16}}>
+        {messages.map((m, idx) => (
+          <div key={idx} style={{background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:10,padding:16}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:8,gap:12,flexWrap:'wrap'}}>
+              <div>
+                <div style={{display:'flex',alignItems:'center',gap:8}}>
+                  <b style={{fontSize:14,color:'#0f172a'}}>{m.title}</b>
+                  <span style={{background: idx === 0 ? '#dcfce7' : '#e0f2fe', color: idx === 0 ? '#15803d' : '#0369a1', padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700}}>{m.badge}</span>
+                </div>
+                <p style={{fontSize:12,color:'#64748b',margin:'2px 0 0'}}>{m.description}</p>
+              </div>
+              <button
+                type="button"
+                className="button small primary"
+                onClick={() => void copyMsg(m.text, idx)}
+                style={{background: copiedIndex === idx ? '#059669' : '#16a34a', borderColor: copiedIndex === idx ? '#059669' : '#16a34a'}}
+              >
+                {copiedIndex === idx ? <Check size={14}/> : <Copy size={14}/>}
+                {copiedIndex === idx ? '✓ Mensagem copiada!' : 'Copiar esta mensagem'}
+              </button>
+            </div>
+            <pre style={{whiteSpace:'pre-wrap',fontFamily:'inherit',fontSize:12,background:'#fff',border:'1px solid #cbd5e1',borderRadius:6,padding:10,margin:0,color:'#334155',lineHeight:1.5}}>
+              {m.text}
+            </pre>
+          </div>
+        ))}
+      </div>
+      <div className="modal-actions">
+        <button type="button" className="button" onClick={onClose}>Fechar</button>
+      </div>
+    </Modal>
+  );
+}
+
 function PermanentLinksPanel({data, cycle, onOpenEmployee, onAddEmployee, onEditEmployee, onDeleteEmployee}:{data:AppData; cycle?:Cycle; onOpenEmployee:(id:string)=>void; onAddEmployee:()=>void; onEditEmployee:(e:Employee)=>void; onDeleteEmployee:(e:Employee)=>void}) {
   const [copiedLink, setCopiedLink] = useState('');
   const [copiedType, setCopiedType] = useState<'url'|'whatsapp'|'all'|null>(null);
+  const [showWaModal, setShowWaModal] = useState(false);
 
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const leadUrl = `${origin}/avaliacao-de-lideres`;
@@ -589,6 +659,7 @@ function PermanentLinksPanel({data, cycle, onOpenEmployee, onAddEmployee, onEdit
 
   return (
     <>
+      {showWaModal && <WhatsAppModal cycle={cycle} leadUrl={leadUrl} teamUrl={teamUrl} onClose={()=>setShowWaModal(false)}/>}
       <div className="info-banner" style={{background:'#f0f7fd',borderColor:'#c5def1',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:16}}>
         <div style={{maxWidth:760}}>
           <b style={{fontSize:16,color:'#0573b9',display:'flex',alignItems:'center',gap:8}}>
@@ -599,8 +670,11 @@ function PermanentLinksPanel({data, cycle, onOpenEmployee, onAddEmployee, onEdit
           </p>
         </div>
         <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+          <button type="button" className="button" onClick={()=>setShowWaModal(true)} style={{borderColor:'#86efac',color:'#166534',background:'#f0fdf4'}}>
+            <MessageCircle size={16}/>Mensagens do WhatsApp (3)
+          </button>
           <button type="button" className="button primary" onClick={handleCopyAll}>
-            <Copy size={16}/>{copiedType==='all'?'Mensagem com os 2 links copiada!':'Copiar mensagem com os 2 links (WhatsApp)'}
+            <Copy size={16}/>{copiedType==='all'?'Mensagem com os 2 links copiada!':'Copiar mensagem geral (WhatsApp)'}
           </button>
           <button type="button" className="button" onClick={onAddEmployee}>
             <Plus size={16}/>Adicionar colaborador
@@ -660,6 +734,62 @@ function PermanentLinksPanel({data, cycle, onOpenEmployee, onAddEmployee, onEdit
           </div>
         </div>
       </div>
+
+      {/* Seção das 3 Mensagens do WhatsApp Prontas */}
+      <Panel title="💬 3 Mensagens prontas para o WhatsApp" subtitle="Textos formatados prontos para copiar e colar para os colaboradores ou no grupo da clínica.">
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))',gap:14}}>
+          {/* Opção 1 */}
+          <div style={{background:'#f8fafc',border:'1px solid #cbd5e1',borderRadius:10,padding:16,display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
+            <div>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6}}>
+                <b style={{fontSize:13,color:'#0f172a'}}>1. Geral (2 Links + Prazo)</b>
+                <span style={{background:'#dcfce7',color:'#15803d',padding:'2px 8px',borderRadius:6,fontSize:10,fontWeight:700}}>COMPLETA</span>
+              </div>
+              <p style={{fontSize:12,color:'#64748b',margin:'0 0 10px'}}>Para o grupo geral com ambos os links.</p>
+              <pre style={{whiteSpace:'pre-wrap',fontFamily:'inherit',fontSize:11,background:'#fff',border:'1px solid #e2e8f0',borderRadius:6,padding:10,margin:'0 0 12px',color:'#334155',lineHeight:1.5,maxHeight:140,overflowY:'auto'}}>
+                {`Olá, equipe Cardiofitness! 👋\n\nEstá aberto o ciclo de avaliação de desempenho *${cycle?.name || 'Cardiofitness'}*.\n\nPreencham os dois formulários nos links fixos abaixo (basta selecionar seu próprio nome na lista):\n\n1️⃣ *Avaliação de Líderes:*\n${leadUrl}\n\n2️⃣ *Avaliação e Autoavaliação da Equipe:*\n${teamUrl}\n\n⏰ Disponível até ${cycle ? formatDate(cycle.endDate) : 'o prazo do ciclo'}.\nCardiofitness — Gestão de Pessoas`}
+              </pre>
+            </div>
+            <button type="button" className="button small primary" onClick={handleCopyAll} style={{width:'100%',justifyContent:'center',background:copiedType==='all'?'#059669':'#16a34a',borderColor:copiedType==='all'?'#059669':'#16a34a'}}>
+              {copiedType==='all'?<Check size={14}/>:<Copy size={14}/>}{copiedType==='all'?'✓ Mensagem copiada!':'Copiar Mensagem 1 (Geral)'}
+            </button>
+          </div>
+
+          {/* Opção 2 */}
+          <div style={{background:'#f8fafc',border:'1px solid #bfdbfe',borderRadius:10,padding:16,display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
+            <div>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6}}>
+                <b style={{fontSize:13,color:'#1e3a8a'}}>2. Apenas Líderes</b>
+                <span style={{background:'#dbeafe',color:'#1d4ed8',padding:'2px 8px',borderRadius:6,fontSize:10,fontWeight:700}}>LIDERANÇA</span>
+              </div>
+              <p style={{fontSize:12,color:'#64748b',margin:'0 0 10px'}}>Mensagem individual do Formulário 1.</p>
+              <pre style={{whiteSpace:'pre-wrap',fontFamily:'inherit',fontSize:11,background:'#fff',border:'1px solid #e2e8f0',borderRadius:6,padding:10,margin:'0 0 12px',color:'#334155',lineHeight:1.5,maxHeight:140,overflowY:'auto'}}>
+                {waLeadMsg}
+              </pre>
+            </div>
+            <button type="button" className="button small" onClick={()=>void handleCopy(waLeadMsg, 'f1-wa-box', 'whatsapp')} style={{width:'100%',justifyContent:'center',color:'#1d4ed8',borderColor:'#93c5fd'}}>
+              {copiedLink==='f1-wa-box'?<Check size={14}/>:<Copy size={14}/>}{copiedLink==='f1-wa-box'?'✓ Mensagem copiada!':'Copiar Mensagem 2 (Líderes)'}
+            </button>
+          </div>
+
+          {/* Opção 3 */}
+          <div style={{background:'#f8fafc',border:'1px solid #bbf7d0',borderRadius:10,padding:16,display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
+            <div>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6}}>
+                <b style={{fontSize:13,color:'#14532d'}}>3. Apenas Equipe</b>
+                <span style={{background:'#dcfce7',color:'#15803d',padding:'2px 8px',borderRadius:6,fontSize:10,fontWeight:700}}>EQUIPE</span>
+              </div>
+              <p style={{fontSize:12,color:'#64748b',margin:'0 0 10px'}}>Mensagem individual do Formulário 2.</p>
+              <pre style={{whiteSpace:'pre-wrap',fontFamily:'inherit',fontSize:11,background:'#fff',border:'1px solid #e2e8f0',borderRadius:6,padding:10,margin:'0 0 12px',color:'#334155',lineHeight:1.5,maxHeight:140,overflowY:'auto'}}>
+                {waTeamMsg}
+              </pre>
+            </div>
+            <button type="button" className="button small" onClick={()=>void handleCopy(waTeamMsg, 'f2-wa-box', 'whatsapp')} style={{width:'100%',justifyContent:'center',color:'#15803d',borderColor:'#86efac'}}>
+              {copiedLink==='f2-wa-box'?<Check size={14}/>:<Copy size={14}/>}{copiedLink==='f2-wa-box'?'✓ Mensagem copiada!':'Copiar Mensagem 3 (Equipe)'}
+            </button>
+          </div>
+        </div>
+      </Panel>
 
       <LeaderRosterAccordion
         data={data}
@@ -864,17 +994,20 @@ function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,on
 }
 
 /** The primary RH workflow: share the evaluation links for the cycle. */
-function CycleLinks({forms,cycle}:{forms:Evaluation[];cycle:Pick<Cycle,'startDate'|'endDate'> & {id?:string}}) {
+function CycleLinks({forms,cycle,onOpenWhatsAppModal}:{forms:Evaluation[];cycle:Pick<Cycle,'startDate'|'endDate'> & {id?:string;name?:string};onOpenWhatsAppModal?:()=>void}) {
   const [copied,setCopied]=useState(''),[error,setError]=useState('');
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const leadUrl = `${origin}/avaliacao-de-lideres`;
   const teamUrl = `${origin}/avaliacao-da-equipe`;
-  const portalUrl = `${origin}/avaliar`;
+
+  const waLeadMsg = `Olá! 👋\n\nEstá aberto o ciclo de avaliação *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse o link abaixo para preencher a *Avaliação de Líderes* (basta selecionar seu nome na lista):\n${leadUrl}\n\nPeríodo aberto até ${formatDate(cycle.endDate)}.\nCardiofitness — Gestão de Pessoas`;
+  const waTeamMsg = `Olá! 👋\n\nEstá aberto o ciclo de avaliação *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse o link abaixo para preencher a *Avaliação e Autoavaliação da Equipe* (basta selecionar seu nome na lista):\n${teamUrl}\n\nPeríodo aberto até ${formatDate(cycle.endDate)}.\nCardiofitness — Gestão de Pessoas`;
 
   async function copyLink(url:string){
     try {
       if(!navigator.clipboard?.writeText)throw new Error('Clipboard indisponível');
       await navigator.clipboard.writeText(url);setCopied(url);setError('');
+      setTimeout(()=>setCopied(''),3000);
     } catch {setError('Não foi possível copiar automaticamente. Endereço: ' + url);}
   }
   return <div className="quick-link-list">
@@ -886,6 +1019,9 @@ function CycleLinks({forms,cycle}:{forms:Evaluation[];cycle:Pick<Cycle,'startDat
       <div className="quick-actions">
         <button type="button" className="button small primary" onClick={()=>void copyLink(leadUrl)}>
           <Copy size={15}/>{copied===leadUrl?'Link copiado!':'Copiar link'}
+        </button>
+        <button type="button" className="button small" onClick={()=>void copyLink(waLeadMsg)} style={{color:'#067647'}}>
+          {copied===waLeadMsg?'✓ Copiado!':'WhatsApp'}
         </button>
         <a className="button small" href={leadUrl} target="_blank" rel="noopener noreferrer">
           <ExternalLink size={15}/>Abrir
@@ -902,29 +1038,49 @@ function CycleLinks({forms,cycle}:{forms:Evaluation[];cycle:Pick<Cycle,'startDat
         <button type="button" className="button small primary" onClick={()=>void copyLink(teamUrl)}>
           <Copy size={15}/>{copied===teamUrl?'Link copiado!':'Copiar link'}
         </button>
+        <button type="button" className="button small" onClick={()=>void copyLink(waTeamMsg)} style={{color:'#067647'}}>
+          {copied===waTeamMsg?'✓ Copiado!':'WhatsApp'}
+        </button>
         <a className="button small" href={teamUrl} target="_blank" rel="noopener noreferrer">
           <ExternalLink size={15}/>Abrir
         </a>
       </div>
     </div>
 
+    {onOpenWhatsAppModal && (
+      <div style={{marginTop:8}}>
+        <button type="button" className="button small" onClick={onOpenWhatsAppModal} style={{borderColor:'#86efac',color:'#166534',background:'#f0fdf4'}}>
+          <MessageCircle size={15}/>Ver as 3 Mensagens do WhatsApp
+        </button>
+      </div>
+    )}
+
     {error&&<Notice message={error}/>}
   </div>;
 }
 function QuickCycleHome({data,cycle,onQuickCycle,onConfigure,onOpenLinks}:{data:AppData;cycle:Cycle;onQuickCycle:()=>void;onConfigure:()=>void;onOpenLinks:()=>void}) {
+  const [showWaModal, setShowWaModal] = useState(false);
   const forms=cycleEvaluations(data,cycle.id);
   const next=suggestNextCycle(data);
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const leadUrl = `${origin}/avaliacao-de-lideres`;
+  const teamUrl = `${origin}/avaliacao-da-equipe`;
+
   return <section className="quick-launch" aria-labelledby="quick-launch-title">
+    {showWaModal && <WhatsAppModal cycle={cycle} leadUrl={leadUrl} teamUrl={teamUrl} onClose={()=>setShowWaModal(false)}/>}
     <div className="quick-launch-head">
       <div><span className="quick-kicker">PORTAL DE AVALIAÇÕES</span><h2 id="quick-launch-title">Links de avaliação do ciclo</h2><p>Compartilhe os dois links com os colaboradores. Todas as avaliações respondidas são computadas em tempo real durante o período ativo.</p></div>
       <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+        <button type="button" className="button" onClick={()=>setShowWaModal(true)} style={{borderColor:'#86efac',color:'#166534',background:'#f0fdf4'}}>
+          <MessageCircle size={17}/>Mensagens WhatsApp (3)
+        </button>
         <button type="button" className="button" onClick={onOpenLinks}><ExternalLink size={17}/>Ver links dos formulários (2)</button>
         <button type="button" className="button primary" disabled={!next} onClick={onQuickCycle}><Plus size={18}/>Criar próximo ciclo</button>
       </div>
     </div>
     <div className="quick-launch-bottom">
       <div className="quick-link-title"><b>Links do ciclo: {cycle.name}</b><small>{formatDate(cycle.startDate)} a {formatDate(cycle.endDate)}</small></div>
-      <CycleLinks forms={forms} cycle={cycle}/>
+      <CycleLinks forms={forms} cycle={cycle} onOpenWhatsAppModal={()=>setShowWaModal(true)}/>
       <p className="quick-help">Envie os dois links para a equipe. Cada colaborador seleciona seu próprio nome na lista e responde. As notas alimentam as médias e os relatórios automaticamente durante o período ativo. <button className="text-button" type="button" onClick={onConfigure}>Configurações avançadas</button></p>
     </div>
   </section>;
