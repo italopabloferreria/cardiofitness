@@ -22,7 +22,7 @@ type View = 'dashboard' | 'links' | 'employees' | 'employee' | 'evaluations' | '
 type Editor = { type: 'quick-cycle' } | { type: 'employee'; item?: Employee } | { type: 'deactivate'; item: Employee } | { type: 'delete-employee'; item: Employee } | { type: 'cycle'; item?: Cycle; sourceCycleId?:string } | { type: 'evaluation'; item?: Evaluation; preset?: typeof PROVIDED_FORMS[number] } | null;
 const NAV = [{ id:'dashboard', label:'Dashboard', icon:LayoutDashboard }, { id:'links', label:'Links de Avaliação', icon:ExternalLink }, { id:'employees', label:'Colaboradores', icon:UsersRound }, { id:'evaluations', label:'Avaliações', icon:ClipboardList }, { id:'pending', label:'Pendências', icon:UserRoundCheck }, { id:'reports', label:'Relatórios', icon:BarChart3 }, { id:'sync', label:'Sincronização', icon:RefreshCw }, { id:'settings', label:'Configurações', icon:Settings2 }] as const;
 const titles: Record<View,string> = {dashboard:'Dashboard',links:'Links de Avaliação',employees:'Colaboradores',employee:'Detalhe do colaborador',evaluations:'Avaliações',pending:'Pendências',result:'Resultado da avaliação',reports:'Relatórios',sync:'Sincronização',settings:'Configurações'};
-const subtitles: Record<View,string> = {dashboard:'Uma visão clara das pessoas, das avaliações e de cada ciclo.',links:'Links individuais permanentes para cada colaborador ativo.',employees:'Cadastre, selecione e acompanhe as pessoas da Cardiofitness.',employee:'Resultados individuais e histórico ao longo dos ciclos.',evaluations:'Respostas e médias de cada avaliação do ciclo.',pending:'Veja quem ainda precisa responder às avaliações do ciclo.',result:'Notas e respostas de texto identificadas do formulário selecionado.',reports:'Selecione o recorte e exporte os resultados do ciclo.',sync:'Confira a conexão, as consultas e as respostas a revisar.',settings:'Organize ciclos, participantes e os formulários de avaliação.'};
+const subtitles: Record<View,string> = {dashboard:'Uma visão clara das pessoas, das avaliações e de cada ciclo.',links:'Links fixos de avaliação e quadro de equipes.',employees:'Estrutura de líderes e subordinados da Cardiofitness.',employee:'Resultados individuais e histórico ao longo dos ciclos.',evaluations:'Respostas e médias de cada avaliação do ciclo.',pending:'Veja quem ainda precisa responder às avaliações do ciclo.',result:'Notas e respostas de texto identificadas do formulário selecionado.',reports:'Selecione o recorte e exporte os resultados do ciclo.',sync:'Confira a conexão, as consultas e as respostas a revisar.',settings:'Organize ciclos, participantes e os formulários de avaliação.'};
 const initials = (name:string) => name.split(' ').filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
 const person = (data:AppData,id:string) => data.employees.find(employee=>employee.id===id);
 const cycleEvaluations = (data:AppData,cycleId:string) => data.evaluations.filter(evaluation=>evaluation.cycleId===cycleId);
@@ -79,8 +79,8 @@ export default function Application() {
       {app.mode==='live'&&<button type="button" className="icon-button" title="Sair da conta" aria-label="Sair da conta" onClick={()=>void app.logout().catch(error=>setNotice({text:errorMessage(error),success:false}))}><LogOut size={18}/></button>}
     </div></header><main id="main" className="main"><div className="page-heading"><div>{(view==='employee'||view==='result')&&<button type="button" className="back-link" onClick={()=>navigate(view==='employee'?'employees':'evaluations')}><ArrowLeft size={16}/>Voltar para {view==='employee'?'colaboradores':'avaliações'}</button>}<h1>{view==='employee'&&employee?employee.name:view==='result'&&evaluation?evaluation.name:titles[view]}</h1><p>{subtitles[view]}</p></div><div className="page-actions">{view==='employees'?<button className="button primary" onClick={()=>setEditor({type:'employee'})}><Plus size={18}/>Adicionar colaborador</button>:view==='settings'?null:view==='result'?null:<Field label="Ciclo" className="cycle-select"><select value={selectedCycleId} onChange={event=>setCycleId(event.target.value)} aria-label="Selecionar ciclo">{!cycles.length&&<option value="">Nenhum ciclo cadastrado</option>}{cycles.map(cycle=><option key={cycle.id} value={cycle.id}>{cycle.name}</option>)}</select></Field>}</div></div>{notice&&<Notice message={notice.text} success={notice.success} onClose={()=>setNotice(null)}/ >}{app.error&&<Notice message={app.error}/ >}
       {view==='dashboard'&&<Dashboard data={data} cycle={selectedCycle} onQuickCycle={()=>setEditor({type:'quick-cycle'})} onConfigure={()=>navigate('settings')} onResults={openEvaluation} onOpenLinks={()=>navigate('links')}/>}
-      {view==='links'&&<PermanentLinksPanel data={data} cycle={selectedCycle} onAddEmployee={()=>setEditor({type:'employee'})} onEditEmployee={item=>setEditor({type:'employee',item})} onDeleteEmployee={item=>setEditor({type:'delete-employee',item})}/>}
-      {view==='employees'&&<Employees data={data} cycle={selectedCycle} onOpen={openEmployee} onEdit={item=>setEditor({type:'employee',item})} onDeactivate={item=>setEditor({type:'deactivate',item})} onDelete={item=>setEditor({type:'delete-employee',item})}/>}
+      {view==='links'&&<PermanentLinksPanel data={data} cycle={selectedCycle} onOpenEmployee={openEmployee} onAddEmployee={()=>setEditor({type:'employee'})} onEditEmployee={item=>setEditor({type:'employee',item})} onDeleteEmployee={item=>setEditor({type:'delete-employee',item})}/>}
+      {view==='employees'&&<Employees data={data} cycle={selectedCycle} onOpen={openEmployee} onAdd={()=>setEditor({type:'employee'})} onEdit={item=>setEditor({type:'employee',item})} onDeactivate={item=>setEditor({type:'deactivate',item})} onDelete={item=>setEditor({type:'delete-employee',item})}/>}
       {view==='employee'&&(employee?<EmployeeDetail data={data} employee={employee} cycleId={selectedCycleId} onEdit={()=>setEditor({type:'employee',item:employee})} onResults={openEvaluation}/>:<Empty title="Selecione um colaborador" action={<button className="button" onClick={()=>navigate('employees')}>Ver colaboradores</button>}/>)}
       {view==='evaluations'&&<Evaluations data={data} cycle={selectedCycle} onResults={openEvaluation} onConfigure={()=>navigate('settings')} onSync={sync} syncing={syncing} canSync={app.googleConfigured&&app.mode==='live'} demo={app.mode==='demo'}/>}
       {view==='pending'&&<Pending data={data} cycleId={selectedCycleId} onPerson={openEmployee} onConfigure={()=>navigate('settings')}/>}
@@ -98,31 +98,467 @@ export default function Application() {
     </div>;
 }
 
-function PermanentLinksPanel({data, cycle, onAddEmployee, onEditEmployee, onDeleteEmployee}:{data:AppData; cycle?:Cycle; onAddEmployee:()=>void; onEditEmployee:(e:Employee)=>void; onDeleteEmployee:(e:Employee)=>void}) {
+function LeaderRosterAccordion({
+  data,
+  cycle,
+  onOpenEmployee,
+  onEditEmployee,
+  onDeleteEmployee,
+  onAddEmployee,
+  title = 'Quadro de Colaboradores por Liderança',
+  subtitle = 'Clique em uma liderança para abrir seus subordinados. Organizado por equipes, sem necessidade de páginas.',
+  showStats = true,
+}: {
+  data: AppData;
+  cycle?: Cycle;
+  onOpenEmployee: (id: string) => void;
+  onEditEmployee: (employee: Employee) => void;
+  onDeleteEmployee: (employee: Employee) => void;
+  onAddEmployee?: () => void;
+  title?: string;
+  subtitle?: string;
+  showStats?: boolean;
+}) {
   const [query, setQuery] = useState('');
   const [department, setDepartment] = useState('');
-  const [roleFilter, setRoleFilter] = useState<'all'|'leader'|'staff'|'intern'>('all');
+  const [status, setStatus] = useState<'all' | 'active' | 'inactive'>('active');
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+
+  const allEmployees = data.employees;
+  const activeEmployees = allEmployees.filter(e => e.active);
+  const departments = [...new Set(allEmployees.map(e => e.department))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+
+  const q = query.trim().toLocaleLowerCase('pt-BR');
+
+  function matchEmp(emp: Employee) {
+    const matchStatus = status === 'all' ? true : status === 'active' ? emp.active : !emp.active;
+    const matchDept = !department || emp.department === department;
+    const matchQ = !q || `${emp.name} ${emp.department} ${emp.email} ${emp.formName}`.toLocaleLowerCase('pt-BR').includes(q);
+    return matchStatus && matchDept && matchQ;
+  }
+
+  // Leaders
+  const leaders = allEmployees.filter(e => e.isLeader);
+
+  // Group leaders with their subordinates
+  const leaderGroups = leaders.map(leader => {
+    const directSubs = allEmployees.filter(e => e.leaderId === leader.id && e.id !== leader.id);
+    const visibleSubs = directSubs.filter(matchEmp);
+    const leaderSelfMatches = matchEmp(leader);
+    const visible = leaderSelfMatches || visibleSubs.length > 0;
+    return {
+      leader,
+      subordinates: directSubs,
+      visibleSubordinates: visibleSubs,
+      visible,
+      hasMatchInSubs: q ? visibleSubs.length > 0 : false,
+    };
+  }).filter(group => group.visible);
+
+  // Unassigned employees (not a leader and no valid leader)
+  const unassigned = allEmployees.filter(e =>
+    !e.isLeader && (!e.leaderId || !leaders.some(l => l.id === e.leaderId))
+  ).filter(matchEmp);
+
+  const toggleLeader = (id: string) => {
+    setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const expandAll = () => {
+    const next: Record<string, boolean> = {};
+    leaderGroups.forEach(g => { next[g.leader.id] = true; });
+    next['unassigned'] = true;
+    setExpanded(next);
+  };
+
+  const collapseAll = () => {
+    setExpanded({});
+  };
+
+  const totalVisibleCount = leaderGroups.reduce((acc, g) => acc + (matchEmp(g.leader) ? 1 : 0) + g.visibleSubordinates.length, 0) + unassigned.length;
+
+  return (
+    <>
+      {showStats && (
+        <div className="stat-grid four">
+          <Stat label="Total Cadastrado" value={allEmployees.length} note="Todos os registros" icon={<UsersRound size={19}/>}/>
+          <Stat label="Colaboradores Ativos" value={activeEmployees.length} note="Conforme quadro oficial" icon={<Check size={19}/>}/>
+          <Stat label="Lideranças Ativas" value={activeEmployees.filter(e=>e.isLeader).length} note="Setores da clínica" icon={<UserRoundCheck size={19}/>}/>
+          <Stat label="Ciclo Atual" value={cycle?.name || 'Nenhum'} note={cycle ? `${formatDate(cycle.startDate)} a ${formatDate(cycle.endDate)}` : 'Sem ciclo'} icon={<CalendarDays size={19}/>}/>
+        </div>
+      )}
+
+      <Panel
+        title={title}
+        subtitle={subtitle}
+        action={
+          onAddEmployee && (
+            <button type="button" className="button primary" onClick={onAddEmployee}>
+              <Plus size={16}/>Adicionar colaborador
+            </button>
+          )
+        }
+      >
+        <div className="table-filters" style={{ flexWrap: 'wrap', gap: 10 }}>
+          <label className="search-field" style={{ minWidth: 220, flex: 2 }}>
+            <Search size={18}/>
+            <span className="sr-only">Buscar colaborador</span>
+            <input
+              placeholder="Buscar por nome, setor ou líder..."
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+            />
+          </label>
+
+          <select
+            aria-label="Filtrar por setor"
+            value={department}
+            onChange={e => setDepartment(e.target.value)}
+            style={{ flex: 1, minWidth: 150 }}
+          >
+            <option value="">Todos os setores</option>
+            {departments.map(d => <option key={d} value={d}>{d}</option>)}
+          </select>
+
+          <select
+            aria-label="Filtrar por status"
+            value={status}
+            onChange={e => setStatus(e.target.value as any)}
+            style={{ flex: 1, minWidth: 130 }}
+          >
+            <option value="active">Apenas Ativos</option>
+            <option value="all">Todos os status</option>
+            <option value="inactive">Apenas Inativos</option>
+          </select>
+
+          <div style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
+            <button
+              type="button"
+              className="button small"
+              onClick={expandAll}
+              title="Expandir todas as equipes de líderes"
+            >
+              Expandir todos
+            </button>
+            <button
+              type="button"
+              className="button small"
+              onClick={collapseAll}
+              title="Recolher todas as equipes"
+            >
+              Recolher todos
+            </button>
+          </div>
+
+          <span className="record-count">{quantity(totalVisibleCount, 'pessoa')}</span>
+        </div>
+
+        <div style={{ padding: '0 24px 24px' }}>
+          {leaderGroups.length === 0 && unassigned.length === 0 ? (
+            <Empty title="Nenhum colaborador encontrado com os filtros selecionados.">
+              Ajuste a busca ou altere os filtros de status e setor.
+            </Empty>
+          ) : (
+            leaderGroups.map(({ leader, subordinates, visibleSubordinates, hasMatchInSubs }) => {
+              const isOpen = expanded[leader.id] ?? (q ? hasMatchInSubs : false);
+
+              return (
+                <div
+                  key={leader.id}
+                  style={{
+                    border: isOpen ? '1px solid #bfdbfe' : '1px solid #e2e8f0',
+                    borderRadius: 10,
+                    marginBottom: 14,
+                    overflow: 'hidden',
+                    background: '#ffffff',
+                    boxShadow: isOpen ? '0 2px 8px rgba(37,99,235,0.06)' : '0 1px 3px rgba(0,0,0,0.02)',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  {/* Leader Header Row (Click to toggle) */}
+                  <div
+                    onClick={() => toggleLeader(leader.id)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '14px 18px',
+                      background: isOpen ? '#f0f7ff' : '#ffffff',
+                      cursor: 'pointer',
+                      userSelect: 'none',
+                      borderBottom: isOpen ? '1px solid #e0f2fe' : 'none',
+                      flexWrap: 'wrap',
+                      gap: 12,
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <span
+                        style={{
+                          color: isOpen ? '#1d4ed8' : 'var(--muted)',
+                          display: 'inline-flex',
+                          transition: 'transform 0.2s',
+                          transform: isOpen ? 'rotate(90deg)' : 'none',
+                        }}
+                      >
+                        <ChevronRight size={18} />
+                      </span>
+                      <Avatar name={leader.name} />
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                          <b style={{ fontSize: 14, color: 'var(--ink)' }}>{leader.name}</b>
+                          <Pill kind="green">Líder de Setor</Pill>
+                          <Pill kind={leader.active ? 'green' : 'muted'}>{leader.active ? 'Ativo' : 'Inativo'}</Pill>
+                        </div>
+                        <small style={{ color: 'var(--muted)', display: 'block', marginTop: 2 }}>
+                          {leader.department} · {leader.email || 'Cardiofitness'}
+                        </small>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                      <span
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 600,
+                          padding: '3px 10px',
+                          borderRadius: 20,
+                          background: subordinates.length ? '#e0f2fe' : '#f1f5f9',
+                          color: subordinates.length ? '#0369a1' : '#64748b',
+                        }}
+                      >
+                        {quantity(subordinates.length, 'subordinado')}
+                      </span>
+
+                      <div style={{ display: 'inline-flex', gap: 6 }} onClick={e => e.stopPropagation()}>
+                        <button
+                          type="button"
+                          className="button small"
+                          title="Ver histórico e notas do líder"
+                          onClick={() => onOpenEmployee(leader.id)}
+                        >
+                          <ArrowRight size={14} /> Detalhe
+                        </button>
+                        <button
+                          type="button"
+                          className="button small"
+                          title="Editar cadastro do líder"
+                          onClick={() => onEditEmployee(leader)}
+                        >
+                          <Pencil size={14} /> Editar
+                        </button>
+                        <button
+                          type="button"
+                          className="button small danger-outline"
+                          title="Remover liderança"
+                          style={{ color: '#b42318' }}
+                          onClick={() => onDeleteEmployee(leader)}
+                        >
+                          <Trash2 size={14} /> Remover
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Subordinates Accordion Body */}
+                  {isOpen && (
+                    <div style={{ background: '#fafbfc' }}>
+                      {visibleSubordinates.length === 0 ? (
+                        <p style={{ margin: 0, padding: '16px 22px', fontSize: 13, color: 'var(--muted)', fontStyle: 'italic' }}>
+                          {q ? 'Nenhum subordinado corresponde ao filtro de busca.' : 'Nenhum colaborador subordinado vinculado a esta liderança.'}
+                        </p>
+                      ) : (
+                        <div className="table-scroll">
+                          <table style={{ background: '#ffffff' }}>
+                            <thead>
+                              <tr style={{ background: '#f8fafc' }}>
+                                <th style={{ paddingLeft: 22 }}>Colaborador</th>
+                                <th>Setor</th>
+                                <th>Papel</th>
+                                <th>Status</th>
+                                <th style={{ textAlign: 'right', paddingRight: 22 }}>Ações</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {visibleSubordinates.map(sub => {
+                                const isIntern = sub.formName.toLowerCase().includes('estagi');
+                                return (
+                                  <tr key={sub.id}>
+                                    <td style={{ paddingLeft: 22 }}>
+                                      <div className="person-button" style={{ cursor: 'pointer' }} onClick={() => onOpenEmployee(sub.id)}>
+                                        <Avatar name={sub.name} />
+                                        <span>
+                                          <b style={{ color: 'var(--ink)' }}>{sub.name}</b>
+                                          <small>{sub.email || 'Cardiofitness'}</small>
+                                        </span>
+                                      </div>
+                                    </td>
+                                    <td>{sub.department}</td>
+                                    <td>
+                                      <Pill kind={isIntern ? 'amber' : 'muted'}>
+                                        {isIntern ? 'Estagiário' : 'Colaborador'}
+                                      </Pill>
+                                    </td>
+                                    <td>
+                                      <Pill kind={sub.active ? 'green' : 'muted'}>
+                                        {sub.active ? 'Ativo' : 'Inativo'}
+                                      </Pill>
+                                    </td>
+                                    <td style={{ textAlign: 'right', paddingRight: 22 }}>
+                                      <div style={{ display: 'inline-flex', gap: 6 }}>
+                                        <button
+                                          type="button"
+                                          className="button small"
+                                          title="Ver histórico e notas"
+                                          onClick={() => onOpenEmployee(sub.id)}
+                                        >
+                                          <ArrowRight size={14} /> Detalhe
+                                        </button>
+                                        <button
+                                          type="button"
+                                          className="button small"
+                                          title="Editar colaborador"
+                                          onClick={() => onEditEmployee(sub)}
+                                        >
+                                          <Pencil size={14} /> Editar
+                                        </button>
+                                        <button
+                                          type="button"
+                                          className="button small danger-outline"
+                                          title="Remover colaborador"
+                                          style={{ color: '#b42318' }}
+                                          onClick={() => onDeleteEmployee(sub)}
+                                        >
+                                          <Trash2 size={14} /> Remover
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+
+          {/* Unassigned Collaborators (if any exist) */}
+          {unassigned.length > 0 && (
+            <div
+              style={{
+                border: expanded['unassigned'] ? '1px solid #fcd34d' : '1px solid #e2e8f0',
+                borderRadius: 10,
+                marginTop: 18,
+                overflow: 'hidden',
+                background: '#ffffff',
+              }}
+            >
+              <div
+                onClick={() => setExpanded(prev => ({ ...prev, unassigned: !prev.unassigned }))}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '14px 18px',
+                  background: expanded['unassigned'] ? '#fffbeb' : '#ffffff',
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                  borderBottom: expanded['unassigned'] ? '1px solid #fef3c7' : 'none',
+                  flexWrap: 'wrap',
+                  gap: 12,
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span
+                    style={{
+                      color: 'var(--muted)',
+                      display: 'inline-flex',
+                      transition: 'transform 0.2s',
+                      transform: expanded['unassigned'] ? 'rotate(90deg)' : 'none',
+                    }}
+                  >
+                    <ChevronRight size={18} />
+                  </span>
+                  <div>
+                    <b style={{ fontSize: 14, color: '#92400e' }}>Outros Colaboradores (Sem Líder Vinculado)</b>
+                    <small style={{ color: 'var(--muted)', display: 'block', marginTop: 2 }}>
+                      Colaboradores que não possuem liderança direta atribuída
+                    </small>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, padding: '3px 10px', borderRadius: 20, background: '#fef3c7', color: '#92400e' }}>
+                    {quantity(unassigned.length, 'colaborador')}
+                  </span>
+                </div>
+              </div>
+
+              {expanded['unassigned'] && (
+                <div className="table-scroll">
+                  <table style={{ background: '#ffffff' }}>
+                    <thead>
+                      <tr style={{ background: '#f8fafc' }}>
+                        <th style={{ paddingLeft: 22 }}>Colaborador</th>
+                        <th>Setor</th>
+                        <th>Papel</th>
+                        <th>Status</th>
+                        <th style={{ textAlign: 'right', paddingRight: 22 }}>Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {unassigned.map(emp => (
+                        <tr key={emp.id}>
+                          <td style={{ paddingLeft: 22 }}>
+                            <div className="person-button" style={{ cursor: 'pointer' }} onClick={() => onOpenEmployee(emp.id)}>
+                              <Avatar name={emp.name} />
+                              <span>
+                                <b style={{ color: 'var(--ink)' }}>{emp.name}</b>
+                                <small>{emp.email || 'Cardiofitness'}</small>
+                              </span>
+                            </div>
+                          </td>
+                          <td>{emp.department}</td>
+                          <td>
+                            <Pill kind="muted">Colaborador</Pill>
+                          </td>
+                          <td>
+                            <Pill kind={emp.active ? 'green' : 'muted'}>{emp.active ? 'Ativo' : 'Inativo'}</Pill>
+                          </td>
+                          <td style={{ textAlign: 'right', paddingRight: 22 }}>
+                            <div style={{ display: 'inline-flex', gap: 6 }}>
+                              <button type="button" className="button small" onClick={() => onOpenEmployee(emp.id)}>
+                                <ArrowRight size={14} /> Detalhe
+                              </button>
+                              <button type="button" className="button small" onClick={() => onEditEmployee(emp)}>
+                                <Pencil size={14} /> Editar
+                              </button>
+                              <button type="button" className="button small danger-outline" style={{ color: '#b42318' }} onClick={() => onDeleteEmployee(emp)}>
+                                <Trash2 size={14} /> Remover
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </Panel>
+    </>
+  );
+}
+
+function PermanentLinksPanel({data, cycle, onOpenEmployee, onAddEmployee, onEditEmployee, onDeleteEmployee}:{data:AppData; cycle?:Cycle; onOpenEmployee:(id:string)=>void; onAddEmployee:()=>void; onEditEmployee:(e:Employee)=>void; onDeleteEmployee:(e:Employee)=>void}) {
   const [copiedLink, setCopiedLink] = useState('');
   const [copiedType, setCopiedType] = useState<'url'|'whatsapp'|'all'|null>(null);
-  const [page, setPage] = useState(1);
-
-  const activeEmployees = data.employees.filter(e => e.active);
-  const departments = [...new Set(activeEmployees.map(e => e.department))].sort((a,b)=>a.localeCompare(b, 'pt-BR'));
-
-  const filtered = activeEmployees.filter(e => {
-    const q = query.trim().toLowerCase();
-    const matchesQ = !q || e.name.toLowerCase().includes(q) || e.department.toLowerCase().includes(q) || (e.accessToken && e.accessToken.toLowerCase().includes(q));
-    const matchesDept = !department || e.department === department;
-    const isIntern = e.formName.toLowerCase().includes('estagi');
-    const matchesRole = roleFilter === 'all'
-      ? true
-      : roleFilter === 'leader'
-      ? e.isLeader
-      : roleFilter === 'intern'
-      ? isIntern
-      : (!e.isLeader && !isIntern);
-    return matchesQ && matchesDept && matchesRole;
-  });
 
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const leadUrl = `${origin}/avaliacao-de-lideres`;
@@ -225,113 +661,17 @@ function PermanentLinksPanel({data, cycle, onAddEmployee, onEditEmployee, onDele
         </div>
       </div>
 
-      <div className="stat-grid four">
-        <Stat label="Colaboradores Ativos" value={activeEmployees.length} note="Conforme quadro oficial" icon={<UsersRound size={19}/>}/>
-        <Stat label="Lideranças" value={activeEmployees.filter(e=>e.isLeader).length} note="Avaliam liderados e a si mesmos" icon={<Check size={19}/>}/>
-        <Stat label="Colaboradores & Estagiários" value={activeEmployees.filter(e=>!e.isLeader).length} note="Avaliam líderes e a si mesmos" icon={<UserRoundCheck size={19}/>}/>
-        <Stat label="Ciclo Ativo" value={cycle?.name || 'Nenhum'} note={cycle ? `${formatDate(cycle.startDate)} a ${formatDate(cycle.endDate)}` : 'Defina um ciclo'} icon={<CalendarDays size={19}/>}/>
-      </div>
-
-      <Panel
-        title="Quadro de Colaboradores da Clínica"
-        subtitle={`${quantity(filtered.length, 'colaborador ativo', 'colaboradores ativos')} no cadastro`}
-        action={
-          <button type="button" className="button primary" onClick={onAddEmployee}>
-            <Plus size={16}/>Adicionar colaborador
-          </button>
-        }
-      >
-        <div className="table-filters">
-          <label className="search-field">
-            <Search size={18}/>
-            <span className="sr-only">Buscar colaborador</span>
-            <input placeholder="Buscar por nome ou setor..." value={query} onChange={e=>{setQuery(e.target.value);setPage(1);}}/>
-          </label>
-          <select aria-label="Filtrar por setor" value={department} onChange={e=>{setDepartment(e.target.value);setPage(1);}}>
-            <option value="">Todos os setores</option>
-            {departments.map(d=><option key={d} value={d}>{d}</option>)}
-          </select>
-          <select aria-label="Filtrar por função" value={roleFilter} onChange={e=>{setRoleFilter(e.target.value as any);setPage(1);}}>
-            <option value="all">Todas as funções</option>
-            <option value="leader">Apenas Líderes</option>
-            <option value="staff">Apenas Colaboradores</option>
-            <option value="intern">Apenas Estagiários</option>
-          </select>
-          <span className="record-count">{quantity(filtered.length,'pessoa')}</span>
-        </div>
-
-        <div className="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>Colaborador</th>
-                <th>Setor</th>
-                <th>Função / Papel</th>
-                <th>Liderança no Ciclo</th>
-                <th>Status</th>
-                <th style={{textAlign:'right'}}>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.slice((page-1)*8, page*8).map(emp => {
-                const isIntern = emp.formName.includes('Estagi');
-                const leader = emp.leaderId ? person(data, emp.leaderId)?.name : null;
-
-                return (
-                  <tr key={emp.id}>
-                    <td>
-                      <div className="person-button" style={{cursor:'default'}}>
-                        <Avatar name={emp.name}/>
-                        <span>
-                          <b>{emp.name}</b>
-                          <small>{emp.email || 'Cardiofitness'}</small>
-                        </span>
-                      </div>
-                    </td>
-                    <td>{emp.department}</td>
-                    <td>
-                      <Pill kind={emp.isLeader ? 'green' : isIntern ? 'amber' : 'muted'}>
-                        {emp.isLeader ? 'Líder' : isIntern ? 'Estagiário' : 'Colaborador'}
-                      </Pill>
-                    </td>
-                    <td>
-                      {emp.isLeader ? <span style={{color:'var(--muted)',fontSize:12}}>Equipe subordinada</span> : (leader || '—')}
-                    </td>
-                    <td>
-                      <Pill kind={emp.active ? 'green' : 'muted'}>
-                        {emp.active ? 'Ativo' : 'Inativo'}
-                      </Pill>
-                    </td>
-                    <td style={{textAlign:'right'}}>
-                      <div style={{display:'inline-flex',gap:6}}>
-                        <button
-                          type="button"
-                          className="button small"
-                          title="Editar colaborador"
-                          onClick={() => onEditEmployee(emp)}
-                        >
-                          <Pencil size={14}/> Editar
-                        </button>
-                        <button
-                          type="button"
-                          className="button small danger-outline"
-                          title="Remover ou desativar colaborador"
-                          style={{color:'#b42318'}}
-                          onClick={() => onDeleteEmployee(emp)}
-                        >
-                          <Trash2 size={14}/> Remover
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        {!filtered.length && <Empty title="Nenhum colaborador encontrado com estes filtros."/>}
-        <Pager total={filtered.length} page={page} setPage={setPage}/>
-      </Panel>
+      <LeaderRosterAccordion
+        data={data}
+        cycle={cycle}
+        onOpenEmployee={onOpenEmployee}
+        onEditEmployee={onEditEmployee}
+        onDeleteEmployee={onDeleteEmployee}
+        onAddEmployee={onAddEmployee}
+        showStats={false}
+        title="Quadro de Colaboradores por Liderança"
+        subtitle="Estrutura de líderes e suas equipes na clínica. Clique no líder para abrir seus subordinados."
+      />
     </>
   );
 }
@@ -440,12 +780,20 @@ function QuickCycleEditor({data,onClose,onConfigure,onCreated}:{data:AppData;onC
   </Modal>;
 }
 
-function Employees({data,cycle,onOpen,onEdit,onDeactivate,onDelete}:{data:AppData;cycle?:Cycle;onOpen:(id:string)=>void;onEdit:(employee:Employee)=>void;onDeactivate:(employee:Employee)=>void;onDelete:(employee:Employee)=>void}) {
-  const [query,setQuery]=useState(''),[status,setStatus]=useState('all'),[leader,setLeader]=useState('all'),[selected,setSelected]=useState(''),[page,setPage]=useState(1);
-  const filtered=data.employees.filter(employee=>(`${employee.name} ${employee.email} ${employee.department}`.toLocaleLowerCase('pt-BR').includes(query.toLocaleLowerCase('pt-BR')))&&(status==='all'||(status==='active'?employee.active:!employee.active))&&(leader==='all'||employee.leaderId===leader));
-  const effectivePage=Math.min(page,Math.max(1,Math.ceil(filtered.length/8)));
-  const chosen=person(data,selected);const active=data.employees.filter(employee=>employee.active).length;
-  return <><div className="stat-grid"><Stat label="Total cadastrado" value={data.employees.length} note="Todos os registros" icon={<UsersRound size={19}/>}/><Stat label="Ativos" value={active} note={`${quantity(data.employees.filter(employee=>employee.active&&employee.isLeader).length,'liderança ativa','lideranças ativas')}`} icon={<Check size={19}/>}/><Stat label="Inativos" value={data.employees.length-active} note="Histórico preservado" icon={<CircleOff size={19}/>}/><Stat label="Neste ciclo" value={cycle?.participants.length??'—'} note={cycle?.name||'Sem ciclo configurado'} icon={<CalendarDays size={19}/>}/></div><Panel><div className="table-filters"><label className="search-field"><Search size={18}/><span className="sr-only">Buscar colaborador</span><input placeholder="Buscar nome, e-mail ou setor" value={query} onChange={event=>{setQuery(event.target.value);setPage(1);}}/></label><select aria-label="Filtrar por status" value={status} onChange={event=>{setStatus(event.target.value);setPage(1);}}><option value="all">Todos os status</option><option value="active">Ativos</option><option value="inactive">Inativos</option></select><select aria-label="Filtrar por liderança" value={leader} onChange={event=>{setLeader(event.target.value);setPage(1);}}><option value="all">Todas as lideranças</option>{data.employees.filter(employee=>employee.isLeader).map(employee=><option key={employee.id} value={employee.id}>{employee.name}</option>)}</select><span className="record-count">{quantity(filtered.length,'pessoa')}</span></div><div className="table-scroll"><table><thead><tr><th><span className="sr-only">Selecionar</span></th><th>Colaborador</th><th>Setor</th><th>Liderança</th><th>Status</th><th><span className="sr-only">Detalhe</span></th></tr></thead><tbody>{filtered.slice((effectivePage-1)*8,effectivePage*8).map(employee=><tr key={employee.id} className={selected===employee.id?'selected':''}><td><input type="radio" name="selected-employee" aria-label={`Selecionar ${employee.name}`} checked={selected===employee.id} onChange={()=>setSelected(employee.id)}/></td><td><button className="person-button" onClick={()=>onOpen(employee.id)}><Avatar name={employee.name}/><span><b>{employee.name}</b><small>{employee.isLeader?'Liderança':employee.email||'E-mail não informado'}</small></span></button></td><td>{employee.department}</td><td>{employee.leaderId?person(data,employee.leaderId)?.name||'Não encontrada':'—'}</td><td><Pill kind={employee.active?'green':'muted'}>{employee.active?'Ativo':'Inativo'}</Pill></td><td><button className="icon-button" aria-label={`Ver detalhe de ${employee.name}`} onClick={()=>onOpen(employee.id)}><ArrowRight size={18}/></button></td></tr>)}</tbody></table></div>{!filtered.length&&<Empty title="Nenhum colaborador encontrado">Ajuste os filtros ou adicione uma pessoa ao cadastro.</Empty>}<Pager total={filtered.length} page={effectivePage} setPage={setPage}/>{chosen&&<div className="selection-toolbar"><b>{chosen.name} selecionado(a)</b><div><button className="button" onClick={()=>onOpen(chosen.id)}><ArrowRight size={17}/>Ver detalhe</button><button className="button" onClick={()=>onEdit(chosen)}><Pencil size={16}/>Editar</button>{chosen.active&&<button className="button danger-outline" onClick={()=>onDeactivate(chosen)}><CircleOff size={17}/>Desativar</button>}<button className="button danger-outline" onClick={()=>onDelete(chosen)}><Trash2 size={17}/>Remover</button></div></div>}</Panel></>;
+function Employees({data,cycle,onOpen,onEdit,onDeactivate,onDelete,onAdd}:{data:AppData;cycle?:Cycle;onOpen:(id:string)=>void;onEdit:(employee:Employee)=>void;onDeactivate:(employee:Employee)=>void;onDelete:(employee:Employee)=>void;onAdd?:()=>void}) {
+  return (
+    <LeaderRosterAccordion
+      data={data}
+      cycle={cycle}
+      onOpenEmployee={onOpen}
+      onEditEmployee={onEdit}
+      onDeleteEmployee={onDelete}
+      onAddEmployee={onAdd}
+      showStats={true}
+      title="Colaboradores por Liderança"
+      subtitle="Exibe as lideranças da clínica. Clique em cada líder para abrir os colaboradores subordinados."
+    />
+  );
 }
 
 function EmployeeDetail({data,employee,cycleId,onEdit,onResults}:{data:AppData;employee:Employee;cycleId:string;onEdit:()=>void;onResults:(id:string)=>void}) {
