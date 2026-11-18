@@ -1,10 +1,9 @@
 'use client';
 
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { ArrowDownToLine, ArrowLeft, ArrowRight, BarChart3, CalendarDays, Check, ChevronLeft, ChevronRight, ClipboardList, Copy, Database, ExternalLink, FileSpreadsheet, LayoutDashboard, LoaderCircle, LockKeyhole, LogOut, Menu, Pencil, Plus, RefreshCw, Search, Settings2, ShieldCheck, UserRoundCheck, UsersRound, X, CircleOff, Trash2, TrendingUp } from 'lucide-react';
+import { ArrowDownToLine, ArrowLeft, ArrowRight, BarChart3, Bell, CalendarDays, Check, ChevronLeft, ChevronRight, ClipboardList, Copy, Database, ExternalLink, FileSpreadsheet, LayoutDashboard, LoaderCircle, LockKeyhole, LogOut, Menu, Pencil, Plus, RefreshCw, Search, Settings2, ShieldCheck, UserRoundCheck, UsersRound, X, CircleOff, Trash2, TrendingUp } from 'lucide-react';
 import { useApp } from '@/lib/store';
 import PasswordRecovery from './password-recovery';
-import SyncCenter from './sync-center';
 import RhAccess from './rh-access';
 import { CycleComparison } from './comparison';
 import { EvolutionDashboard } from './evolution-dashboard';
@@ -19,11 +18,11 @@ import { resolveFormId, resolveFormLink } from '@/lib/form-link';
 import { getPermanentEvaluationUrl } from '@/lib/roster-data';
 import { KIND_LABELS, PROVIDED_FORMS, type AppData, type Cycle, type CycleInput, type Employee, type EmployeeInput, type Evaluation, type EvaluationInput, type EvaluationKind, type EvaluationResponse, type FormMetadata } from '@/lib/types';
 
-type View = 'dashboard' | 'evolution' | 'links' | 'employees' | 'employee' | 'evaluations' | 'pending' | 'result' | 'reports' | 'sync' | 'settings';
+type View = 'dashboard' | 'evolution' | 'links' | 'employees' | 'employee' | 'evaluations' | 'pending' | 'result' | 'reports' | 'settings';
 type Editor = { type: 'quick-cycle' } | { type: 'employee'; item?: Employee } | { type: 'deactivate'; item: Employee } | { type: 'delete-employee'; item: Employee } | { type: 'cycle'; item?: Cycle; sourceCycleId?:string } | { type: 'evaluation'; item?: Evaluation; preset?: typeof PROVIDED_FORMS[number] } | null;
-const NAV = [{ id:'dashboard', label:'Dashboard', icon:LayoutDashboard }, { id:'evolution', label:'Evolução & Gráficos', icon:TrendingUp }, { id:'links', label:'Links de Avaliação', icon:ExternalLink }, { id:'employees', label:'Colaboradores', icon:UsersRound }, { id:'evaluations', label:'Avaliações', icon:ClipboardList }, { id:'pending', label:'Pendências', icon:UserRoundCheck }, { id:'reports', label:'Relatórios', icon:BarChart3 }, { id:'sync', label:'Sincronização', icon:RefreshCw }, { id:'settings', label:'Configurações', icon:Settings2 }] as const;
-const titles: Record<View,string> = {dashboard:'Dashboard',evolution:'Evolução e Gráficos',links:'Links de Avaliação',employees:'Colaboradores',employee:'Detalhe do colaborador',evaluations:'Avaliações',pending:'Pendências',result:'Resultado da avaliação',reports:'Relatórios',sync:'Sincronização',settings:'Configurações'};
-const subtitles: Record<View,string> = {dashboard:'Uma visão clara das pessoas, das avaliações e de cada ciclo.',evolution:'Acompanhamento da evolução histórica de notas e comparativo de desempenho por setor.',links:'Links fixos de avaliação e quadro de equipes.',employees:'Estrutura de líderes e subordinados da Cardiofitness.',employee:'Resultados individuais e histórico ao longo dos ciclos.',evaluations:'Respostas e médias de cada avaliação do ciclo.',pending:'Veja quem ainda precisa responder às avaliações do ciclo.',result:'Notas e respostas de texto identificadas do formulário selecionado.',reports:'Selecione o recorte e exporte os resultados do ciclo.',sync:'Confira a conexão, as consultas e as respostas a revisar.',settings:'Organize ciclos, participantes e os formulários de avaliação.'};
+const NAV = [{ id:'dashboard', label:'Dashboard', icon:LayoutDashboard }, { id:'evolution', label:'Evolução & Gráficos', icon:TrendingUp }, { id:'links', label:'Links de Avaliação', icon:ExternalLink }, { id:'employees', label:'Colaboradores', icon:UsersRound }, { id:'evaluations', label:'Avaliações', icon:ClipboardList }, { id:'pending', label:'Pendências', icon:UserRoundCheck }, { id:'reports', label:'Relatórios', icon:BarChart3 }, { id:'settings', label:'Configurações', icon:Settings2 }] as const;
+const titles: Record<View,string> = {dashboard:'Dashboard',evolution:'Evolução e Gráficos',links:'Links de Avaliação',employees:'Colaboradores',employee:'Detalhe do colaborador',evaluations:'Avaliações',pending:'Pendências',result:'Resultado da avaliação',reports:'Relatórios',settings:'Configurações'};
+const subtitles: Record<View,string> = {dashboard:'Uma visão clara das pessoas, das avaliações e de cada ciclo.',evolution:'Acompanhamento da evolução histórica de notas e comparativo de desempenho por setor.',links:'Links fixos de avaliação e quadro de equipes.',employees:'Estrutura de líderes e subordinados da Cardiofitness.',employee:'Resultados individuais e histórico ao longo dos ciclos.',evaluations:'Respostas e médias de cada avaliação do ciclo.',pending:'Veja quem ainda precisa responder às avaliações do ciclo.',result:'Notas e respostas de texto identificadas do formulário selecionado.',reports:'Selecione o recorte, confira a evolução histórica e exporte os resultados.',settings:'Organize ciclos, datas, participantes e os formulários de avaliação.'};
 const initials = (name:string) => name.split(' ').filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
 const person = (data:AppData,id:string) => data.employees.find(employee=>employee.id===id);
 const cycleEvaluations = (data:AppData,cycleId:string) => data.evaluations.filter(evaluation=>evaluation.cycleId===cycleId);
@@ -79,16 +78,15 @@ export default function Application() {
       <Avatar name={app.user?.name||'Recursos Humanos'}/>
       {app.mode==='live'&&<button type="button" className="icon-button" title="Sair da conta" aria-label="Sair da conta" onClick={()=>void app.logout().catch(error=>setNotice({text:errorMessage(error),success:false}))}><LogOut size={18}/></button>}
     </div></header><main id="main" className="main"><div className="page-heading"><div>{(view==='employee'||view==='result')&&<button type="button" className="back-link" onClick={()=>navigate(view==='employee'?'employees':'evaluations')}><ArrowLeft size={16}/>Voltar para {view==='employee'?'colaboradores':'avaliações'}</button>}<h1>{view==='employee'&&employee?employee.name:view==='result'&&evaluation?evaluation.name:titles[view]}</h1><p>{subtitles[view]}</p></div><div className="page-actions">{view==='employees'?<button className="button primary" onClick={()=>setEditor({type:'employee'})}><Plus size={18}/>Adicionar colaborador</button>:view==='settings'?null:view==='result'?null:<Field label="Ciclo" className="cycle-select"><select value={selectedCycleId} onChange={event=>setCycleId(event.target.value)} aria-label="Selecionar ciclo">{!cycles.length&&<option value="">Nenhum ciclo cadastrado</option>}{cycles.map(cycle=><option key={cycle.id} value={cycle.id}>{cycle.name}</option>)}</select></Field>}</div></div>{notice&&<Notice message={notice.text} success={notice.success} onClose={()=>setNotice(null)}/ >}{app.error&&<Notice message={app.error}/ >}
-      {view==='dashboard'&&<Dashboard data={data} cycle={selectedCycle} onQuickCycle={()=>setEditor({type:'quick-cycle'})} onConfigure={()=>navigate('settings')} onResults={openEvaluation} onOpenLinks={()=>navigate('links')}/>}
+      {view==='dashboard'&&<Dashboard data={data} cycle={selectedCycle} onQuickCycle={()=>setEditor({type:'quick-cycle'})} onConfigure={()=>navigate('settings')} onResults={openEvaluation} onOpenLinks={()=>navigate('links')} onNavigate={navigate} onEditCycle={item=>setEditor({type:'cycle',item})}/>}
       {view==='evolution'&&<EvolutionDashboard data={data} activeCycleId={selectedCycleId}/>}
       {view==='links'&&<PermanentLinksPanel data={data} cycle={selectedCycle} onOpenEmployee={openEmployee} onAddEmployee={()=>setEditor({type:'employee'})} onEditEmployee={item=>setEditor({type:'employee',item})} onDeleteEmployee={item=>setEditor({type:'delete-employee',item})}/>}
       {view==='employees'&&<Employees data={data} cycle={selectedCycle} onOpen={openEmployee} onAdd={()=>setEditor({type:'employee'})} onEdit={item=>setEditor({type:'employee',item})} onDeactivate={item=>setEditor({type:'deactivate',item})} onDelete={item=>setEditor({type:'delete-employee',item})}/>}
       {view==='employee'&&(employee?<EmployeeDetail data={data} employee={employee} cycleId={selectedCycleId} onEdit={()=>setEditor({type:'employee',item:employee})} onResults={openEvaluation}/>:<Empty title="Selecione um colaborador" action={<button className="button" onClick={()=>navigate('employees')}>Ver colaboradores</button>}/>)}
-      {view==='evaluations'&&<Evaluations data={data} cycle={selectedCycle} onResults={openEvaluation} onConfigure={()=>navigate('settings')} onSync={sync} syncing={syncing} canSync={app.googleConfigured&&app.mode==='live'} demo={app.mode==='demo'}/>}
+      {view==='evaluations'&&<Evaluations data={data} cycle={selectedCycle} onResults={openEvaluation} onConfigure={()=>navigate('settings')}/>}
       {view==='pending'&&<Pending data={data} cycleId={selectedCycleId} onPerson={openEmployee} onConfigure={()=>navigate('settings')}/>}
       {view==='result'&&(evaluation?<Result data={data} evaluation={evaluation} onPerson={openEmployee}/>:<Empty title="Selecione uma avaliação"/>)}
       {view==='reports'&&<Reports data={data} cycleId={selectedCycleId} onError={text=>setNotice({text,success:false})}/>}
-      {view==='sync'&&<SyncCenter data={data} configured={app.googleConfigured} onSync={id=>void sync(id)} syncing={syncing}/>}
       {view==='settings'&&<Configuration data={data} cycleId={selectedCycleId} setCycleId={setCycleId} onEdit={setEditor} demo={app.mode==='demo'} googleConfigured={app.googleConfigured}/>}
       <footer className="main-footer"><span>Cardiofitness · Avaliações de desempenho</span><span>Painel de Recursos Humanos · Respostas identificadas</span></footer></main></div>
       {editor?.type==='quick-cycle'&&<QuickCycleEditor data={data} onClose={()=>setEditor(null)} onConfigure={()=>{setEditor(null);navigate('settings');}} onCreated={id=>{setCycleId(id);setNotice({text:'Novo ciclo criado com sucesso. Links do portal ativos.',success:true});}}/>}
@@ -678,11 +676,191 @@ function PermanentLinksPanel({data, cycle, onOpenEmployee, onAddEmployee, onEdit
   );
 }
 
-function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks}:{data:AppData;cycle?:Cycle;onQuickCycle:()=>void;onConfigure:()=>void;onResults:(id:string)=>void;onOpenLinks:()=>void}) {
+function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,onNavigate,onEditCycle}:{data:AppData;cycle?:Cycle;onQuickCycle:()=>void;onConfigure:()=>void;onResults:(id:string)=>void;onOpenLinks:()=>void;onNavigate:(view:View)=>void;onEditCycle:(cycle:Cycle)=>void}) {
   if(!cycle)return <Panel><Empty title="Vamos organizar o primeiro ciclo" action={<button className="button primary" onClick={onConfigure}><Plus size={18}/>Configurar o ciclo</button>}>Cadastre os colaboradores, selecione os participantes e vincule os formulários de avaliação.</Empty></Panel>;
   const evaluations=cycleEvaluations(data,cycle.id),responses=cycleResponses(data,cycle.id),expected=expectedTotal(evaluations);const leaderIds=new Set(cycle.participants.map(item=>item.leaderId).filter(Boolean));
   const kinds:EvaluationKind[]=['leadership','team','self','leader_to_employee'];
-  return <><QuickCycleHome data={data} cycle={cycle} onQuickCycle={onQuickCycle} onConfigure={onConfigure} onOpenLinks={onOpenLinks}/><div className="stat-grid"><Stat label="Participantes do ciclo" value={cycle.participants.length} note={`${quantity(leaderIds.size,'liderança vinculada','lideranças vinculadas')}`} icon={<UsersRound size={19}/>}/><Stat label="Respostas recebidas" value={<>{responses.length}<em>{expected!==null?` / ${expected}`:''}</em></>} note={`${quantity(evaluations.length,'formulário vinculado','formulários vinculados')}`} icon={<ClipboardList size={19}/>}/><Stat label="Conclusão do ciclo" value={formatPercent(responses.length,expected)} note={expected===null?'Defina o total esperado por formulário':`${quantity(Math.max(0,expected-responses.length),'resposta pendente','respostas pendentes')}`}/><Stat label="Colaboradores ativos" value={data.employees.filter(employee=>employee.active).length} note={`${quantity(data.employees.length,'pessoa')} no cadastro`} icon={<UserRoundCheck size={19}/>}/></div><div className="dashboard-grid"><Panel title="Participação por avaliação" subtitle="Respostas recebidas em cada formulário do ciclo" className="participation-panel">{evaluations.length?evaluations.map(evaluation=>{const stats=getEvaluationStats(data,evaluation.id);return <div className="participation-row" key={evaluation.id}><div><button className="text-button" onClick={()=>onResults(evaluation.id)}>{evaluation.name}<ArrowRight size={15}/></button><b>{stats.received}<span>{stats.expected!==null?` / ${stats.expected}`:stats.received===1?' resposta':' respostas'}</span></b></div><div><Progress received={stats.received} expected={stats.expected}/><small>{stats.expected===null?'Esperado não definido':formatPercent(stats.received,stats.expected)}</small></div></div>;}):<Empty title="Nenhum formulário vinculado" action={<button className="button" onClick={onConfigure}>Vincular formulários</button>}/> }</Panel><Panel title="Ciclo de avaliação" subtitle={cycle.name}><div className="cycle-summary"><Pill kind={cycleState(cycle)==='Em andamento'?'green':'muted'}>{cycleState(cycle)}</Pill><dl><div><dt>Período</dt><dd>{formatDate(cycle.startDate)}<br/>{formatDate(cycle.endDate)}</dd></div><div><dt>Participantes</dt><dd>{quantity(cycle.participants.length,'pessoa')}</dd></div><div><dt>Coleta</dt><dd>Portal Nativo (/avaliar)</dd></div></dl><div className="mini-note"><ShieldCheck size={17}/>Acompanhamento exclusivo do RH</div></div></Panel></div><Panel title="Perspectivas do ciclo" subtitle="Médias calculadas separadamente · Escala de 1 a 4"><div className="perspective-grid">{kinds.filter(kind=>responses.some(response=>response.kind===kind)||evaluations.some(evaluation=>evaluation.kind===kind)).map(kind=>{const subset=responses.filter(response=>response.kind===kind);return <div className="perspective" key={kind}><span>{KIND_LABELS[kind]}</span><strong>{formatNumber(mean(subset.map(responseAverage).filter((value):value is number=>value!==null)))}<small> / 4</small></strong><p>{quantity(subset.length,'resposta')}{kind==='self'?(subset.length===1?' própria':' próprias'):kind==='team'?' entre colegas':''}</p></div>;})}{!responses.length&&!evaluations.length&&<p className="muted padded">As médias aparecerão após a importação das respostas.</p>}</div></Panel><EvolutionDashboard data={data} activeCycleId={cycle.id}/></>;
+
+  // Notificações do ciclo ativo para o RH
+  const rows = getParticipation(data, cycle.id);
+  const pendingRows = rows.filter(r => r.status === 'not_started' || r.status === 'partial');
+  const pendingByPerson = Array.from(
+    pendingRows.reduce((map, row) => {
+      const existing = map.get(row.employee.id) || { employee: row.employee, missing: [] as string[] };
+      if (row.evaluation.kind === 'leadership') {
+        const leader = row.pendingSubjects[0]?.name ? row.pendingSubjects[0].name.split(' ')[0] : 'Líder';
+        existing.missing.push(`Líder (${leader})`);
+      } else if (row.evaluation.kind === 'team') {
+        const hasSelf = row.pendingSubjects.some(p => p.id === row.employee.id);
+        const peers = row.pendingSubjects.filter(p => p.id !== row.employee.id);
+        if (hasSelf) existing.missing.push('Autoavaliação');
+        if (peers.length > 0) existing.missing.push(`${quantity(peers.length, 'colega')}`);
+      } else {
+        existing.missing.push(row.evaluation.name);
+      }
+      map.set(row.employee.id, existing);
+      return map;
+    }, new Map<string, { employee: Employee; missing: string[] }>()).values()
+  );
+
+  const now = new Date();
+  const endDate = new Date(cycle.endDate + 'T23:59:59');
+  const daysDiff = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+  return (
+    <>
+      {/* Notificação em Destaque no Topo do Dashboard */}
+      <div style={{
+        background: '#f8fafc',
+        border: '1px solid #cbd5e1',
+        borderLeft: `5px solid ${daysDiff <= 3 ? '#e11d48' : daysDiff <= 7 ? '#f59e0b' : '#0284c7'}`,
+        borderRadius: 12,
+        padding: '20px 24px',
+        marginBottom: 24,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, minWidth: 280 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
+              <span style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 30,
+                height: 30,
+                borderRadius: '50%',
+                background: daysDiff <= 3 ? '#ffe4e6' : daysDiff <= 7 ? '#fef3c7' : '#e0f2fe',
+                color: daysDiff <= 3 ? '#e11d48' : daysDiff <= 7 ? '#d97706' : '#0284c7'
+              }}>
+                <Bell size={17} />
+              </span>
+              <b style={{ fontSize: 16, color: '#0f172a' }}>
+                Lembrete de Prazos e Pendências — {cycle.name}
+              </b>
+              <span style={{
+                fontSize: 12,
+                fontWeight: 700,
+                padding: '3px 10px',
+                borderRadius: 20,
+                background: daysDiff <= 3 ? '#fff1f2' : daysDiff <= 7 ? '#fffbeb' : '#f0f9ff',
+                color: daysDiff <= 3 ? '#be123c' : daysDiff <= 7 ? '#b45309' : '#0369a1',
+                border: `1px solid ${daysDiff <= 3 ? '#fecdd3' : daysDiff <= 7 ? '#fde68a' : '#bae6fd'}`
+              }}>
+                {daysDiff > 0 ? `Encerra em ${daysDiff} ${daysDiff === 1 ? 'dia' : 'dias'}` : daysDiff === 0 ? 'Encerra hoje!' : 'Prazo expirado'}
+              </span>
+            </div>
+
+            <p style={{ margin: '0 0 10px', fontSize: 14, color: '#475467', lineHeight: 1.5 }}>
+              O ciclo atual está aberto até <b>{formatDate(cycle.endDate)}</b>.
+              {pendingByPerson.length > 0 ? (
+                <> Ainda restam <b>{quantity(pendingByPerson.length, 'colaborador com pendência', 'colaboradores com pendências')}</b> para concluir:</>
+              ) : (
+                <> Todos os participantes concluíram suas avaliações neste ciclo!</>
+              )}
+            </p>
+
+            {pendingByPerson.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 6 }}>
+                {pendingByPerson.slice(0, 6).map(p => (
+                  <span key={p.employee.id} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, padding: '5px 10px', fontSize: 12, color: '#1e293b' }}>
+                    👤 <b>{p.employee.name}</b> <small style={{ color: '#64748b' }}>({p.missing.join(', ')})</small>
+                  </span>
+                ))}
+                {pendingByPerson.length > 6 && (
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#0284c7', alignSelf: 'center', paddingLeft: 4 }}>
+                    + {pendingByPerson.length - 6} outros
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignSelf: 'flex-start' }}>
+            <button
+              type="button"
+              className="button small primary"
+              onClick={() => onNavigate('pending')}
+            >
+              <UserRoundCheck size={16} /> Ver todas as pendências
+            </button>
+            <button
+              type="button"
+              className="button small"
+              onClick={() => onEditCycle(cycle)}
+            >
+              <CalendarDays size={16} /> Estender / Ajustar prazo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <QuickCycleHome data={data} cycle={cycle} onQuickCycle={onQuickCycle} onConfigure={onConfigure} onOpenLinks={onOpenLinks}/>
+      <div className="stat-grid">
+        <Stat label="Participantes do ciclo" value={cycle.participants.length} note={`${quantity(leaderIds.size,'liderança vinculada','lideranças vinculadas')}`} icon={<UsersRound size={19}/>}/>
+        <Stat label="Respostas recebidas" value={<>{responses.length}<em>{expected!==null?` / ${expected}`:''}</em></>} note={`${quantity(evaluations.length,'formulário vinculado','formulários vinculados')}`} icon={<ClipboardList size={19}/>}/>
+        <Stat label="Conclusão do ciclo" value={formatPercent(responses.length,expected)} note={expected===null?'Defina o total esperado por formulário':`${quantity(Math.max(0,expected-responses.length),'resposta pendente','respostas pendentes')}`}/>
+        <Stat label="Colaboradores ativos" value={data.employees.filter(employee=>employee.active).length} note={`${quantity(data.employees.length,'pessoa')} no cadastro`} icon={<UserRoundCheck size={19}/>}/>
+      </div>
+      <div className="dashboard-grid">
+        <Panel title="Participação por avaliação" subtitle="Respostas recebidas em cada formulário do ciclo" className="participation-panel">
+          {evaluations.length?evaluations.map(evaluation=>{
+            const stats=getEvaluationStats(data,evaluation.id);
+            return (
+              <div className="participation-row" key={evaluation.id}>
+                <div>
+                  <button className="text-button" onClick={()=>onResults(evaluation.id)}>
+                    {evaluation.name}<ArrowRight size={15}/>
+                  </button>
+                  <b>{stats.received}<span>{stats.expected!==null?` / ${stats.expected}`:stats.received===1?' resposta':' respostas'}</span></b>
+                </div>
+                <div>
+                  <Progress received={stats.received} expected={stats.expected}/>
+                  <small>{stats.expected===null?'Esperado não definido':formatPercent(stats.received,stats.expected)}</small>
+                </div>
+              </div>
+            );
+          }):<Empty title="Nenhum formulário vinculado" action={<button className="button" onClick={onConfigure}>Vincular formulários</button>}/> }
+        </Panel>
+        <Panel title="Ciclo de avaliação" subtitle={cycle.name}>
+          <div className="cycle-summary">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Pill kind={cycleState(cycle)==='Em andamento'?'green':'muted'}>{cycleState(cycle)}</Pill>
+              <button
+                type="button"
+                className="button small"
+                onClick={() => onEditCycle(cycle)}
+                style={{ fontSize: 12, height: 32 }}
+              >
+                <CalendarDays size={14} /> Ajustar datas
+              </button>
+            </div>
+            <dl>
+              <div><dt>Período</dt><dd>{formatDate(cycle.startDate)}<br/>{formatDate(cycle.endDate)}</dd></div>
+              <div><dt>Participantes</dt><dd>{quantity(cycle.participants.length,'pessoa')}</dd></div>
+              <div><dt>Coleta</dt><dd>Portal Nativo (/avaliar)</dd></div>
+            </dl>
+            <div className="mini-note"><ShieldCheck size={17}/>Acompanhamento exclusivo do RH</div>
+          </div>
+        </Panel>
+      </div>
+      <Panel title="Perspectivas do ciclo" subtitle="Médias calculadas separadamente · Escala de 1 a 4">
+        <div className="perspective-grid">
+          {kinds.filter(kind=>responses.some(response=>response.kind===kind)||evaluations.some(evaluation=>evaluation.kind===kind)).map(kind=>{
+            const subset=responses.filter(response=>response.kind===kind);
+            return (
+              <div className="perspective" key={kind}>
+                <span>{KIND_LABELS[kind]}</span>
+                <strong>{formatNumber(mean(subset.map(responseAverage).filter((value):value is number=>value!==null)))}<small> / 4</small></strong>
+                <p>{quantity(subset.length,'resposta')}{kind==='self'?(subset.length===1?' própria':' próprias'):kind==='team'?' entre colegas':''}</p>
+              </div>
+            );
+          })}
+          {!responses.length&&!evaluations.length&&<p className="muted padded">As médias aparecerão após a importação das respostas.</p>}
+        </div>
+      </Panel>
+      <EvolutionDashboard data={data} activeCycleId={cycle.id}/>
+    </>
+  );
 }
 
 /** The primary RH workflow: share the evaluation links for the cycle. */
@@ -813,9 +991,9 @@ function HistoryChart({data,employeeId,kinds}:{data:AppData;employeeId:string;ki
   return <svg className="history-chart" viewBox="0 0 540 240" role="img" aria-label="Histórico de médias por ciclo, na escala de 1 a 4">{[1,2,3,4].map(value=><g key={value}><line x1="42" y1={y(value)} x2="514" y2={y(value)} stroke="#E7EBF0"/><text x="24" y={y(value)+4}>{value}</text></g>)}{cycles.map((cycle,index)=><text key={cycle.id} x={x(index)} y="223" textAnchor="middle">{cycle.startDate.slice(5,7)}/{cycle.startDate.slice(2,4)}–{cycle.endDate.slice(5,7)}/{cycle.endDate.slice(2,4)}</text>)}{kinds.map((kind,index)=>{const values=cycles.map(cycle=>mean(cycleResponses(data,cycle.id).filter(response=>response.subjectId===employeeId&&response.kind===kind).map(responseAverage).filter((n):n is number=>n!==null)));const color=['#163064','#009BD2','#527AAB','#00A7C7'][index];return <g key={kind}>{values.map((value,i)=>value!==null&&<g key={i}>{i>0&&values[i-1]!==null&&<line x1={x(i-1)} y1={y(values[i-1]!)} x2={x(i)} y2={y(value)} stroke={color} strokeWidth="2.5"/>}<circle cx={x(i)} cy={y(value)} r="5" stroke={color} strokeWidth="2" fill="white"/><title>{KIND_LABELS[kind]} · {cycles[i].name}: {formatNumber(value)}</title></g>)}</g>;})}</svg>;
 }
 
-function Evaluations({data,cycle,onResults,onConfigure,onSync,syncing,canSync,demo}:{data:AppData;cycle?:Cycle;onResults:(id:string)=>void;onConfigure:()=>void;onSync:(id:string)=>void;syncing:string;canSync:boolean;demo:boolean}) {
-  const evaluations=cycle?cycleEvaluations(data,cycle.id):[];const novemberCampaign=isNovember2026Cycle(cycle)&&november2026FormStatus(cycle,'leadership')==='share';const reason=demo?'Ambiente de demonstração local com dados protegidos.':'Sincronização com o banco de dados Supabase ativa.';
-  return <><div className="info-banner"><ClipboardList size={26}/><div><b>Portal de Avaliações Cardiofitness</b><p>As respostas são preenchidas nos formulários fixos e computadas diretamente no ciclo ativo por colaborador.</p></div></div>{novemberCampaign&&<div className="info-banner compact"><CalendarDays size={21}/><div><b>Campanha de novembro/2026: somente avaliações de liderança</b><p>Compartilhe apenas o formulário para colaboradores avaliarem os líderes até {formatDate(NOVEMBER_2026_END)}. Avaliações entre colegas e autoavaliações permanecem no calendário bimestral. Os resultados anteriores são preservados.</p></div></div>}<div className="section-heading"><h2>Formulários do ciclo</h2>{cycle&&<><Pill kind={cycleState(cycle)==='Em andamento'?'green':'muted'}>{cycleState(cycle)}</Pill><span>{formatDate(cycle.startDate)} a {formatDate(cycle.endDate)}</span></>}</div>{evaluations.length?<div className="evaluation-grid">{evaluations.map(evaluation=>{const stats=getEvaluationStats(data,evaluation.id);const self=stats.responses.filter(response=>response.kind==='self').length;return <Panel key={evaluation.id} className="evaluation-card"><div className="evaluation-card-top"><span className="form-icon"><ClipboardList size={25}/></span><Pill kind="green">Portal Nativo</Pill></div><h2>{evaluation.name}</h2><p className="muted">{evaluation.kind==='team'?'Avaliação entre colegas e autoavaliação':'Respostas identificadas por colaborador'}</p><div className="evaluation-count"><strong>{stats.received}</strong><span>{stats.expected!==null?`de ${quantity(stats.expected,'resposta')}`:stats.received===1?'resposta recebida':'respostas recebidas'}</span></div><Progress received={stats.received} expected={stats.expected}/><div className="evaluation-meta"><span>{stats.pending!==null?quantity(stats.pending,'pendente'):'Total esperado não definido'}</span><b>{formatPercent(stats.received,stats.expected)}</b></div>{evaluation.kind==='team'&&<div className="form-split"><span>{stats.received-self} entre colegas</span><span>{quantity(self,'autoavaliação','autoavaliações')}</span></div>}<button className="button primary full" onClick={()=>onResults(evaluation.id)}><BarChart3 size={18}/>Ver resultados<ArrowRight size={17}/></button>{november2026FormStatus(cycle,evaluation.kind)==="bimonthly"?<p className="form-hint">Link não divulgado em novembro. Coleta entre colegas/autoavaliação apenas no ciclo bimestral.</p>:november2026FormStatus(cycle,evaluation.kind)==="separate"?<p className="form-hint">Formulário separado: líderes avaliando colaboradores. Não faz parte da campanha de novembro solicitada pelo RH.</p>:<a className="external-link" href={evaluation.kind==='leadership'?'/avaliacao-de-lideres':'/avaliacao-da-equipe'} target="_blank" rel="noopener noreferrer">Abrir formulário no portal<ExternalLink size={15}/></a>}<div className="evaluation-sync"><span><RefreshCw size={15}/>{evaluation.lastSyncedAt?`Último registro: ${formatDate(evaluation.lastSyncedAt)}`:'Coleta nativa em tempo real'}</span><button className="button small" disabled={!canSync||!!syncing} title={!canSync?reason:undefined} onClick={()=>onSync(evaluation.id)}>{syncing===evaluation.id?<LoaderCircle className="spin" size={15}/>:<RefreshCw size={15}/>}Atualizar dados</button></div></Panel>;})}</div>:<Panel><Empty title={cycle?'Vincule os formulários deste ciclo':'Nenhum ciclo cadastrado'} action={<button className="button primary" onClick={onConfigure}><Plus size={18}/>Configurar avaliações</button>}>Os dois formulários fornecidos estão disponíveis nas configurações.</Empty></Panel>}{!canSync&&<div className="connection-note"><LockKeyhole size={19}/><div><b>Coleta nativa integrada ao Supabase</b><p>{reason}{demo?" A demonstração usa exclusivamente dados fictícios.":""}</p></div></div>}</>;
+function Evaluations({data,cycle,onResults,onConfigure}:{data:AppData;cycle?:Cycle;onResults:(id:string)=>void;onConfigure:()=>void}) {
+  const evaluations=cycle?cycleEvaluations(data,cycle.id):[];
+  return <><div className="info-banner"><ClipboardList size={26}/><div><b>Portal de Avaliações Cardiofitness</b><p>As respostas são preenchidas nos links fixos e computadas diretamente em tempo real por colaborador e ciclo ativo.</p></div></div><div className="section-heading"><h2>Formulários do ciclo</h2>{cycle&&<><Pill kind={cycleState(cycle)==='Em andamento'?'green':'muted'}>{cycleState(cycle)}</Pill><span>{formatDate(cycle.startDate)} a {formatDate(cycle.endDate)}</span></>}</div>{evaluations.length?<div className="evaluation-grid">{evaluations.map(evaluation=>{const stats=getEvaluationStats(data,evaluation.id);const self=stats.responses.filter(response=>response.kind==='self').length;return <Panel key={evaluation.id} className="evaluation-card"><div className="evaluation-card-top"><span className="form-icon"><ClipboardList size={25}/></span><Pill kind="green">Portal Nativo</Pill></div><h2>{evaluation.name}</h2><p className="muted">{evaluation.kind==='team'?'Avaliação entre colegas e autoavaliação':'Avaliação da liderança responsável pelo setor'}</p><div className="evaluation-count"><strong>{stats.received}</strong><span>{stats.expected!==null?`de ${quantity(stats.expected,'resposta')}`:stats.received===1?'resposta recebida':'respostas recebidas'}</span></div><Progress received={stats.received} expected={stats.expected}/><div className="evaluation-meta"><span>{stats.pending!==null?quantity(stats.pending,'pendente'):'Total esperado não definido'}</span><b>{formatPercent(stats.received,stats.expected)}</b></div>{evaluation.kind==='team'&&<div className="form-split"><span>{stats.received-self} entre colegas</span><span>{quantity(self,'autoavaliação','autoavaliações')}</span></div>}<div style={{display:'flex',gap:10,marginTop:16}}><button className="button primary full" onClick={()=>onResults(evaluation.id)}><BarChart3 size={18}/>Ver resultados<ArrowRight size={17}/></button><a className="button" href={evaluation.kind==='leadership'?'/avaliacao-de-lideres':'/avaliacao-da-equipe'} target="_blank" rel="noopener noreferrer"><ExternalLink size={15}/>Abrir formulário</a></div><div className="evaluation-sync"><span><Check size={15} style={{color:'#059669'}}/>Coleta nativa integrada em tempo real</span></div></Panel>;})}</div>:<Panel><Empty title={cycle?'Vincule os formulários deste ciclo':'Nenhum ciclo cadastrado'} action={<button className="button primary" onClick={onConfigure}><Plus size={18}/>Configurar avaliações</button>}>Os dois formulários fornecidos estão disponíveis nas configurações.</Empty></Panel>}</>;
 }
 
 function Pending({data,cycleId,onPerson,onConfigure}:{data:AppData;cycleId:string;onPerson:(id:string)=>void;onConfigure:()=>void}) {
@@ -827,19 +1005,16 @@ function Pending({data,cycleId,onPerson,onConfigure}:{data:AppData;cycleId:strin
   const scoped=rows.filter(row=>(!selectedDepartment||row.employee.department===selectedDepartment)&&row.employee.name.toLocaleLowerCase('pt-BR').includes(query.toLocaleLowerCase('pt-BR')));
   const filtered=scoped.filter(row=>status==='all'||(status==='pending'?(row.status==='not_started'||row.status==='partial'):row.status===status));
   const effectivePage=Math.min(page,Math.max(1,Math.ceil(filtered.length/8)));
-  const visibleEvaluations=evaluations.filter(item=>!selectedEvaluation||item.id===selectedEvaluation);
   const statusLabels={not_started:'Não iniciou',partial:'Em andamento',completed:'Concluiu',unconfigured:'A conferir'};
-  const syncTime=(value:string)=>Number.isFinite(Date.parse(value))?new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',dateStyle:'short',timeStyle:'short'}).format(new Date(value)):'Data não informada';
   useEffect(()=>{setPage(1);},[cycleId]);
   return <>
-    <div className="info-banner pending-explanation"><UserRoundCheck size={26}/><div><b>Quem respondeu, e o que ainda falta responder.</b><p>A lista usa os participantes e vínculos do ciclo e as últimas respostas sincronizadas. Receber uma avaliação de outra pessoa não significa ter respondido. Respostas enviadas há pouco podem aguardar a próxima sincronização.</p></div></div>
+    <div className="info-banner pending-explanation"><UserRoundCheck size={26}/><div><b>Quem respondeu, e o que ainda falta responder.</b><p>A lista usa os participantes e vínculos do ciclo e as respostas registradas em tempo real. Receber uma avaliação de outra pessoa não significa ter respondido.</p></div></div>
     <div className="stat-grid three">
       <Stat label="Não iniciaram" value={scoped.filter(row=>row.status==='not_started').length} note="Participações sem resposta registrada" icon={<CircleOff size={19}/>}/>
       <Stat label="Em andamento" value={scoped.filter(row=>row.status==='partial').length} note="Já responderam, mas ainda têm pendências" icon={<ClipboardList size={19}/>}/>
       <Stat label="Concluíram" value={scoped.filter(row=>row.status==='completed').length} note="Todas as pessoas esperadas avaliadas" icon={<Check size={19}/>}/>
     </div>
-    {scoped.some(row=>row.status==='unconfigured')&&<div className="notice notice-error" role="status">{quantity(scoped.filter(row=>row.status==='unconfigured').length,'participação a conferir','participações a conferir')}: o formulário ainda não foi sincronizado, está incompleto ou o total esperado difere das atribuições do ciclo. Essas pessoas não são classificadas como ausentes. Selecione “A conferir” para consultar.</div>}
-    {visibleEvaluations.length>0&&<Panel title="Atualização dos formulários" subtitle="Uma participação é acompanhada separadamente em cada formulário."><ul className="pending-sync-list">{visibleEvaluations.map(item=><li key={item.id}><strong>{item.name}</strong><span>{item.lastSyncedAt?`Última sincronização: ${syncTime(item.lastSyncedAt)}`:'Ainda sem sincronização; os envios não foram conferidos.'}</span>{item.syncMessage&&<p className="pending-sync-message">{item.syncMessage}</p>}</li>)}</ul></Panel>}
+    {scoped.some(row=>row.status==='unconfigured')&&<div className="notice notice-error" role="status">{quantity(scoped.filter(row=>row.status==='unconfigured').length,'participação a conferir','participações a conferir')}: o formulário ainda não possui perguntas numéricas configuradas ou o total esperado difere das atribuições do ciclo. Selecione “A conferir” para consultar.</div>}
     {exportError&&<Notice message={exportError}/>}
     <Panel title="Participação por pessoa e formulário" subtitle="Abra as pendências para ver quem ainda precisa ser avaliado." action={<div className="report-export">{(['pdf','xlsx'] as const).map(format=><button key={format} className="button small" disabled={!filtered.length||!!exporting} onClick={async()=>{setExporting(format);setExportError('');try{await downloadPending(filtered,data.cycles.find(c=>c.id===cycleId)?.name||'Ciclo',format);}catch(error){setExportError(errorMessage(error));}finally{setExporting(null);}}}>{exporting===format?'Exportando…':format==='pdf'?'Pendências PDF':'Pendências Excel'}</button>)}</div>}>
       <div className="table-filters pending-filters">
@@ -995,8 +1170,9 @@ function DeleteEmployeeModal({data,employee,onClose,onDeleted,onDeactivated}:{da
 function CycleEditor({data,cycle,sourceCycleId,onClose,onSaved}:{data:AppData;cycle?:Cycle;sourceCycleId?:string;onClose:()=>void;onSaved:(id:string)=>void}) {
   const {saveCycle,prepareCycle}=useApp();const reference=data.cycles.find(c=>c.id===sourceCycleId);const following=reference?new Date(reference.endDate+'T12:00:00Z'):null;if(following)following.setUTCDate(following.getUTCDate()+1);const start=following?.toISOString().slice(0,10)||'';const [form,setForm]=useState<CycleInput>(cycle?cycleInput(cycle):reference?{name:'',startDate:start,endDate:bimonthlyEnd(start),participants:reference.participants.filter(p=>data.employees.some(e=>e.id===p.employeeId&&e.active)).map(p=>({employeeId:p.employeeId,leaderId:data.employees.find(e=>e.id===p.employeeId)?.leaderId||null}))}:{name:'',startDate:'',endDate:'',participants:[]}),[search,setSearch]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false);const locked=!!cycle&&cycleResponses(data,cycle.id).length>0;const employees=data.employees.filter(employee=>(employee.active||form.participants.some(participant=>participant.employeeId===employee.id))&&`${employee.name} ${employee.department}`.toLocaleLowerCase('pt-BR').includes(search.toLocaleLowerCase('pt-BR')));
   function toggle(employee:Employee){setForm(current=>({...current,participants:current.participants.some(item=>item.employeeId===employee.id)?current.participants.filter(item=>item.employeeId!==employee.id):[...current.participants,{employeeId:employee.id,leaderId:employee.leaderId}]}));}
+  function adjustDays(days:number){setForm(current=>{const base=current.endDate?new Date(current.endDate+'T12:00:00Z'):new Date();base.setUTCDate(base.getUTCDate()+days);const newEnd=base.toISOString().slice(0,10);return {...current,endDate:newEnd<current.startDate?current.startDate:newEnd};});}
   async function submit(event:FormEvent){event.preventDefault();setBusy(true);setError('');try{const saved=sourceCycleId?await prepareCycle(form,sourceCycleId):await saveCycle(form,cycle?.id);onSaved(saved.id);}catch(error){setError(errorMessage(error));}finally{setBusy(false);}}
-  return <Modal wide title={cycle?'Editar ciclo':reference?'Preparar próximo ciclo':'Novo ciclo de avaliação'} subtitle="Ciclo bimestral, participantes e vínculos de liderança." onClose={onClose}><form onSubmit={submit}><div className="modal-body">{error&&<Notice message={error}/>}{reference&&<div className="info-banner compact"><ClipboardList size={19}/><p>Referência: <b>{reference.name}</b>. Confira datas, participantes e vínculos. Os formulários e o mapeamento serão copiados; respostas e histórico não serão copiados.</p></div>}<Field label="Nome do ciclo *"><input required maxLength={100} value={form.name} onChange={event=>setForm(current=>({...current,name:event.target.value}))} placeholder="Novembro - Dezembro / 2026"/></Field><div className="form-grid"><Field label="Início *"><input type="date" required value={form.startDate} onChange={event=>{const startDate=event.target.value;setForm(current=>({...current,startDate,endDate:!cycle||current.endDate===bimonthlyEnd(current.startDate)?bimonthlyEnd(startDate):current.endDate}));}}/></Field><Field label="Encerramento *" hint="O RH pode ajustar ou prorrogar o ciclo a qualquer momento."><input type="date" required min={form.startDate} value={form.endDate} onChange={event=>setForm(current=>({...current,endDate:event.target.value}))}/></Field></div>{locked&&<div className="info-banner compact"><ShieldCheck size={19}/><p>Este ciclo já possui respostas registradas. O período pode ser ajustado ou prorrogado pelo RH a qualquer momento.</p></div>}<div className="participant-heading"><h3>Participantes <span>{quantity(form.participants.length,'selecionado')}</span></h3><button type="button" className="text-button" disabled={locked} onClick={()=>setForm(current=>({...current,participants:data.employees.filter(employee=>employee.active).map(employee=>({employeeId:employee.id,leaderId:employee.leaderId}))}))}>Selecionar todos os ativos</button></div><label className="search-field"><Search size={17}/><span className="sr-only">Buscar participantes</span><input value={search} onChange={event=>setSearch(event.target.value)} placeholder="Buscar nome ou setor"/></label><div className="participant-list">{employees.map(employee=>{const item=form.participants.find(item=>item.employeeId===employee.id);return <div className="participant-row" key={employee.id}><label className="checkbox-label"><input type="checkbox" disabled={locked} checked={!!item} onChange={()=>toggle(employee)}/><span><b>{employee.name}</b><small>{employee.department}</small></span></label><select aria-label={`Liderança de ${employee.name} neste ciclo`} disabled={locked||!item} value={item?.leaderId||''} onChange={event=>setForm(current=>({...current,participants:current.participants.map(participant=>participant.employeeId===employee.id?{...participant,leaderId:event.target.value||null}:participant)}))}><option value="">Sem vínculo de liderança</option>{data.employees.filter(leader=>leader.isLeader&&(leader.active||leader.id===item?.leaderId)&&leader.id!==employee.id).map(leader=><option value={leader.id} key={leader.id}>{leader.name}</option>)}</select></div>;})}{!employees.length&&<p className="muted padded">Nenhum colaborador disponível para este filtro.</p>}</div><small className="form-hint">O vínculo selecionado fica registrado neste ciclo, mesmo que o cadastro seja alterado depois.</small></div><div className="modal-actions"><small>* Campos obrigatórios</small><button type="button" className="button" onClick={onClose}>Cancelar</button><button className="button primary" disabled={busy}>{busy&&<LoaderCircle className="spin" size={17}/>}Salvar ciclo</button></div></form></Modal>;
+  return <Modal wide title={cycle?'Editar ciclo':reference?'Preparar próximo ciclo':'Novo ciclo de avaliação'} subtitle="Período do ciclo livre para edição pelo RH, participantes e vínculos de liderança." onClose={onClose}><form onSubmit={submit}><div className="modal-body">{error&&<Notice message={error}/>}{reference&&<div className="info-banner compact"><ClipboardList size={19}/><p>Referência: <b>{reference.name}</b>. Confira datas, participantes e vínculos. Os formulários e o mapeamento serão copiados; respostas e histórico não serão copiados.</p></div>}<Field label="Nome do ciclo *"><input required maxLength={100} value={form.name} onChange={event=>setForm(current=>({...current,name:event.target.value}))} placeholder="Novembro - Dezembro / 2026"/></Field><div className="form-grid"><Field label="Início *"><input type="date" required value={form.startDate} onChange={event=>{const startDate=event.target.value;setForm(current=>({...current,startDate,endDate:current.endDate&&current.endDate>=startDate?current.endDate:startDate}));}}/></Field><Field label="Encerramento *" hint="O RH pode ajustar ou prorrogar o ciclo livremente."><input type="date" required min={form.startDate} value={form.endDate} onChange={event=>setForm(current=>({...current,endDate:event.target.value}))}/><div style={{display:'flex',gap:6,marginTop:6,flexWrap:'wrap'}}><button type="button" className="button small" onClick={()=>adjustDays(7)}>+7 dias</button><button type="button" className="button small" onClick={()=>adjustDays(15)}>+15 dias</button><button type="button" className="button small" onClick={()=>adjustDays(30)}>+30 dias</button><button type="button" className="button small" onClick={()=>adjustDays(-7)}>-7 dias</button></div></Field></div>{locked&&<div className="info-banner compact"><ShieldCheck size={19}/><p>Este ciclo já possui respostas registradas. O período pode ser ajustado ou prorrogado pelo RH a qualquer momento.</p></div>}<div className="participant-heading"><h3>Participantes <span>{quantity(form.participants.length,'selecionado')}</span></h3><button type="button" className="text-button" disabled={locked} onClick={()=>setForm(current=>({...current,participants:data.employees.filter(employee=>employee.active).map(employee=>({employeeId:employee.id,leaderId:employee.leaderId}))}))}>Selecionar todos os ativos</button></div><label className="search-field"><Search size={17}/><span className="sr-only">Buscar participantes</span><input value={search} onChange={event=>setSearch(event.target.value)} placeholder="Buscar nome ou setor"/></label><div className="participant-list">{employees.map(employee=>{const item=form.participants.find(item=>item.employeeId===employee.id);return <div className="participant-row" key={employee.id}><label className="checkbox-label"><input type="checkbox" disabled={locked} checked={!!item} onChange={()=>toggle(employee)}/><span><b>{employee.name}</b><small>{employee.department}</small></span></label><select aria-label={`Liderança de ${employee.name} neste ciclo`} disabled={locked||!item} value={item?.leaderId||''} onChange={event=>setForm(current=>({...current,participants:current.participants.map(participant=>participant.employeeId===employee.id?{...participant,leaderId:event.target.value||null}:participant)}))}><option value="">Sem vínculo de liderança</option>{data.employees.filter(leader=>leader.isLeader&&(leader.active||leader.id===item?.leaderId)&&leader.id!==employee.id).map(leader=><option value={leader.id} key={leader.id}>{leader.name}</option>)}</select></div>;})}{!employees.length&&<p className="muted padded">Nenhum colaborador disponível para este filtro.</p>}</div><small className="form-hint">O vínculo selecionado fica registrado neste ciclo, mesmo que o cadastro seja alterado depois.</small></div><div className="modal-actions"><small>* Campos obrigatórios</small><button type="button" className="button" onClick={onClose}>Cancelar</button><button className="button primary" disabled={busy}>{busy&&<LoaderCircle className="spin" size={17}/>}Salvar ciclo</button></div></form></Modal>;
 }
 
 function EvaluationEditor({data,cycleId,evaluation,preset,onClose,onSaved}:{data:AppData;cycleId:string;evaluation?:Evaluation;preset?:typeof PROVIDED_FORMS[number];onClose:()=>void;onSaved:()=>void}) {
