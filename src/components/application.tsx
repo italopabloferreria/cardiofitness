@@ -73,8 +73,8 @@ export default function Application() {
   if(app.status!=='ready')return <AccessScreen/>;
   const activeNav=view==='employee'?'employees':view==='result'?'evaluations':view;
   return <div className="app-shell"><a className="skip-link" href="#main">Ir para o conteúdo</a>{mobile&&<button className="sidebar-shade" aria-label="Fechar navegação" onClick={()=>setMobile(false)}/>}<aside className={`sidebar ${mobile?'sidebar-open':''}`}><Brand/><div className="sidebar-label">GESTÃO DE PESSOAS</div><nav aria-label="Menu principal">{NAV.map(item=><button type="button" key={item.id} className={`nav-item ${activeNav===item.id?'active':''}`} aria-current={activeNav===item.id?'page':undefined} onClick={()=>navigate(item.id)}><item.icon size={20}/>{item.label}{activeNav===item.id&&<span className="nav-dot"/>}</button>)}</nav><div className="sidebar-bottom"><div className="access-note"><LockKeyhole size={19}/><div><b>Acesso exclusivo do RH</b><span>Respostas identificadas</span></div></div><div className="sidebar-profile"><Avatar name="Recursos Humanos"/><div><b>Recursos Humanos</b><small>Cardiofitness</small></div></div></div></aside><div className="workspace"><header className="topbar"><div className="breadcrumb"><button type="button" className="icon-button mobile-toggle" aria-label="Abrir menu" onClick={()=>setMobile(true)}><Menu size={21}/></button><span>Gestão de pessoas</span><span className="breadcrumb-slash">/</span><b>{titles[view]}</b></div>    <div className="topbar-right">
-      <a href="/avaliar" target="_blank" rel="noopener noreferrer" className="button small" style={{display:'inline-flex',alignItems:'center',gap:6}}><ClipboardList size={16}/>Portal de Avaliação</a>
-      {app.mode==='demo'?<><Pill kind="amber">DEMONSTRAÇÃO LOCAL</Pill><span className="topbar-muted">Dados fictícios</span></>:<><Pill>RH autorizado</Pill><span className="topbar-muted">{app.user?.email}</span></>}
+      <a href="/avaliar" target="_blank" rel="noopener noreferrer" className="button small" style={{display:'inline-flex',alignItems:'center',gap:6}}><ClipboardList size={16}/>Portal de Avaliações</a>
+      <Pill kind="green">RH Ativo</Pill><span className="topbar-muted">{app.user?.email || 'Gestão de Pessoas'}</span>
       <Avatar name={app.user?.name||'Recursos Humanos'}/>
       {app.mode==='live'&&<button type="button" className="icon-button" title="Sair da conta" aria-label="Sair da conta" onClick={()=>void app.logout().catch(error=>setNotice({text:errorMessage(error),success:false}))}><LogOut size={18}/></button>}
     </div></header><main id="main" className="main"><div className="page-heading"><div>{(view==='employee'||view==='result')&&<button type="button" className="back-link" onClick={()=>navigate(view==='employee'?'employees':'evaluations')}><ArrowLeft size={16}/>Voltar para {view==='employee'?'colaboradores':'avaliações'}</button>}<h1>{view==='employee'&&employee?employee.name:view==='result'&&evaluation?evaluation.name:titles[view]}</h1><p>{subtitles[view]}</p></div><div className="page-actions">{view==='employees'?<button className="button primary" onClick={()=>setEditor({type:'employee'})}><Plus size={18}/>Adicionar colaborador</button>:view==='settings'?null:view==='result'?null:<Field label="Ciclo" className="cycle-select"><select value={selectedCycleId} onChange={event=>setCycleId(event.target.value)} aria-label="Selecionar ciclo">{!cycles.length&&<option value="">Nenhum ciclo cadastrado</option>}{cycles.map(cycle=><option key={cycle.id} value={cycle.id}>{cycle.name}</option>)}</select></Field>}</div></div>{notice&&<Notice message={notice.text} success={notice.success} onClose={()=>setNotice(null)}/ >}{app.error&&<Notice message={app.error}/ >}
@@ -88,7 +88,7 @@ export default function Application() {
       {view==='reports'&&<Reports data={data} cycleId={selectedCycleId} onError={text=>setNotice({text,success:false})}/>}
       {view==='sync'&&<SyncCenter data={data} configured={app.googleConfigured} onSync={id=>void sync(id)} syncing={syncing}/>}
       {view==='settings'&&<Configuration data={data} cycleId={selectedCycleId} setCycleId={setCycleId} onEdit={setEditor} demo={app.mode==='demo'} googleConfigured={app.googleConfigured}/>}
-      <footer className="main-footer"><span>Cardiofitness · Avaliações de desempenho</span><span>{app.mode==='demo'?'Demonstração com dados fictícios. Alterações salvas neste navegador.':'Painel de Recursos Humanos · Respostas identificadas'}</span></footer></main></div>
+      <footer className="main-footer"><span>Cardiofitness · Avaliações de desempenho</span><span>Painel de Recursos Humanos · Respostas identificadas</span></footer></main></div>
       {editor?.type==='quick-cycle'&&<QuickCycleEditor data={data} onClose={()=>setEditor(null)} onConfigure={()=>{setEditor(null);navigate('settings');}} onCreated={id=>{setCycleId(id);setNotice({text:'Novo ciclo criado com os mesmos links do Google Forms.',success:true});}}/>}
       {editor?.type==='employee'&&<EmployeeEditor data={data} employee={editor.item} onClose={()=>setEditor(null)} onSaved={name=>{setEditor(null);setNotice({text:`Cadastro de ${name} salvo.`,success:true});}}/>}
       {editor?.type==='deactivate'&&<Deactivate employee={editor.item} onClose={()=>setEditor(null)} onSaved={()=>{setEditor(null);setNotice({text:'Colaborador desativado. O histórico foi preservado.',success:true});}}/>}
@@ -125,6 +125,8 @@ function PermanentLinksPanel({data, cycle, onAddEmployee, onEditEmployee, onDele
   });
 
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const leadUrl = `${origin}/avaliacao-de-lideres`;
+  const teamUrl = `${origin}/avaliacao-da-equipe`;
 
   async function handleCopy(text: string, id: string, type: 'url'|'whatsapp'|'all') {
     try {
@@ -141,53 +143,85 @@ function PermanentLinksPanel({data, cycle, onAddEmployee, onEditEmployee, onDele
     }
   }
 
-  function handleExportCsv() {
-    const header = 'Nome,Setor,Função,Liderança,Código / Token,Link Permanente\n';
-    const rows = filtered.map(e => {
-      const role = e.isLeader ? 'Líder' : (e.formName.includes('Estagi') ? 'Estagiário' : 'Colaborador');
-      const leader = e.leaderId ? (activeEmployees.find(l => l.id === e.leaderId)?.name || '') : 'Próprio Líder';
-      const link = getPermanentEvaluationUrl(e, origin);
-      return `"${e.name}","${e.department}","${role}","${leader}","${e.accessToken || e.id}","${link}"`;
-    }).join('\n');
-    const blob = new Blob(['\uFEFF' + header + rows], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `links-permanentes-cardiofitness.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
   function handleCopyAll() {
-    const list = filtered.map(e => {
-      const link = getPermanentEvaluationUrl(e, origin);
-      return `• ${e.name} (${e.department}${e.isLeader ? ' - Líder' : ''}): ${link}`;
-    }).join('\n');
-    const text = `CARDIOFITNESS - LINKS DE AVALIAÇÃO (${cycle?.name || 'Ciclo Ativo'})\n\n${list}`;
+    const text = `Olá, equipe Cardiofitness! 👋\n\nEstá aberto o ciclo de avaliação de desempenho *${cycle?.name || 'Cardiofitness'}*.\n\nPreencham os dois formulários nos links fixos abaixo (basta selecionar seu próprio nome na lista):\n\n1️⃣ *Avaliação de Líderes:*\n${leadUrl}\n\n2️⃣ *Avaliação e Autoavaliação da Equipe:*\n${teamUrl}\n\n⏰ Disponível até ${cycle ? formatDate(cycle.endDate) : 'o prazo do ciclo'}.\nCardiofitness — Gestão de Pessoas`;
     void handleCopy(text, 'all', 'all');
   }
+
+  const waLeadMsg = `Olá! 👋\n\nEstá aberto o ciclo de avaliação *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse o link abaixo para preencher a *Avaliação de Líderes* (basta selecionar seu nome na lista):\n${leadUrl}\n\nPeríodo aberto até ${cycle ? formatDate(cycle.endDate) : 'o encerramento'}.\nCardiofitness — Gestão de Pessoas`;
+  const waTeamMsg = `Olá! 👋\n\nEstá aberto o ciclo de avaliação *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse o link abaixo para preencher a *Avaliação e Autoavaliação da Equipe* (basta selecionar seu nome na lista):\n${teamUrl}\n\nPeríodo aberto até ${cycle ? formatDate(cycle.endDate) : 'o encerramento'}.\nCardiofitness — Gestão de Pessoas`;
 
   return (
     <>
       <div className="info-banner" style={{background:'#f0f7fd',borderColor:'#c5def1',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:16}}>
-        <div style={{maxWidth:720}}>
-          <b style={{fontSize:15,color:'#0573b9',display:'flex',alignItems:'center',gap:8}}>
-            <ExternalLink size={18}/> Links Individuais Permanentes (/avaliar?p=[token])
+        <div style={{maxWidth:760}}>
+          <b style={{fontSize:16,color:'#0573b9',display:'flex',alignItems:'center',gap:8}}>
+            <ExternalLink size={20}/> Dois Links Fixos de Avaliação
           </b>
           <p style={{margin:'6px 0 0',fontSize:13,lineHeight:1.6,color:'#365977'}}>
-            Cada colaborador possui um endereço fixo de avaliação. <b>O RH não precisa gerar nem reenviar links novos a cada ciclo:</b> basta definir o ciclo ativo (atualmente: <b>{cycle?.name || 'Sem ciclo'}</b>). Quando o colaborador abre o link dele, o sistema carrega automaticamente as avaliações daquele momento.
+            Não é necessário gerar links individuais. <b>Envie apenas estes dois links fixos para a equipe.</b> Em cada um, o colaborador apenas seleciona seu próprio nome na lista. As respostas são computadas automaticamente enquanto o ciclo estiver ativo (atualmente: <b>{cycle?.name || 'Sem ciclo'}</b>); após o fim da data definida pelo RH, os links se encerram automaticamente.
           </p>
         </div>
         <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
-          <button type="button" className="button primary" onClick={onAddEmployee}>
+          <button type="button" className="button primary" onClick={handleCopyAll}>
+            <Copy size={16}/>{copiedType==='all'?'Mensagem com os 2 links copiada!':'Copiar mensagem com os 2 links (WhatsApp)'}
+          </button>
+          <button type="button" className="button" onClick={onAddEmployee}>
             <Plus size={16}/>Adicionar colaborador
           </button>
-          <button type="button" className="button" onClick={handleCopyAll}>
-            <Copy size={16}/>{copiedType==='all'?'Lista copiada!':'Copiar lista completa'}
-          </button>
-          <button type="button" className="button" onClick={handleExportCsv}>
-            <FileSpreadsheet size={16}/>Exportar Planilha (CSV)
-          </button>
+        </div>
+      </div>
+
+      {/* Cartões dos 2 Links Fixos */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))',gap:16,margin:'20px 0'}}>
+        {/* Formulário 1: Líderes */}
+        <div style={{background:'#fff',border:'1px solid #bfdbfe',borderRadius:12,padding:'20px',boxShadow:'0 2px 8px rgba(0,0,0,0.03)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:8}}>
+            <span style={{background:'#dbeafe',color:'#1d4ed8',padding:'4px 8px',borderRadius:6,fontSize:11,fontWeight:700}}>FORMULÁRIO 1</span>
+            <b style={{fontSize:16,color:'#1e3a8a'}}>Avaliação de Líderes</b>
+          </div>
+          <p style={{fontSize:13,color:'#475467',margin:'0 0 14px',lineHeight:1.5}}>
+            Colaboradores avaliam a liderança do setor. Cada pessoa seleciona seu nome e o sistema carrega o líder responsável automaticamente.
+          </p>
+          <code style={{display:'block',background:'#f8fafc',padding:'8px 12px',borderRadius:6,fontSize:12,color:'#0284c7',marginBottom:14,wordBreak:'break-all'}}>
+            {leadUrl}
+          </code>
+          <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+            <button type="button" className="button small primary" onClick={()=>void handleCopy(leadUrl, 'f1-url', 'url')}>
+              <Copy size={14}/>{copiedLink==='f1-url'?'Link copiado!':'Copiar link'}
+            </button>
+            <button type="button" className="button small" onClick={()=>void handleCopy(waLeadMsg, 'f1-wa', 'whatsapp')} style={{color:'#067647'}}>
+              {copiedLink==='f1-wa'?'✓ Copiado!':'WhatsApp'}
+            </button>
+            <a className="button small" href={leadUrl} target="_blank" rel="noopener noreferrer">
+              <ExternalLink size={14}/>Abrir
+            </a>
+          </div>
+        </div>
+
+        {/* Formulário 2: Equipe */}
+        <div style={{background:'#fff',border:'1px solid #bbf7d0',borderRadius:12,padding:'20px',boxShadow:'0 2px 8px rgba(0,0,0,0.03)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:8}}>
+            <span style={{background:'#dcfce7',color:'#15803d',padding:'4px 8px',borderRadius:6,fontSize:11,fontWeight:700}}>FORMULÁRIO 2</span>
+            <b style={{fontSize:16,color:'#14532d'}}>Avaliação e Autoavaliação da Equipe</b>
+          </div>
+          <p style={{fontSize:13,color:'#475467',margin:'0 0 14px',lineHeight:1.5}}>
+            Autoavaliação individual e avaliação de cooperação entre colegas do mesmo setor. Seleciona o nome e escolhe quem avaliar.
+          </p>
+          <code style={{display:'block',background:'#f8fafc',padding:'8px 12px',borderRadius:6,fontSize:12,color:'#16a34a',marginBottom:14,wordBreak:'break-all'}}>
+            {teamUrl}
+          </code>
+          <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+            <button type="button" className="button small primary" onClick={()=>void handleCopy(teamUrl, 'f2-url', 'url')}>
+              <Copy size={14}/>{copiedLink==='f2-url'?'Link copiado!':'Copiar link'}
+            </button>
+            <button type="button" className="button small" onClick={()=>void handleCopy(waTeamMsg, 'f2-wa', 'whatsapp')} style={{color:'#067647'}}>
+              {copiedLink==='f2-wa'?'✓ Copiado!':'WhatsApp'}
+            </button>
+            <a className="button small" href={teamUrl} target="_blank" rel="noopener noreferrer">
+              <ExternalLink size={14}/>Abrir
+            </a>
+          </div>
         </div>
       </div>
 
@@ -198,12 +232,20 @@ function PermanentLinksPanel({data, cycle, onAddEmployee, onEditEmployee, onDele
         <Stat label="Ciclo Ativo" value={cycle?.name || 'Nenhum'} note={cycle ? `${formatDate(cycle.startDate)} a ${formatDate(cycle.endDate)}` : 'Defina um ciclo'} icon={<CalendarDays size={19}/>}/>
       </div>
 
-      <Panel title="Tabela de Links por Colaborador" subtitle={`${quantity(filtered.length, 'colaborador ativo', 'colaboradores ativos')} listados`}>
+      <Panel
+        title="Quadro de Colaboradores da Clínica"
+        subtitle={`${quantity(filtered.length, 'colaborador ativo', 'colaboradores ativos')} no cadastro`}
+        action={
+          <button type="button" className="button primary" onClick={onAddEmployee}>
+            <Plus size={16}/>Adicionar colaborador
+          </button>
+        }
+      >
         <div className="table-filters">
           <label className="search-field">
             <Search size={18}/>
             <span className="sr-only">Buscar colaborador</span>
-            <input placeholder="Buscar por nome, setor ou código..." value={query} onChange={e=>{setQuery(e.target.value);setPage(1);}}/>
+            <input placeholder="Buscar por nome ou setor..." value={query} onChange={e=>{setQuery(e.target.value);setPage(1);}}/>
           </label>
           <select aria-label="Filtrar por setor" value={department} onChange={e=>{setDepartment(e.target.value);setPage(1);}}>
             <option value="">Todos os setores</option>
@@ -226,16 +268,14 @@ function PermanentLinksPanel({data, cycle, onAddEmployee, onEditEmployee, onDele
                 <th>Setor</th>
                 <th>Função / Papel</th>
                 <th>Liderança no Ciclo</th>
-                <th>Link Permanente</th>
-                <th style={{textAlign:'right'}}>Ações Rápidas</th>
+                <th>Status</th>
+                <th style={{textAlign:'right'}}>Ações</th>
               </tr>
             </thead>
             <tbody>
               {filtered.slice((page-1)*8, page*8).map(emp => {
-                const url = getPermanentEvaluationUrl(emp, origin);
                 const isIntern = emp.formName.includes('Estagi');
                 const leader = emp.leaderId ? person(data, emp.leaderId)?.name : null;
-                const waMessage = `Olá, ${emp.name.split(' ')[0]}! 👋\n\nEstá aberto o ciclo de avaliação de desempenho *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse seu link individual exclusivo para responder suas avaliações:\n${url}\n\n⚠️ Este link é permanente e exclusivo para você. Sua participação é fundamental!\nCardiofitness — Gestão de Pessoas`;
 
                 return (
                   <tr key={emp.id}>
@@ -244,7 +284,7 @@ function PermanentLinksPanel({data, cycle, onAddEmployee, onEditEmployee, onDele
                         <Avatar name={emp.name}/>
                         <span>
                           <b>{emp.name}</b>
-                          <small>{emp.accessToken || emp.id}</small>
+                          <small>{emp.email || 'Cardiofitness'}</small>
                         </span>
                       </div>
                     </td>
@@ -258,55 +298,28 @@ function PermanentLinksPanel({data, cycle, onAddEmployee, onEditEmployee, onDele
                       {emp.isLeader ? <span style={{color:'var(--muted)',fontSize:12}}>Equipe subordinada</span> : (leader || '—')}
                     </td>
                     <td>
-                      <code style={{fontSize:11,background:'#f4f7fa',padding:'4px 8px',borderRadius:6,color:'#0573b9'}}>
-                        /avaliar?p={emp.accessToken || emp.id}
-                      </code>
+                      <Pill kind={emp.active ? 'green' : 'muted'}>
+                        {emp.active ? 'Ativo' : 'Inativo'}
+                      </Pill>
                     </td>
                     <td style={{textAlign:'right'}}>
                       <div style={{display:'inline-flex',gap:6}}>
                         <button
                           type="button"
                           className="button small"
-                          title="Copiar link individual"
-                          onClick={() => void handleCopy(url, emp.id, 'url')}
-                        >
-                          <Copy size={14}/>
-                          {copiedLink === emp.id && copiedType === 'url' ? 'Copiado!' : 'Copiar link'}
-                        </button>
-                        <button
-                          type="button"
-                          className="button small"
-                          title="Copiar mensagem formatada para WhatsApp"
-                          onClick={() => void handleCopy(waMessage, emp.id, 'whatsapp')}
-                          style={{color:'#067647'}}
-                        >
-                          {copiedLink === emp.id && copiedType === 'whatsapp' ? '✓ Mensagem copiada!' : 'WhatsApp'}
-                        </button>
-                        <a
-                          className="button small"
-                          href={url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          title="Abrir em nova aba"
-                        >
-                          <ExternalLink size={14}/>
-                        </a>
-                        <button
-                          type="button"
-                          className="button small"
                           title="Editar colaborador"
                           onClick={() => onEditEmployee(emp)}
                         >
-                          <Pencil size={14}/>
+                          <Pencil size={14}/> Editar
                         </button>
                         <button
                           type="button"
-                          className="button small"
+                          className="button small danger-outline"
                           title="Remover ou desativar colaborador"
                           style={{color:'#b42318'}}
                           onClick={() => onDeleteEmployee(emp)}
                         >
-                          <Trash2 size={14}/>
+                          <Trash2 size={14}/> Remover
                         </button>
                       </div>
                     </td>
@@ -330,10 +343,14 @@ function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks}:{
   return <><QuickCycleHome data={data} cycle={cycle} onQuickCycle={onQuickCycle} onConfigure={onConfigure} onOpenLinks={onOpenLinks}/><div className="stat-grid"><Stat label="Participantes do ciclo" value={cycle.participants.length} note={`${quantity(leaderIds.size,'liderança vinculada','lideranças vinculadas')}`} icon={<UsersRound size={19}/>}/><Stat label="Respostas recebidas" value={<>{responses.length}<em>{expected!==null?` / ${expected}`:''}</em></>} note={`${quantity(evaluations.length,'formulário vinculado','formulários vinculados')}`} icon={<ClipboardList size={19}/>}/><Stat label="Conclusão do ciclo" value={formatPercent(responses.length,expected)} note={expected===null?'Defina o total esperado por formulário':`${quantity(Math.max(0,expected-responses.length),'resposta pendente','respostas pendentes')}`}/><Stat label="Colaboradores ativos" value={data.employees.filter(employee=>employee.active).length} note={`${quantity(data.employees.length,'pessoa')} no cadastro`} icon={<UserRoundCheck size={19}/>}/></div><div className="dashboard-grid"><Panel title="Participação por avaliação" subtitle="Respostas recebidas em cada formulário do ciclo" className="participation-panel">{evaluations.length?evaluations.map(evaluation=>{const stats=getEvaluationStats(data,evaluation.id);return <div className="participation-row" key={evaluation.id}><div><button className="text-button" onClick={()=>onResults(evaluation.id)}>{evaluation.name}<ArrowRight size={15}/></button><b>{stats.received}<span>{stats.expected!==null?` / ${stats.expected}`:stats.received===1?' resposta':' respostas'}</span></b></div><div><Progress received={stats.received} expected={stats.expected}/><small>{stats.expected===null?'Esperado não definido':formatPercent(stats.received,stats.expected)}</small></div></div>;}):<Empty title="Nenhum formulário vinculado" action={<button className="button" onClick={onConfigure}>Vincular formulários</button>}/> }</Panel><Panel title="Ciclo de avaliação" subtitle={cycle.name}><div className="cycle-summary"><Pill kind={cycleState(cycle)==='Em andamento'?'green':'muted'}>{cycleState(cycle)}</Pill><dl><div><dt>Período</dt><dd>{formatDate(cycle.startDate)}<br/>{formatDate(cycle.endDate)}</dd></div><div><dt>Participantes</dt><dd>{quantity(cycle.participants.length,'pessoa')}</dd></div><div><dt>Coleta</dt><dd>Portal Nativo (/avaliar)</dd></div></dl><div className="mini-note"><ShieldCheck size={17}/>Acompanhamento exclusivo do RH</div></div></Panel></div><Panel title="Perspectivas do ciclo" subtitle="Médias calculadas separadamente · Escala de 1 a 4"><div className="perspective-grid">{kinds.filter(kind=>responses.some(response=>response.kind===kind)||evaluations.some(evaluation=>evaluation.kind===kind)).map(kind=>{const subset=responses.filter(response=>response.kind===kind);return <div className="perspective" key={kind}><span>{KIND_LABELS[kind]}</span><strong>{formatNumber(mean(subset.map(responseAverage).filter((value):value is number=>value!==null)))}<small> / 4</small></strong><p>{quantity(subset.length,'resposta')}{kind==='self'?(subset.length===1?' própria':' próprias'):kind==='team'?' entre colegas':''}</p></div>;})}{!responses.length&&!evaluations.length&&<p className="muted padded">As médias aparecerão após a importação das respostas.</p>}</div></Panel></>;
 }
 
-/** The primary RH workflow: share the native evaluation link for the cycle. */
+/** The primary RH workflow: share the evaluation links for the cycle. */
 function CycleLinks({forms,cycle}:{forms:Evaluation[];cycle:Pick<Cycle,'startDate'|'endDate'> & {id?:string}}) {
   const [copied,setCopied]=useState(''),[error,setError]=useState('');
-  const portalUrl = typeof window !== 'undefined' ? `${window.location.origin}/avaliar` : '/avaliar';
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const leadUrl = `${origin}/avaliacao-de-lideres`;
+  const teamUrl = `${origin}/avaliacao-da-equipe`;
+  const portalUrl = `${origin}/avaliar`;
+
   async function copyLink(url:string){
     try {
       if(!navigator.clipboard?.writeText)throw new Error('Clipboard indisponível');
@@ -343,29 +360,34 @@ function CycleLinks({forms,cycle}:{forms:Evaluation[];cycle:Pick<Cycle,'startDat
   return <div className="quick-link-list">
     <div className="quick-link" style={{background:'#f0f7fd',borderColor:'#c5def1',padding:'12px 16px',borderRadius:8}}>
       <div>
-        <b style={{color:'#0573b9',fontSize:14}}>Portal de Avaliações (Link Direto)</b>
-        <small style={{display:'block',marginTop:2}}>Envie este link aos colaboradores para responder todas as avaliações do ciclo · {portalUrl}</small>
+        <b style={{color:'#0573b9',fontSize:14}}>Formulário 1: Avaliação de Líderes</b>
+        <small style={{display:'block',marginTop:2}}>Colaborador avalia o líder do setor · Seleção direta do nome na lista · {leadUrl}</small>
       </div>
       <div className="quick-actions">
-        <button type="button" className="button small primary" onClick={()=>void copyLink(portalUrl)}>
-          <Copy size={15}/>{copied===portalUrl?'Link copiado!':'Copiar link do portal'}
+        <button type="button" className="button small primary" onClick={()=>void copyLink(leadUrl)}>
+          <Copy size={15}/>{copied===leadUrl?'Link copiado!':'Copiar link'}
         </button>
-        <a className="button small" href={portalUrl} target="_blank" rel="noopener noreferrer">
-          <ExternalLink size={15}/>Abrir portal
+        <a className="button small" href={leadUrl} target="_blank" rel="noopener noreferrer">
+          <ExternalLink size={15}/>Abrir
         </a>
       </div>
     </div>
-    {forms.map(form=>{
-      const directUrl = `${portalUrl}?avaliacao=${form.id}`;
-      return <div className="quick-link" key={form.id}>
-        <div><b>{KIND_LABELS[form.kind]}</b><small>{form.name}</small></div>
-        <div className="quick-actions">
-          <button type="button" className="button small" onClick={()=>void copyLink(directUrl)}><Copy size={15}/>{copied===directUrl?'Link copiado!':'Copiar link'}</button>
-          <a className="button small" href={directUrl} target="_blank" rel="noopener noreferrer"><ExternalLink size={15}/>Abrir</a>
-        </div>
-      </div>;
-    })}
-    {!forms.length&&<p className="muted">Vincule os formulários de avaliação nas configurações para liberar os links do ciclo.</p>}
+
+    <div className="quick-link" style={{background:'#f0fdf4',borderColor:'#bbf7d0',padding:'12px 16px',borderRadius:8}}>
+      <div>
+        <b style={{color:'#16a34a',fontSize:14}}>Formulário 2: Avaliação e Autoavaliação da Equipe</b>
+        <small style={{display:'block',marginTop:2}}>Autoavaliação e avaliação entre colegas · Seleção direta do nome · {teamUrl}</small>
+      </div>
+      <div className="quick-actions">
+        <button type="button" className="button small primary" onClick={()=>void copyLink(teamUrl)}>
+          <Copy size={15}/>{copied===teamUrl?'Link copiado!':'Copiar link'}
+        </button>
+        <a className="button small" href={teamUrl} target="_blank" rel="noopener noreferrer">
+          <ExternalLink size={15}/>Abrir
+        </a>
+      </div>
+    </div>
+
     {error&&<Notice message={error}/>}
   </div>;
 }
@@ -374,16 +396,16 @@ function QuickCycleHome({data,cycle,onQuickCycle,onConfigure,onOpenLinks}:{data:
   const next=suggestNextCycle(data);
   return <section className="quick-launch" aria-labelledby="quick-launch-title">
     <div className="quick-launch-head">
-      <div><span className="quick-kicker">PORTAL DE AVALIAÇÕES</span><h2 id="quick-launch-title">Links de avaliação do ciclo</h2><p>Compartilhe o link do portal nativo com os colaboradores. Todas as avaliações respondidas são computadas em tempo real.</p></div>
+      <div><span className="quick-kicker">PORTAL DE AVALIAÇÕES</span><h2 id="quick-launch-title">Links de avaliação do ciclo</h2><p>Compartilhe os dois links com os colaboradores. Todas as avaliações respondidas são computadas em tempo real durante o período ativo.</p></div>
       <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
-        <button type="button" className="button" onClick={onOpenLinks}><ExternalLink size={17}/>Ver links dos colaboradores (35)</button>
+        <button type="button" className="button" onClick={onOpenLinks}><ExternalLink size={17}/>Ver links dos formulários (2)</button>
         <button type="button" className="button primary" disabled={!next} onClick={onQuickCycle}><Plus size={18}/>Criar próximo ciclo</button>
       </div>
     </div>
     <div className="quick-launch-bottom">
       <div className="quick-link-title"><b>Links do ciclo: {cycle.name}</b><small>{formatDate(cycle.startDate)} a {formatDate(cycle.endDate)}</small></div>
       <CycleLinks forms={forms} cycle={cycle}/>
-      <p className="quick-help">Cada colaborador acessa seu link permanente (/avaliar?p=[token]) e responde suas avaliações. As notas alimentam as médias, os gráficos e os relatórios automaticamente. <button className="text-button" type="button" onClick={onConfigure}>Configurações avançadas</button></p>
+      <p className="quick-help">Envie os dois links para a equipe. Cada colaborador seleciona seu próprio nome na lista e responde. As notas alimentam as médias e os relatórios automaticamente durante o período ativo. <button className="text-button" type="button" onClick={onConfigure}>Configurações avançadas</button></p>
     </div>
   </section>;
 }

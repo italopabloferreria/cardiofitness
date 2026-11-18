@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState, useCallback, useRef, ty
 import type { AppData, Bootstrap, Cycle, CycleInput, Employee, EmployeeInput, Evaluation, EvaluationInput, EvaluationResponse, FormMetadata, ResponseSubmissionInput, SyncResult } from './types';
 import { createDemoData } from './demo';
 import { prepareCycleForms } from './cycle-template';
+import { cycleState } from './analytics';
 
 const EMPTY: AppData = {employees:[],cycles:[],evaluations:[],responses:[]};
 const DEMO_KEY = 'cardiofitness-demo-v3';
@@ -176,6 +177,11 @@ export function AppProvider({children}:{children:ReactNode}) {
   const resetDemo=()=>{if(mode!=='demo')return;setData(createDemoData());};
   const submitResponse=async(input:ResponseSubmissionInput)=>{
     if(!input.evaluationId||!input.respondentId||!input.subjectId)throw new Error('Identificação ou avaliação incompleta.');
+    const evalObj = data.evaluations.find(e => e.id === input.evaluationId);
+    const cycle = evalObj ? data.cycles.find(c => c.id === evalObj.cycleId) : null;
+    if (cycle && cycleState(cycle) !== 'Em andamento') {
+      throw new Error(`O período de avaliações do ciclo ${cycle.name} está encerrado. Não são permitidas novas respostas.`);
+    }
     if(!input.scores||!Object.keys(input.scores).length)throw new Error('Responda às perguntas com notas de 1 a 4.');
     for(const val of Object.values(input.scores)){
       if(!Number.isInteger(val)||val<1||val>4)throw new Error('Todas as notas devem ser inteiras de 1 a 4.');
