@@ -166,12 +166,19 @@ function TeamEvaluationContent() {
 
   function handleDepartmentChange(dept: string) {
     setSelectedDepartment(dept);
-    setRespondentId('');
-    setSelectedTargetId('');
     setScores({});
     setObservation('');
     setSubmitted(false);
     setErrorMessage('');
+
+    const deptEmps = activeEmployees.filter(e => normalizeDepartment(e.department) === dept);
+    if (deptEmps.length === 1) {
+      setRespondentId(deptEmps[0].id);
+      setSelectedTargetId(deptEmps[0].id);
+    } else {
+      setRespondentId('');
+      setSelectedTargetId('');
+    }
   }
 
   function handleRespondentChange(id: string) {

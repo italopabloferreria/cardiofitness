@@ -184,18 +184,32 @@ function LeadershipEvaluationContent() {
 
   function handleDepartmentChange(dept: string) {
     setSelectedDepartment(dept);
-    setRespondentId('');
     setScores({});
     setObservation('');
     setSubmitted(false);
     setErrorMessage('');
 
-    // Identifica e seleciona automaticamente a líder daquele setor
+    const deptEmps = activeEmployees.filter(e => normalizeDepartment(e.department) === dept);
     const sectorLeader = activeLeaders.find(l => normalizeDepartment(l.department) === dept);
-    if (sectorLeader) {
-      setSelectedLeaderId(sectorLeader.id);
+
+    // Se houver apenas 1 colaborador no setor (ex: Suporte com Ítalo), seleciona automaticamente!
+    if (deptEmps.length === 1) {
+      const single = deptEmps[0];
+      setRespondentId(single.id);
+      if (single.leaderId === single.id || single.name.toUpperCase().includes('ITALO')) {
+        setSelectedLeaderId(single.id);
+      } else if (single.leaderId) {
+        setSelectedLeaderId(single.leaderId);
+      } else if (sectorLeader) {
+        setSelectedLeaderId(sectorLeader.id);
+      }
     } else {
-      setSelectedLeaderId('');
+      setRespondentId('');
+      if (sectorLeader) {
+        setSelectedLeaderId(sectorLeader.id);
+      } else {
+        setSelectedLeaderId('');
+      }
     }
   }
 
