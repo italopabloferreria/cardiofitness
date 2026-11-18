@@ -136,7 +136,11 @@ export function AppProvider({children}:{children:ReactNode}) {
     if(!input.name.trim()||!input.startDate||!input.endDate||input.startDate>input.endDate)throw new Error('Informe nome e um período válido para o ciclo.');
     if(!input.participants.length)throw new Error('Selecione ao menos um participante.');
     const old=data.cycles.find(cycle=>cycle.id===id);
-    if(old&&data.responses.some(response=>data.evaluations.some(evaluation=>evaluation.id===response.evaluationId&&evaluation.cycleId===id))&&(old.startDate!==input.startDate||old.endDate!==input.endDate||JSON.stringify(old.participants)!==JSON.stringify(input.participants)))throw new Error('O ciclo já tem respostas. Preserve datas e participantes e crie um novo ciclo.');
+    if(old&&data.responses.some(response=>data.evaluations.some(evaluation=>evaluation.id===response.evaluationId&&evaluation.cycleId===id))){
+      const nextParticipantIds = new Set(input.participants.map(p => p.employeeId));
+      const hasRemoved = data.responses.some(r => data.evaluations.some(e => e.id === r.evaluationId && e.cycleId === id) && !nextParticipantIds.has(r.respondentId));
+      if (hasRemoved) throw new Error('Não é possível remover do ciclo participantes que já possuem respostas registradas.');
+    }
     const saved=mode==='demo'?{...input,id:id??crypto.randomUUID()}:await authorizedRequest<Cycle>(`/api/cycles${id?`/${id}`:''}`,{method:id?'PATCH':'POST',body:JSON.stringify(input)});
     setData(current=>({...current,cycles:id?current.cycles.map(cycle=>cycle.id===id?saved:cycle):[...current.cycles,saved]}));return saved;
   };

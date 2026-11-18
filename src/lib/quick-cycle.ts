@@ -64,8 +64,8 @@ export function suggestNextCycle(data: AppData): QuickCycleDraft | null {
     problems.push('O link já está associado a um ciclo com período sobreposto. Revise as datas para não duplicar respostas.');
   }
   const warnings = [
-    'Reutiliza exatamente os links e as perguntas do Google Forms; as respostas serão separadas pelas datas do ciclo.',
-    'Mudanças nos nomes das opções do Google Forms precisam ser conferidas na conta Google antes da divulgação.',
+    'Reutiliza os links fixos e as perguntas dos formulários; as respostas serão separadas pelas datas do ciclo.',
+    'Mudanças nos participantes e novos colaboradores precisam ser conferidos antes da divulgação.',
   ];
   if (forms.some(form => form.kind === 'team' || form.kind === 'self')) {
     warnings.push(months === 2

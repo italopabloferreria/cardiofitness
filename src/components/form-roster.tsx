@@ -28,8 +28,8 @@ export function FormRoster({ evaluationId }: { evaluationId: string }) {
     } catch (error) { setMessage(error instanceof Error ? error.message : 'Falha ao confirmar a atualização.'); setPreview(null); setConfirmed(false); }
     finally { setBusy(false); }
   }
-  return <section aria-label="Atualizar nomes no Google Forms">
-    <h3>Nomes no Google Forms</h3>
+  return <section aria-label="Atualizar nomes nos formulários">
+    <h3>Relação de nomes nos formulários</h3>
     <p>Prepare uma prévia com os colaboradores ativos. Confira as listas antes de alterar o formulário.</p>
     <button type="button" className="button" disabled={busy} onClick={prepare}>{busy ? 'Aguarde…' : 'Conferir nomes do formulário'}</button>
     {message && <p role="status">{message}</p>}
@@ -45,7 +45,7 @@ export function FormRoster({ evaluationId }: { evaluationId: string }) {
       </details>)}
       {preview.changes.length > 0 && <>
         <label><input type="checkbox" checked={confirmed} onChange={e => setConfirmed(e.target.checked)} disabled={busy || !preview.writeEnabled || Boolean(preview.blocked.length)} /> Conferi os nomes e autorizo atualizar somente estas listas no formulário.</label>
-        <button type="button" className="button primary" disabled={busy || !confirmed || !preview.writeEnabled || Boolean(preview.blocked.length)} onClick={apply}>Atualizar listas no Google Forms</button>
+        <button type="button" className="button primary" disabled={busy || !confirmed || !preview.writeEnabled || Boolean(preview.blocked.length)} onClick={apply}>Atualizar listas no formulário</button>
       </>}
     </div>}
   </section>;

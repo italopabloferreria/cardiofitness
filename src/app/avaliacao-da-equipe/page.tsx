@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { usePublicForm } from '@/lib/use-public-form';
 import { cycleState, formatDate } from '@/lib/analytics';
+import { normalizeDepartment } from '@/lib/roster-data';
 import type { Employee, EvaluationKind, ScoreQuestion } from '@/lib/types';
 import styles from '@/components/native-prototype.module.css';
 
@@ -24,7 +25,16 @@ const SCALE_LABELS: Record<number, string> = {
   4: 'Supera',
 };
 
-// Perguntas por setor, espelhando exatamente o Google Forms oficial
+// Setores oficiais da Cardiofitness
+const DEPARTMENTS = [
+  'Faturamento',
+  'Central e Resultados',
+  'Recepção e Triagem',
+  'Técnicas e Corredor / Copeiras',
+  'Administrativo',
+];
+
+// Perguntas oficiais por setor
 const SECTOR_QUESTIONS: Record<string, ScoreQuestion[]> = {
   'Faturamento': [
     { id: 'q1', title: 'O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?', min: 1, max: 4 },
@@ -69,15 +79,14 @@ const SECTOR_QUESTIONS: Record<string, ScoreQuestion[]> = {
   ],
 };
 
-// fallback genérico (nunca deveria aparecer se todos os setores estiverem mapeados)
 const DEFAULT_TEAM_QUESTIONS: ScoreQuestion[] = SECTOR_QUESTIONS['Administrativo'];
 
 function TeamEvaluationContent() {
   const { cycle, employees, evaluations, loading, submitResponse } = usePublicForm('team');
 
+  const [selectedDepartment, setSelectedDepartment] = useState('');
   const [respondentId, setRespondentId] = useState('');
-  const [evaluationMode, setEvaluationMode] = useState<'self' | 'peer' | 'subordinate'>('self');
-  const [selectedPeerId, setSelectedPeerId] = useState('');
+  const [selectedTargetId, setSelectedTargetId] = useState('');
   const [scores, setScores] = useState<Record<string, number>>({});
   const [observation, setObservation] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -94,38 +103,38 @@ function TeamEvaluationContent() {
     return employees.filter(e => e.active).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
   }, [employees]);
 
+  // Colaboradores filtrados pelo setor selecionado
+  const departmentEmployees = useMemo(() => {
+    if (!selectedDepartment) return [];
+    return activeEmployees.filter(e => normalizeDepartment(e.department) === selectedDepartment);
+  }, [activeEmployees, selectedDepartment]);
+
   const respondent = useMemo(() => {
     return activeEmployees.find(e => e.id === respondentId);
   }, [activeEmployees, respondentId]);
 
-  // Colegas do mesmo setor para avaliação entre pares
+  // Colegas do mesmo setor (excluindo a própria pessoa e excluindo a líder do setor para não líderes)
   const peersInDepartment = useMemo(() => {
     if (!respondent) return [];
-    return activeEmployees.filter(e => e.department === respondent.department && e.id !== respondent.id && !e.isLeader);
-  }, [activeEmployees, respondent]);
-
-  // Liderados (caso o respondente seja um líder)
-  const subordinates = useMemo(() => {
-    if (!respondent || !respondent.isLeader) return [];
-    return activeEmployees.filter(e => e.leaderId === respondent.id);
-  }, [activeEmployees, respondent]);
+    return departmentEmployees.filter(
+      e => e.id !== respondent.id && (!e.isLeader || respondent.isLeader)
+    );
+  }, [departmentEmployees, respondent]);
 
   // Sujeito da avaliação (quem está sendo avaliado)
   const targetSubject = useMemo((): Employee | undefined => {
-    if (!respondent) return undefined;
-    if (evaluationMode === 'self') return respondent;
-    if (evaluationMode === 'peer') return peersInDepartment.find(p => p.id === selectedPeerId);
-    if (evaluationMode === 'subordinate') return subordinates.find(s => s.id === selectedPeerId);
-    return undefined;
-  }, [respondent, evaluationMode, selectedPeerId, peersInDepartment, subordinates]);
+    if (!respondent || !selectedTargetId) return undefined;
+    if (selectedTargetId === respondent.id) return respondent;
+    return departmentEmployees.find(e => e.id === selectedTargetId);
+  }, [respondent, selectedTargetId, departmentEmployees]);
 
   const targetKind: EvaluationKind = useMemo(() => {
-    if (evaluationMode === 'self') return 'self';
-    if (evaluationMode === 'subordinate') return 'leader_to_employee';
+    if (!respondent || !targetSubject) return 'team';
+    if (targetSubject.id === respondent.id) return 'self';
+    if (respondent.isLeader && targetSubject.leaderId === respondent.id) return 'leader_to_employee';
     return 'team';
-  }, [evaluationMode]);
+  }, [respondent, targetSubject]);
 
-  // Avaliação correspondente do ciclo
   const evaluationObj = useMemo(() => {
     if (!activeCycle) return undefined;
     return (
@@ -135,33 +144,39 @@ function TeamEvaluationContent() {
   }, [activeCycle, evaluations]);
 
   const questions: ScoreQuestion[] = useMemo(() => {
-    if (evaluationObj?.mapping?.scoreQuestions?.length) {
-      return evaluationObj.mapping.scoreQuestions;
-    }
-    if (respondent) {
-      return SECTOR_QUESTIONS[respondent.department] ?? DEFAULT_TEAM_QUESTIONS;
+    const dept = selectedDepartment || respondent?.department;
+    if (dept && SECTOR_QUESTIONS[dept]) {
+      return SECTOR_QUESTIONS[dept];
     }
     return DEFAULT_TEAM_QUESTIONS;
-  }, [evaluationObj, respondent]);
+  }, [respondent, selectedDepartment]);
 
   const isFormComplete = useMemo(() => {
     if (!respondent || !targetSubject || !questions.length) return false;
     return questions.every(q => scores[q.id] >= 1 && scores[q.id] <= 4);
   }, [respondent, targetSubject, questions, scores]);
 
-  function handleRespondentChange(id: string) {
-    setRespondentId(id);
-    setSelectedPeerId('');
-    setEvaluationMode('self');
+  function handleDepartmentChange(dept: string) {
+    setSelectedDepartment(dept);
+    setRespondentId('');
+    setSelectedTargetId('');
     setScores({});
     setObservation('');
     setSubmitted(false);
     setErrorMessage('');
   }
 
-  function handleModeChange(mode: 'self' | 'peer' | 'subordinate') {
-    setEvaluationMode(mode);
-    setSelectedPeerId('');
+  function handleRespondentChange(id: string) {
+    setRespondentId(id);
+    setSelectedTargetId('');
+    setScores({});
+    setObservation('');
+    setSubmitted(false);
+    setErrorMessage('');
+  }
+
+  function handleTargetChange(targetId: string) {
+    setSelectedTargetId(targetId);
     setScores({});
     setObservation('');
     setSubmitted(false);
@@ -216,10 +231,10 @@ function TeamEvaluationContent() {
         </div>
 
         <div className={styles.asideCenter}>
-          <div className={styles.asideEyebrow}>FORMULÁRIO OFICIAL 2</div>
+          <div className={styles.asideEyebrow}>PORTAL DE AVALIAÇÕES</div>
           <h1>Avaliação e Autoavaliação da Equipe</h1>
           <p>
-            Espaço para reflexão do próprio desempenho (autoavaliação) e avaliação da colaboração entre os colegas do mesmo setor.
+            Espaço para reflexão do próprio desempenho (autoavaliação) e avaliação da cooperação entre os colegas do seu setor.
           </p>
 
           <div className={styles.asidePill}>
@@ -265,7 +280,7 @@ function TeamEvaluationContent() {
                 Avaliação enviada com sucesso!
               </h2>
               <p style={{ color: '#047857', fontSize: 15, lineHeight: 1.6, maxWidth: 500, margin: '0 auto 28px' }}>
-                O envio sobre <b>{targetSubject?.name}</b> foi registrado e computado com sucesso no <b>{activeCycle.name}</b>.
+                O envio sobre <b>{targetSubject?.name}</b> foi registrado com sucesso no <b>{activeCycle.name}</b>.
               </p>
 
               <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -276,6 +291,7 @@ function TeamEvaluationContent() {
                     setSubmitted(false);
                     setScores({});
                     setObservation('');
+                    setSelectedTargetId('');
                   }}
                 >
                   Enviar outra avaliação
@@ -300,161 +316,81 @@ function TeamEvaluationContent() {
                 </span>
               </div>
 
-              {/* Bloco 1: Seleção de quem está respondendo */}
+              {/* Bloco 1: Seleção do Setor e do Nome */}
               <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 14, padding: '24px', marginBottom: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
-                <label className={styles.fieldLabel} style={{ fontSize: 15, color: '#0f172a', marginBottom: 6 }}>
-                  1. Quem está respondendo? (Selecione seu nome) *
-                </label>
-                <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 14px' }}>
-                  Identifique-se para carregar sua autoavaliação e os colegas do seu setor.
-                </p>
+                {/* 1. SELECIONE O SEU SETOR */}
+                <div style={{ marginBottom: 20 }}>
+                  <label className={styles.fieldLabel} style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', marginBottom: 8, display: 'block' }}>
+                    1. Selecione o seu setor *
+                  </label>
+                  <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 10px' }}>
+                    Escolha sua área para carregar apenas os colaboradores do seu setor.
+                  </p>
+                  <select
+                    className={styles.input}
+                    style={{ fontSize: 15, fontWeight: 600, color: selectedDepartment ? '#0f172a' : '#64748b' }}
+                    value={selectedDepartment}
+                    onChange={e => handleDepartmentChange(e.target.value)}
+                    required
+                  >
+                    <option value="">-- Selecione seu setor --</option>
+                    {DEPARTMENTS.map(dept => (
+                      <option key={dept} value={dept}>
+                        {dept}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-                <select
-                  className={styles.input}
-                  style={{ fontSize: 15, fontWeight: 500 }}
-                  value={respondentId}
-                  onChange={e => handleRespondentChange(e.target.value)}
-                  required
-                >
-                  <option value="">-- Selecione seu nome na lista --</option>
-                  {activeEmployees.map(emp => (
-                    <option key={emp.id} value={emp.id}>
-                      {emp.name}
-                    </option>
-                  ))}
-                </select>
-
-                {/* Opções de modalidade quando selecionado */}
-                {respondent && (
-                  <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #e2e8f0' }}>
-                    <label style={{ display: 'block', fontSize: 14, fontWeight: 700, color: '#0f172a', marginBottom: 10 }}>
-                      2. O que você deseja preencher agora? *
+                {/* 2. SELECIONE O SEU NOME */}
+                {selectedDepartment && (
+                  <div style={{ marginTop: 20, paddingTop: 18, borderTop: '1px solid #f1f5f9' }}>
+                    <label className={styles.fieldLabel} style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', marginBottom: 8, display: 'block' }}>
+                      2. Selecione o seu nome *
                     </label>
+                    <select
+                      className={styles.input}
+                      style={{ fontSize: 15, fontWeight: 500 }}
+                      value={respondentId}
+                      onChange={e => handleRespondentChange(e.target.value)}
+                      required
+                    >
+                      <option value="">-- Escolha seu nome na lista do setor {selectedDepartment} --</option>
+                      {departmentEmployees.map(emp => (
+                        <option key={emp.id} value={emp.id}>
+                          {emp.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10, marginBottom: 16 }}>
-                      {/* Opção Autoavaliação */}
-                      <button
-                        type="button"
-                        onClick={() => handleModeChange('self')}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 10,
-                          padding: '14px 16px',
-                          borderRadius: 10,
-                          border: `2px solid ${evaluationMode === 'self' ? '#0573b9' : '#e2e8f0'}`,
-                          background: evaluationMode === 'self' ? '#f0f7fd' : '#fff',
-                          cursor: 'pointer',
-                          textAlign: 'left',
-                          fontWeight: evaluationMode === 'self' ? 700 : 500,
-                          color: evaluationMode === 'self' ? '#0573b9' : '#334155',
-                        }}
-                      >
-                        <User size={18} />
-                        <div>
-                          <span style={{ display: 'block', fontSize: 13 }}>Minha Autoavaliação</span>
-                          <small style={{ fontSize: 11, opacity: 0.7 }}>Avaliar a mim mesmo</small>
-                        </div>
-                      </button>
-
-                      {/* Opção Colega do Setor */}
-                      {peersInDepartment.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => handleModeChange('peer')}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 10,
-                            padding: '14px 16px',
-                            borderRadius: 10,
-                            border: `2px solid ${evaluationMode === 'peer' ? '#0573b9' : '#e2e8f0'}`,
-                            background: evaluationMode === 'peer' ? '#f0f7fd' : '#fff',
-                            cursor: 'pointer',
-                            textAlign: 'left',
-                            fontWeight: evaluationMode === 'peer' ? 700 : 500,
-                            color: evaluationMode === 'peer' ? '#0573b9' : '#334155',
-                          }}
-                        >
-                          <UsersRound size={18} />
-                          <div>
-                            <span style={{ display: 'block', fontSize: 13 }}>Colega de Equipe</span>
-                            <small style={{ fontSize: 11, opacity: 0.7 }}>Avaliar colega do setor</small>
-                          </div>
-                        </button>
-                      )}
-
-                      {/* Opção Liderado (caso seja líder) */}
-                      {subordinates.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => handleModeChange('subordinate')}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 10,
-                            padding: '14px 16px',
-                            borderRadius: 10,
-                            border: `2px solid ${evaluationMode === 'subordinate' ? '#0573b9' : '#e2e8f0'}`,
-                            background: evaluationMode === 'subordinate' ? '#f0f7fd' : '#fff',
-                            cursor: 'pointer',
-                            textAlign: 'left',
-                            fontWeight: evaluationMode === 'subordinate' ? 700 : 500,
-                            color: evaluationMode === 'subordinate' ? '#0573b9' : '#334155',
-                          }}
-                        >
-                          <UsersRound size={18} />
-                          <div>
-                            <span style={{ display: 'block', fontSize: 13 }}>Colaborador Liderado</span>
-                            <small style={{ fontSize: 11, opacity: 0.7 }}>Avaliação como líder</small>
-                          </div>
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Seleção do colega quando modalidade é 'peer' */}
-                    {evaluationMode === 'peer' && (
-                      <div style={{ marginTop: 12, padding: '14px 16px', background: '#f8fafc', borderRadius: 10, border: '1px solid #e2e8f0' }}>
-                        <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#334155', marginBottom: 6 }}>
-                          Selecione qual colega você vai avaliar: *
-                        </label>
-                        <select
-                          className={styles.input}
-                          value={selectedPeerId}
-                          onChange={e => setSelectedPeerId(e.target.value)}
-                          required
-                        >
-                          <option value="">-- Escolha o colega --</option>
-                          {peersInDepartment.map(p => (
-                            <option key={p.id} value={p.id}>
-                              {p.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
-
-                    {/* Seleção do liderado quando modalidade é 'subordinate' */}
-                    {evaluationMode === 'subordinate' && (
-                      <div style={{ marginTop: 12, padding: '14px 16px', background: '#f8fafc', borderRadius: 10, border: '1px solid #e2e8f0' }}>
-                        <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#334155', marginBottom: 6 }}>
-                          Selecione qual colaborador da sua equipe você vai avaliar: *
-                        </label>
-                        <select
-                          className={styles.input}
-                          value={selectedPeerId}
-                          onChange={e => setSelectedPeerId(e.target.value)}
-                          required
-                        >
-                          <option value="">-- Escolha o colaborador --</option>
-                          {subordinates.map(s => (
-                            <option key={s.id} value={s.id}>
-                              {s.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
+                {/* 3. QUEM VOCÊ VAI AVALIAR? */}
+                {respondent && (
+                  <div style={{ marginTop: 22, paddingTop: 20, borderTop: '1px solid #e2e8f0' }}>
+                    <label className={styles.fieldLabel} style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', marginBottom: 8, display: 'block' }}>
+                      3. Quem você vai avaliar? *
+                    </label>
+                    <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 10px' }}>
+                      Selecione a si mesmo para preencher sua autoavaliação ou selecione um colega do setor {selectedDepartment}.
+                    </p>
+                    <select
+                      className={styles.input}
+                      style={{ fontSize: 15, fontWeight: 500 }}
+                      value={selectedTargetId}
+                      onChange={e => handleTargetChange(e.target.value)}
+                      required
+                    >
+                      <option value="">-- Escolha quem você vai avaliar na lista do setor {selectedDepartment} --</option>
+                      <option value={respondent.id}>
+                        {respondent.name} (Minha autoavaliação)
+                      </option>
+                      {peersInDepartment.map(peer => (
+                        <option key={peer.id} value={peer.id}>
+                          {peer.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 )}
               </div>
@@ -464,13 +400,13 @@ function TeamEvaluationContent() {
                 <>
                   <div style={{ marginBottom: 20 }}>
                     <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0f172a', margin: '0 0 6px' }}>
-                      3. Questões de Desempenho
+                      4. Questões de Desempenho — {selectedDepartment}
                     </h3>
                     <p style={{ fontSize: 13, color: '#64748b', margin: 0 }}>
-                      {evaluationMode === 'self' ? (
-                        <>Reflita sobre suas próprias entregas e comportamento no setor <b>{respondent.department}</b>.</>
+                      {targetKind === 'self' ? (
+                        <>Reflita sobre suas próprias atividades e entregas na área de <b>{selectedDepartment}</b>.</>
                       ) : (
-                        <>Avalie o desempenho e a cooperação de <b>{targetSubject.name}</b> no setor <b>{targetSubject.department}</b>.</>
+                        <>Avalie a cooperação e desempenho de <b>{targetSubject.name}</b> no setor <b>{selectedDepartment}</b>.</>
                       )}
                     </p>
                   </div>
@@ -513,12 +449,12 @@ function TeamEvaluationContent() {
                   {/* Bloco 3: Observações opcionais */}
                   <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 14, padding: '24px', marginBottom: 24 }}>
                     <label className={styles.fieldLabel} style={{ fontSize: 14, color: '#0f172a' }}>
-                      4. Observações e Pontos de Desenvolvimento (Opcional)
+                      5. Observações e Pontos de Desenvolvimento (Opcional)
                     </label>
                     <textarea
                       className={styles.textarea}
                       placeholder={
-                        evaluationMode === 'self'
+                        targetKind === 'self'
                           ? 'Descreva aspectos em que deseja evoluir ou comentários sobre seu desempenho...'
                           : `Deixe comentários sobre o desempenho ou pontos de desenvolvimento de ${targetSubject.name.split(' ')[0]}...`
                       }
@@ -549,7 +485,7 @@ function TeamEvaluationContent() {
                       ) : (
                         <>
                           <Send size={18} />
-                          {evaluationMode === 'self'
+                          {targetKind === 'self'
                             ? 'Enviar Minha Autoavaliação'
                             : `Enviar Avaliação de ${targetSubject.name.split(' ')[0]}`}
                         </>

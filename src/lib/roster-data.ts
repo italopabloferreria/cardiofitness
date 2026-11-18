@@ -1,5 +1,16 @@
 import type { Employee } from './types';
 
+export function normalizeDepartment(dept: string | null | undefined): string {
+  if (!dept) return 'Administrativo';
+  const d = dept.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+  if (d.includes('FATURA')) return 'Faturamento';
+  if (d.includes('CENTRAL') || d.includes('RESULTADO')) return 'Central e Resultados';
+  if (d.includes('RECEP') || d.includes('TRIAGEM')) return 'Recepção e Triagem';
+  if (d.includes('TECNIC') || d.includes('CORREDOR') || d.includes('COPEIR') || d.includes('LIMPEZA')) return 'Técnicas e Corredor / Copeiras';
+  if (d.includes('ADM')) return 'Administrativo';
+  return dept.trim();
+}
+
 // Helper to generate deterministic valid UUIDs for standard employees
 const uid = (section: number, index: number) =>
   `00000000-0000-4000-8000-${String(section).padStart(4, '0')}${String(index).padStart(8, '0')}`;

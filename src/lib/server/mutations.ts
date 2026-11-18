@@ -46,10 +46,13 @@ export async function saveCycle(request: Request, id?: string) {
   if (id && !existing) throw new ApiError(404, 'Ciclo não encontrado.');
   const periodProblem = cyclePeriodConflict(input, app, id);
   if (periodProblem) throw new ApiError(409, periodProblem);
-  const structuralChange = !existing || JSON.stringify(cycleStructure(existing)) !== JSON.stringify(cycleStructure(input));
-  if (existing && structuralChange && app.responses.some(r => app.evaluations.some(e => e.id === r.evaluationId && e.cycleId === id)))
-    throw new ApiError(409, 'Este ciclo possui resultados. Edite apenas o nome para preservar o histórico.');
+  if (existing && app.responses.some(r => app.evaluations.some(e => e.id === r.evaluationId && e.cycleId === id))) {
+    const nextParticipantIds = new Set(input.participants.map(p => p.employeeId));
+    const hasRemoved = app.responses.some(r => app.evaluations.some(e => e.id === r.evaluationId && e.cycleId === id) && !nextParticipantIds.has(r.respondentId));
+    if (hasRemoved) throw new ApiError(409, 'Este ciclo possui resultados. Não é possível remover colaboradores participantes que já responderam.');
+  }
   // Existing snapshots remain valid when people have subsequently been deactivated.
+  const structuralChange = !existing || JSON.stringify(existing.participants) !== JSON.stringify(input.participants);
   if (structuralChange) {
     const problem = validateParticipants(input, app.employees);
     if (problem) throw new ApiError(409, problem);

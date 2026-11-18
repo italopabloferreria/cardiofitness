@@ -5,28 +5,23 @@ import Link from 'next/link';
 import {
   CalendarDays,
   ChevronRight,
-  Clock,
   HeartPulse,
   Lock,
   ShieldCheck,
   UserCheck,
   Users,
 } from 'lucide-react';
-import { useApp } from '@/lib/store';
+import { usePublicForm } from '@/lib/use-public-form';
 import { cycleState, formatDate } from '@/lib/analytics';
 import styles from '@/components/native-prototype.module.css';
 
 function AvaliarHubContent() {
-  const { data } = useApp();
+  const { cycle, loading } = usePublicForm('team');
 
   const activeCycle = useMemo(() => {
-    return data.cycles.find(c => cycleState(c) === 'Em andamento');
-  }, [data.cycles]);
-
-  const lastClosedCycle = useMemo(() => {
-    const closed = data.cycles.filter(c => cycleState(c) === 'Encerrado');
-    return closed.sort((a, b) => b.endDate.localeCompare(a.endDate))[0];
-  }, [data.cycles]);
+    if (!cycle) return undefined;
+    return cycleState(cycle) === 'Em andamento' ? cycle : undefined;
+  }, [cycle]);
 
   return (
     <div className={styles.portal}>
@@ -67,12 +62,6 @@ function AvaliarHubContent() {
               <p style={{ color: '#475467', fontSize: 15, lineHeight: 1.6, maxWidth: 480, margin: '0 auto 24px' }}>
                 Não há ciclo de avaliação ativo no momento. As avaliações estão disponíveis exclusivamente durante as datas estabelecidas pelo RH da Cardiofitness.
               </p>
-              {lastClosedCycle && (
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#f8fafc', padding: '10px 18px', borderRadius: 8, fontSize: 13, color: '#64748b' }}>
-                  <Clock size={16} />
-                  <span>Último ciclo encerrado em <b>{formatDate(lastClosedCycle.endDate)}</b> ({lastClosedCycle.name})</span>
-                </div>
-              )}
             </div>
           ) : (
             <div>

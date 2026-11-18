@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { isDemoMode, createClient } from '@/lib/server/supabase';
-import { OFFICIAL_LEADERS, OFFICIAL_STAFF } from '@/lib/roster-data';
+import { OFFICIAL_LEADERS, OFFICIAL_STAFF, normalizeDepartment } from '@/lib/roster-data';
 import { PROVIDED_FORMS } from '@/lib/form-presets';
 import { cycleState } from '@/lib/analytics';
 import type { Cycle, Employee, Evaluation } from '@/lib/types';
@@ -84,7 +84,7 @@ export async function GET() {
           name: e.name,
           email: '',
           formName: e.form_name || e.name,
-          department: e.department,
+          department: normalizeDepartment(e.department),
           isLeader: !!e.is_leader,
           leaderId: e.leader_id,
           active: true,
