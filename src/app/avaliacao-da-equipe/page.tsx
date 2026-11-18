@@ -27,15 +27,53 @@ const SCALE_LABELS: Record<number, string> = {
   4: 'Supera',
 };
 
-const DEFAULT_TEAM_QUESTIONS: ScoreQuestion[] = [
-  { id: 't1', title: 'O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?', min: 1, max: 4 },
-  { id: 't2', title: 'O funcionário tem conhecimento amplo dos processos e rotinas da sua função?', min: 1, max: 4 },
-  { id: 't3', title: 'Passa as informações necessárias para seu grupo de trabalho com clareza?', min: 1, max: 4 },
-  { id: 't4', title: 'Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?', min: 1, max: 4 },
-  { id: 't5', title: 'Tem domínio dos sistemas e ferramentas utilizadas no dia a dia do setor?', min: 1, max: 4 },
-  { id: 't6', title: 'Demonstra postura proativa, colaborativa e disposição para ajudar os colegas?', min: 1, max: 4 },
-  { id: 't7', title: 'O funcionário reflete os valores e a ética da empresa?', min: 1, max: 4 },
-];
+// Perguntas por setor, espelhando exatamente o Google Forms oficial
+const SECTOR_QUESTIONS: Record<string, ScoreQuestion[]> = {
+  'Faturamento': [
+    { id: 'q1', title: 'O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?', min: 1, max: 4 },
+    { id: 'q2', title: 'O funcionário tem conhecimento amplo dos convênios que fatura/autoriza?', min: 1, max: 4 },
+    { id: 'q3', title: 'Passa as informações necessárias para seu grupo de trabalho?', min: 1, max: 4 },
+    { id: 'q4', title: 'Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?', min: 1, max: 4 },
+    { id: 'q5', title: 'O funcionário tem domínio do software MedWare?', min: 1, max: 4 },
+    { id: 'q6', title: 'O funcionário tem domínio dos sites dos convênios que fatura/autoriza?', min: 1, max: 4 },
+    { id: 'q7', title: 'O funcionário reflete os valores da empresa?', min: 1, max: 4 },
+  ],
+  'Central e Resultados': [
+    { id: 'q1', title: 'O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?', min: 1, max: 4 },
+    { id: 'q2', title: 'O funcionário tem conhecimento dos convênios credenciados, consultas, exames e respectivos valores?', min: 1, max: 4 },
+    { id: 'q3', title: 'Passa as informações necessárias para seu grupo de trabalho?', min: 1, max: 4 },
+    { id: 'q4', title: 'Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?', min: 1, max: 4 },
+    { id: 'q5', title: 'O funcionário tem domínio do software MedWare?', min: 1, max: 4 },
+    { id: 'q6', title: 'O funcionário tem domínio do software da Fasterisks?', min: 1, max: 4 },
+    { id: 'q7', title: 'O funcionário reflete os valores da empresa?', min: 1, max: 4 },
+  ],
+  'Recepção e Triagem': [
+    { id: 'q1', title: 'O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?', min: 1, max: 4 },
+    { id: 'q2', title: 'O funcionário tem conhecimento dos convênios credenciados, consultas, exames e respectivos valores? O funcionário tem conhecimento técnico dos exames da empresa?', min: 1, max: 4 },
+    { id: 'q3', title: 'Passa as informações necessárias para seu grupo de trabalho?', min: 1, max: 4 },
+    { id: 'q4', title: 'Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?', min: 1, max: 4 },
+    { id: 'q5', title: 'O funcionário tem domínio do software MedWare?', min: 1, max: 4 },
+    { id: 'q6', title: 'O funcionário reflete os valores da empresa?', min: 1, max: 4 },
+  ],
+  'Técnicas e Corredor / Copeiras': [
+    { id: 'q1', title: 'O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?', min: 1, max: 4 },
+    { id: 'q2', title: 'O funcionário tem conhecimento técnico dos exames da empresa?', min: 1, max: 4 },
+    { id: 'q3', title: 'Passa as informações necessárias para seu grupo de trabalho?', min: 1, max: 4 },
+    { id: 'q4', title: 'Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?', min: 1, max: 4 },
+    { id: 'q5', title: 'O funcionário tem domínio do software MedWare?', min: 1, max: 4 },
+    { id: 'q6', title: 'O funcionário reflete os valores da empresa?', min: 1, max: 4 },
+  ],
+  'Administrativo': [
+    { id: 'q1', title: 'O funcionário faz uma boa gestão de tempo e consegue entregar suas atividades dentro do prazo?', min: 1, max: 4 },
+    { id: 'q2', title: 'O funcionário tem desempenhado bem sua função?', min: 1, max: 4 },
+    { id: 'q3', title: 'Passa as informações necessárias para seu grupo de trabalho?', min: 1, max: 4 },
+    { id: 'q4', title: 'Busca o diálogo e a troca de opiniões no grupo para que todos encontrem juntos a melhor solução?', min: 1, max: 4 },
+    { id: 'q5', title: 'O funcionário reflete os valores da empresa?', min: 1, max: 4 },
+  ],
+};
+
+// fallback genérico (nunca deveria aparecer se todos os setores estiverem mapeados)
+const DEFAULT_TEAM_QUESTIONS: ScoreQuestion[] = SECTOR_QUESTIONS['Administrativo'];
 
 function TeamEvaluationContent() {
   const { data, status, submitResponse } = useApp();
@@ -107,8 +145,11 @@ function TeamEvaluationContent() {
     if (evaluationObj?.mapping?.scoreQuestions?.length) {
       return evaluationObj.mapping.scoreQuestions;
     }
+    if (respondent) {
+      return SECTOR_QUESTIONS[respondent.department] ?? DEFAULT_TEAM_QUESTIONS;
+    }
     return DEFAULT_TEAM_QUESTIONS;
-  }, [evaluationObj]);
+  }, [evaluationObj, respondent]);
 
   const isFormComplete = useMemo(() => {
     if (!respondent || !targetSubject || !questions.length) return false;
