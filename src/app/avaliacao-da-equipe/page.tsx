@@ -280,7 +280,7 @@ function TeamEvaluationContent() {
                 Avaliação enviada com sucesso!
               </h2>
               <p style={{ color: '#047857', fontSize: 15, lineHeight: 1.6, maxWidth: 500, margin: '0 auto 28px' }}>
-                O envio sobre <b>{targetSubject?.name}</b> foi registrado com sucesso no <b>{activeCycle.name}</b>.
+                O envio sobre <b>{targetSubject?.name.toUpperCase()}</b> foi registrado com sucesso no <b>{activeCycle.name}</b>.
               </p>
 
               <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -355,10 +355,10 @@ function TeamEvaluationContent() {
                       onChange={e => handleRespondentChange(e.target.value)}
                       required
                     >
-                      <option value="">-- Escolha seu nome na lista do setor {selectedDepartment} --</option>
+                      <option value="">-- ESCOLHA SEU NOME NA LISTA DO SETOR {selectedDepartment.toUpperCase()} --</option>
                       {departmentEmployees.map(emp => (
                         <option key={emp.id} value={emp.id}>
-                          {emp.name}
+                          {emp.name.toUpperCase()}
                         </option>
                       ))}
                     </select>
@@ -381,13 +381,13 @@ function TeamEvaluationContent() {
                       onChange={e => handleTargetChange(e.target.value)}
                       required
                     >
-                      <option value="">-- Escolha quem você vai avaliar na lista do setor {selectedDepartment} --</option>
+                      <option value="">-- ESCOLHA QUEM VOCÊ VAI AVALIAR NO SETOR {selectedDepartment.toUpperCase()} --</option>
                       <option value={respondent.id}>
-                        {respondent.name} (Minha autoavaliação)
+                        {respondent.name.toUpperCase()} (MINHA AUTOAVALIAÇÃO)
                       </option>
                       {peersInDepartment.map(peer => (
                         <option key={peer.id} value={peer.id}>
-                          {peer.name}
+                          {peer.name.toUpperCase()}
                         </option>
                       ))}
                     </select>
@@ -406,7 +406,7 @@ function TeamEvaluationContent() {
                       {targetKind === 'self' ? (
                         <>Reflita sobre suas próprias atividades e entregas na área de <b>{selectedDepartment}</b>.</>
                       ) : (
-                        <>Avalie a cooperação e desempenho de <b>{targetSubject.name}</b> no setor <b>{selectedDepartment}</b>.</>
+                        <>Avalie a cooperação e desempenho de <b>{targetSubject.name.toUpperCase()}</b> no setor <b>{selectedDepartment}</b>.</>
                       )}
                     </p>
                   </div>

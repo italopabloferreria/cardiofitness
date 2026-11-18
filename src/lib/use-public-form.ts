@@ -45,7 +45,7 @@ export function usePublicForm(kind: 'leadership' | 'team'): PublicFormData {
         // Fallback garantido usando os dados oficiais
         const official = [...OFFICIAL_LEADERS, ...OFFICIAL_STAFF];
         const defaultCycle: Cycle = {
-          id: '00000000-0000-4000-8000-000000000001',
+          id: '00000000-0000-4000-8000-000000000103',
           name: 'Novembro / 2026',
           startDate: '2026-11-01',
           endDate: '2026-11-30',
@@ -53,7 +53,7 @@ export function usePublicForm(kind: 'leadership' | 'team'): PublicFormData {
         };
         const defaultEvaluations: Evaluation[] = [
           {
-            id: '00000000-0000-4000-8000-000000000010',
+            id: '00000000-0000-4000-8000-000000000210',
             cycleId: defaultCycle.id,
             name: 'Avaliação de líderes',
             kind: 'leadership',
@@ -65,7 +65,7 @@ export function usePublicForm(kind: 'leadership' | 'team'): PublicFormData {
             mapping: PROVIDED_FORMS[0].mapping,
           },
           {
-            id: '00000000-0000-4000-8000-000000000020',
+            id: '00000000-0000-4000-8000-000000000211',
             cycleId: defaultCycle.id,
             name: 'Avaliação e autoavaliação da equipe',
             kind: 'team',

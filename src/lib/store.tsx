@@ -55,7 +55,18 @@ export function AppProvider({children}:{children:ReactNode}) {
                 parsed.cycles = cleanCycles;
                 const cycleIds = new Set(cleanCycles.map((c: Cycle) => c.id));
                 parsed.evaluations = parsed.evaluations.filter((e: Evaluation) => cycleIds.has(e.cycleId));
-                parsed.responses = parsed.responses.filter((r: EvaluationResponse) => parsed.evaluations.some((e: Evaluation) => e.id === r.evaluationId));
+                
+                // Mescla respostas persistidas do servidor com qualquer cache local
+                const responseMap = new Map<string, EvaluationResponse>();
+                for (const r of parsed.responses) {
+                  responseMap.set(`${r.evaluationId}:${r.respondentId}:${r.subjectId}`, r);
+                }
+                for (const r of boot.data.responses) {
+                  responseMap.set(`${r.evaluationId}:${r.respondentId}:${r.subjectId}`, r);
+                }
+                parsed.responses = Array.from(responseMap.values()).filter((r: EvaluationResponse) =>
+                  parsed.evaluations.some((e: Evaluation) => e.id === r.evaluationId)
+                );
                 initial = parsed;
               } else {
                 initial = boot.data;
@@ -232,6 +243,11 @@ export function AppProvider({children}:{children:ReactNode}) {
           newResponse
         ]
       }));
+      // Persiste no servidor local também
+      await request<EvaluationResponse>('/api/evaluations/submit', {
+        method: 'POST',
+        body: JSON.stringify(newResponse)
+      }).catch(() => {});
       return newResponse;
     }
     const saved=await request<EvaluationResponse>('/api/evaluations/submit',{

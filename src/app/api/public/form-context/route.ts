@@ -3,16 +3,29 @@ import { isDemoMode, createClient } from '@/lib/server/supabase';
 import { OFFICIAL_LEADERS, OFFICIAL_STAFF, normalizeDepartment } from '@/lib/roster-data';
 import { PROVIDED_FORMS } from '@/lib/form-presets';
 import { cycleState } from '@/lib/analytics';
+import { createDemoData } from '@/lib/demo';
+import { mergeWithPersistedData } from '@/lib/server/local-storage';
 import type { Cycle, Employee, Evaluation } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    if (isDemoMode()) {
+      const demoData = await mergeWithPersistedData(createDemoData());
+      const activeCycle = demoData.cycles.find(c => cycleState(c) === 'Em andamento') || demoData.cycles[demoData.cycles.length - 1];
+      const evals = demoData.evaluations.filter(e => e.cycleId === activeCycle.id);
+      return NextResponse.json({
+        cycle: activeCycle,
+        employees: demoData.employees.filter(e => e.active),
+        evaluations: evals,
+      });
+    }
+
     // 1. Dados locais oficiais como fallback garantido
     const officialEmployees: Employee[] = [...OFFICIAL_LEADERS, ...OFFICIAL_STAFF];
     const defaultCycle: Cycle = {
-      id: '00000000-0000-4000-8000-000000000001',
+      id: '00000000-0000-4000-8000-000000000103',
       name: 'Novembro / 2026',
       startDate: '2026-11-01',
       endDate: '2026-11-30',
@@ -21,7 +34,7 @@ export async function GET() {
 
     const defaultEvaluations: Evaluation[] = [
       {
-        id: '00000000-0000-4000-8000-000000000010',
+        id: '00000000-0000-4000-8000-000000000210',
         cycleId: defaultCycle.id,
         name: 'Avaliação de líderes',
         kind: 'leadership',
@@ -33,7 +46,7 @@ export async function GET() {
         mapping: PROVIDED_FORMS[0].mapping,
       },
       {
-        id: '00000000-0000-4000-8000-000000000020',
+        id: '00000000-0000-4000-8000-000000000211',
         cycleId: defaultCycle.id,
         name: 'Avaliação e autoavaliação da equipe',
         kind: 'team',
@@ -45,14 +58,6 @@ export async function GET() {
         mapping: PROVIDED_FORMS[1].mapping,
       },
     ];
-
-    if (isDemoMode()) {
-      return NextResponse.json({
-        cycle: defaultCycle,
-        employees: officialEmployees.filter(e => e.active),
-        evaluations: defaultEvaluations,
-      });
-    }
 
     // 2. Tenta carregar do Supabase se disponível
     try {

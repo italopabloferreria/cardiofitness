@@ -1,5 +1,7 @@
 import { isDemoMode, createClient } from '@/lib/server/supabase';
 import { handle, json, parseBody, ApiError } from '@/lib/server/http';
+import { savePersistedResponse } from '@/lib/server/local-storage';
+import type { EvaluationResponse } from '@/lib/types';
 import { z } from 'zod';
 
 const submitSchema = z.object({
@@ -24,53 +26,55 @@ export async function POST(request: Request) {
   return handle(async () => {
     const input = await parseBody(request, submitSchema);
 
-    if (isDemoMode()) {
-      return json({
-        id: input.id || crypto.randomUUID(),
-        evaluationId: input.evaluationId,
-        googleResponseId: input.googleResponseId || `native-${Date.now()}`,
-        respondentId: input.respondentId,
-        subjectId: input.subjectId,
-        kind: input.kind,
-        submittedAt: input.submittedAt || new Date().toISOString(),
-        scores: input.scores,
-        textAnswers: input.textAnswers || []
-      }, 201);
-    }
-
-    const client = await createClient();
-    const row = {
+    const newResponse: EvaluationResponse = {
       id: input.id || crypto.randomUUID(),
-      evaluation_id: input.evaluationId,
-      google_response_id: input.googleResponseId || `native-${Date.now()}`,
-      respondent_id: input.respondentId,
-      subject_id: input.subjectId,
+      evaluationId: input.evaluationId,
+      googleResponseId: input.googleResponseId || `native-${Date.now()}`,
+      respondentId: input.respondentId,
+      subjectId: input.subjectId,
       kind: input.kind,
-      submitted_at: input.submittedAt || new Date().toISOString(),
+      submittedAt: input.submittedAt || new Date().toISOString(),
       scores: input.scores,
-      ...(input.textAnswers ? { text_answers: input.textAnswers } : {})
+      textAnswers: input.textAnswers || []
     };
 
-    const { data, error } = await client
-      .from('evaluation_responses')
-      .upsert(row, { onConflict: 'evaluation_id,respondent_id,subject_id' })
-      .select('*')
-      .single();
+    // Sempre persiste localmente para garantir integridade e visualização imediata
+    await savePersistedResponse(newResponse);
 
-    if (error) {
-      throw new ApiError(500, 'Não foi possível registrar a avaliação no banco.');
+    if (isDemoMode()) {
+      return json(newResponse, 201);
     }
 
-    return json({
-      id: data.id,
-      evaluationId: data.evaluation_id,
-      googleResponseId: data.google_response_id,
-      respondentId: data.respondent_id,
-      subjectId: data.subject_id,
-      kind: data.kind,
-      submittedAt: data.submitted_at,
-      scores: data.scores,
-      textAnswers: data.text_answers || []
-    }, 201);
+    try {
+      const client = await createClient();
+      const row = {
+        id: newResponse.id,
+        evaluation_id: newResponse.evaluationId,
+        google_response_id: newResponse.googleResponseId,
+        respondent_id: newResponse.respondentId,
+        subject_id: newResponse.subjectId,
+        kind: newResponse.kind,
+        submitted_at: newResponse.submittedAt,
+        scores: newResponse.scores,
+        ...(newResponse.textAnswers ? { text_answers: newResponse.textAnswers } : {})
+      };
+
+      const { data, error } = await client
+        .from('evaluation_responses')
+        .upsert(row, { onConflict: 'evaluation_id,respondent_id,subject_id' })
+        .select('*')
+        .single();
+
+      if (error) {
+        console.error('Erro ao registrar resposta no Supabase:', error);
+        // Mesmo se o Supabase falhar, a resposta foi salva no armazenamento local
+      } else if (data) {
+        newResponse.id = data.id;
+      }
+    } catch (err) {
+      console.warn('Supabase não conectado ou indisponível:', err);
+    }
+
+    return json(newResponse, 201);
   });
 }

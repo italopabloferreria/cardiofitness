@@ -9,3 +9,5 @@ test-results/
 credentials*.json
 tokens*.json
 .google-credentials*
+data/*.json
+

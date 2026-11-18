@@ -183,11 +183,12 @@ function LeadershipEvaluationContent() {
     setSubmitted(false);
     setErrorMessage('');
 
-    // Pré-seleciona a líder daquele setor
-    const matchedLeaderItem = FORMS_LEADERS.find(fl => fl.defaultDepartment === dept);
-    if (matchedLeaderItem) {
-      const leaderObj = activeLeaders.find(l => l.name.toLowerCase().includes(matchedLeaderItem.searchKey.toLowerCase()));
-      if (leaderObj) setSelectedLeaderId(leaderObj.id);
+    // Identifica e seleciona automaticamente a líder daquele setor
+    const sectorLeader = activeLeaders.find(l => normalizeDepartment(l.department) === dept);
+    if (sectorLeader) {
+      setSelectedLeaderId(sectorLeader.id);
+    } else {
+      setSelectedLeaderId('');
     }
   }
 
@@ -205,6 +206,9 @@ function LeadershipEvaluationContent() {
       } else if (person.isLeader) {
         const otherLeader = activeLeaders.find(l => l.id !== person.id);
         if (otherLeader) setSelectedLeaderId(otherLeader.id);
+      } else {
+        const sectorLeader = activeLeaders.find(l => normalizeDepartment(l.department) === selectedDepartment);
+        if (sectorLeader) setSelectedLeaderId(sectorLeader.id);
       }
     }
   }
@@ -304,7 +308,7 @@ function LeadershipEvaluationContent() {
                 AGRADECEMOS SUA PARTICIPAÇÃO!
               </h2>
               <p style={{ color: '#047857', fontSize: 15, lineHeight: 1.6, maxWidth: 500, margin: '0 auto 28px' }}>
-                Sua avaliação sobre <b>{targetLeader?.name}</b> foi registrada com sucesso no <b>{activeCycle.name}</b>.
+                Sua avaliação sobre <b>{targetLeader?.name.toUpperCase()}</b> foi registrada com sucesso no <b>{activeCycle.name}</b>.
               </p>
 
               <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -387,66 +391,72 @@ function LeadershipEvaluationContent() {
                       onChange={e => handleRespondentChange(e.target.value)}
                       required
                     >
-                      <option value="">-- Escolha seu nome na lista do setor {selectedDepartment} --</option>
+                      <option value="">-- ESCOLHA SEU NOME NA LISTA DO SETOR {selectedDepartment.toUpperCase()} --</option>
                       {departmentEmployees.map(emp => (
                         <option key={emp.id} value={emp.id}>
-                          {emp.name}
+                          {emp.name.toUpperCase()}
                         </option>
                       ))}
                     </select>
                   </div>
                 )}
 
-                {/* 3. QUAL É A LÍDER RESPONSÁVEL PELO SEU SETOR? */}
-                {respondent && (
+                {/* 3. LÍDER RESPONSÁVEL (PUXADO AUTOMATICAMENTE) */}
+                {selectedDepartment && targetLeader && (
                   <div style={{ marginTop: 20, paddingTop: 18, borderTop: '1px solid #e2e8f0' }}>
                     <label className={styles.fieldLabel} style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', marginBottom: 8, display: 'block' }}>
-                      3. Qual é a líder responsável pelo seu setor? *
+                      3. Líder responsável pelo seu setor *
                     </label>
-                    <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 12px' }}>
-                      A líder do seu setor foi pré-selecionada. Você pode confirmar ou selecionar outra se necessário.
-                    </p>
-                    <div style={{ display: 'grid', gap: 8 }}>
-                      {FORMS_LEADERS.map(fl => {
-                        const leaderObj = activeLeaders.find(l => l.name.toLowerCase().includes(fl.searchKey.toLowerCase()));
-                        const leaderId = leaderObj?.id || '';
-                        const isSelected = (selectedLeaderId || targetLeader?.id) === leaderId;
-
-                        return (
-                          <label
-                            key={fl.displayName}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 12,
-                              padding: '12px 16px',
-                              borderRadius: 10,
-                              border: `2px solid ${isSelected ? '#0573b9' : '#e2e8f0'}`,
-                              background: isSelected ? '#f0f7fd' : '#fff',
-                              cursor: 'pointer',
-                              fontWeight: isSelected ? 700 : 500,
-                              color: isSelected ? '#0573b9' : '#334155',
-                              transition: 'all 0.15s ease',
-                            }}
-                          >
-                            <input
-                              type="radio"
-                              name="leaderSelection"
-                              value={leaderId}
-                              checked={isSelected}
-                              onChange={() => setSelectedLeaderId(leaderId)}
-                              required
-                            />
-                            <span>{fl.displayName}</span>
-                            {isSelected && (
-                              <span style={{ marginLeft: 'auto', fontSize: 12, color: '#0573b9', fontWeight: 600 }}>
-                                Selecionada
-                              </span>
-                            )}
-                          </label>
-                        );
-                      })}
+                    
+                    <div style={{
+                      background: '#f0fdf4',
+                      border: '1.5px solid #86efac',
+                      borderRadius: 12,
+                      padding: '16px 20px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: 12,
+                      marginBottom: 12
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                        <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#dcfce7', color: '#16a34a', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+                          <CheckCircle2 size={22} />
+                        </div>
+                        <div>
+                          <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#15803d', fontWeight: 700, display: 'block' }}>
+                            Líder identificada automaticamente pelo setor {selectedDepartment}
+                          </span>
+                          <strong style={{ fontSize: 16, color: '#14532d', display: 'block', marginTop: 2 }}>
+                            {targetLeader.name.toUpperCase()}
+                          </strong>
+                        </div>
+                      </div>
+                      <span style={{ background: '#dcfce7', color: '#15803d', padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700 }}>
+                        ✓ Selecionada
+                      </span>
                     </div>
+
+                    <details style={{ fontSize: 13, color: '#64748b', marginTop: 8 }}>
+                      <summary style={{ cursor: 'pointer', color: '#0573b9', fontWeight: 600 }}>
+                        Trocar líder ou selecionar outra liderança
+                      </summary>
+                      <div style={{ marginTop: 10 }}>
+                        <select
+                          className={styles.input}
+                          style={{ fontSize: 14 }}
+                          value={targetLeader.id}
+                          onChange={e => setSelectedLeaderId(e.target.value)}
+                        >
+                          {activeLeaders.map(l => (
+                            <option key={l.id} value={l.id}>
+                              {l.name.toUpperCase()} — {l.department.toUpperCase()}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </details>
                   </div>
                 )}
               </div>
@@ -459,7 +469,7 @@ function LeadershipEvaluationContent() {
                       CRITÉRIOS DE AVALIAÇÃO
                     </div>
                     <h3 style={{ fontSize: 20, fontWeight: 800, margin: '4px 0 0' }}>
-                      AVALIAÇÃO DA LIDERANÇA — {targetLeader.name}
+                      AVALIAÇÃO DA LIDERANÇA — {targetLeader.name.toUpperCase()}
                     </h3>
                   </div>
 
