@@ -1,11 +1,9 @@
 'use client';
 
 import { Suspense, useMemo, useState } from 'react';
-import Link from 'next/link';
 import {
   CalendarDays,
   CheckCircle2,
-  ChevronRight,
   Clock,
   HeartPulse,
   LoaderCircle,
@@ -242,10 +240,7 @@ function TeamEvaluationContent() {
 
       {/* Conteúdo Principal */}
       <main className={styles.portalMain}>
-        <div className={styles.topLinks}>
-          <Link href="/avaliar" className={styles.textLink}>
-            ← Outros formulários
-          </Link>
+        <div className={styles.topLinks} style={{ justifyContent: 'flex-end' }}>
           <span className={styles.previewChip}>
             {activeCycle ? `Ciclo Ativo: ${activeCycle.name}` : 'Sem Ciclo Ativo'}
           </span>
@@ -287,18 +282,15 @@ function TeamEvaluationContent() {
               <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
                 <button
                   type="button"
-                  className={styles.secondaryButton}
+                  className={styles.primaryButton}
                   onClick={() => {
                     setSubmitted(false);
                     setScores({});
                     setObservation('');
                   }}
                 >
-                  Avaliar outro colega / autoavaliação
+                  Enviar outra avaliação
                 </button>
-                <Link href="/avaliacao-de-lideres" className={styles.primaryButton}>
-                  Ir para Avaliação de Líderes <ChevronRight size={16} />
-                </Link>
               </div>
             </div>
           ) : (
