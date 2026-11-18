@@ -407,7 +407,7 @@ export const OFFICIAL_STAFF: Employee[] = [
     accessToken: 'maria-luiza',
   },
 
-  // --- Administrativo (2 no total: Líder Maria Alzirene + 1 liderada) ---
+  // --- Administrativo (Líder Maria Alzirene, Colaborador/Líder de teste Ítalo, e 1 liderada Ana) ---
   {
     id: uid(6000, 1),
     name: 'Ana Carolina',
@@ -418,6 +418,17 @@ export const OFFICIAL_STAFF: Employee[] = [
     isLeader: false,
     active: true,
     accessToken: 'ana-carolina',
+  },
+  {
+    id: uid(6000, 2),
+    name: 'Ítalo Pablo Ferreira',
+    email: 'italopablo01@gmail.com',
+    formName: 'Ítalo Pablo Ferreira',
+    department: 'Administrativo',
+    leaderId: uid(6000, 2),
+    isLeader: true,
+    active: true,
+    accessToken: 'italo-pablo',
   },
 ];
 

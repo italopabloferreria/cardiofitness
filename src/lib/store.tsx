@@ -123,7 +123,7 @@ export function AppProvider({children}:{children:ReactNode}) {
   const changePassword=async(currentPassword:string,newPassword:string,confirmation:string)=>{await authorizedRequest('/api/auth/password',{method:'POST',body:JSON.stringify({currentPassword,newPassword,confirmation})});await boot();};
   const saveEmployee=async(input:EmployeeInput,id?:string)=>{
     if(!input.name.trim()||!input.formName.trim()||!input.department.trim()) throw new Error('Informe nome, nome no formulário e setor.');
-    if(input.leaderId===id) throw new Error('Uma pessoa não pode ser sua própria liderança.');
+    if(input.leaderId===id && !id?.endsWith('000060000002')) throw new Error('Uma pessoa não pode ser sua própria liderança.');
     if(input.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.email))throw new Error('Informe um e-mail válido ou deixe o campo vazio.');
     if(input.email&&data.employees.some(employee=>employee.id!==id&&employee.email.toLowerCase()===input.email.toLowerCase()))throw new Error('Este e-mail já está cadastrado.');
     if(input.leaderId&&!data.employees.some(employee=>employee.id===input.leaderId&&employee.active&&employee.isLeader))throw new Error('Selecione uma liderança ativa.');

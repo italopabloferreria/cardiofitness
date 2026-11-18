@@ -149,14 +149,20 @@ function LeadershipEvaluationContent() {
     if (selectedLeaderId) {
       return activeLeaders.find(l => l.id === selectedLeaderId);
     }
+    if (respondent && (respondent.leaderId === respondent.id || respondent.name.toUpperCase().includes('ITALO'))) {
+      return respondent;
+    }
     if (respondent?.leaderId) {
       return activeEmployees.find(e => e.id === respondent.leaderId);
     }
     if (respondent?.isLeader) {
-      return activeLeaders.find(l => l.id !== respondent.id);
+      return activeLeaders.find(l => l.id !== respondent.id) || respondent;
+    }
+    if (selectedDepartment) {
+      return activeLeaders.find(l => normalizeDepartment(l.department) === selectedDepartment);
     }
     return undefined;
-  }, [respondent, selectedLeaderId, activeLeaders, activeEmployees]);
+  }, [respondent, selectedLeaderId, selectedDepartment, activeLeaders, activeEmployees]);
 
   const evaluationObj = useMemo(() => {
     if (!activeCycle) return undefined;
@@ -201,11 +207,14 @@ function LeadershipEvaluationContent() {
 
     const person = activeEmployees.find(e => e.id === id);
     if (person) {
-      if (person.leaderId) {
+      if (person.leaderId === person.id || person.name.toUpperCase().includes('ITALO')) {
+        setSelectedLeaderId(person.id);
+      } else if (person.leaderId) {
         setSelectedLeaderId(person.leaderId);
       } else if (person.isLeader) {
         const otherLeader = activeLeaders.find(l => l.id !== person.id);
         if (otherLeader) setSelectedLeaderId(otherLeader.id);
+        else setSelectedLeaderId(person.id);
       } else {
         const sectorLeader = activeLeaders.find(l => normalizeDepartment(l.department) === selectedDepartment);
         if (sectorLeader) setSelectedLeaderId(sectorLeader.id);

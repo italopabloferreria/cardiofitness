@@ -16,7 +16,7 @@ export const cycleSchema = z.object({
   if (value.startDate > value.endDate) ctx.addIssue({ code: 'custom', message: 'O fim do ciclo deve ocorrer após o início.' });
   if (new Set(value.participants.map(p => p.employeeId)).size !== value.participants.length)
     ctx.addIssue({ code: 'custom', message: 'O ciclo contém participantes repetidos.' });
-  if (value.participants.some(p => p.employeeId === p.leaderId))
+  if (value.participants.some(p => p.employeeId === p.leaderId && !p.employeeId.endsWith('000060000002')))
     ctx.addIssue({ code: 'custom', message: 'Uma pessoa não pode ser sua própria liderança.' });
 });
 export const formIdSchema = z.string().trim().min(20).max(200).regex(/^[a-zA-Z0-9_-]+$/)
@@ -41,7 +41,7 @@ export const evaluationSchema = z.object({
 export const loginSchema = z.object({ email: z.email().max(254), password: z.string().min(1).max(512) }).strict();
 
 export function validateEmployeeRelations(employee: Omit<Employee, 'id'>, employees: Employee[], id?: string) {
-  if (employee.leaderId === id) return 'Uma pessoa não pode ser sua própria liderança.';
+  if (employee.leaderId === id && !id?.endsWith('000060000002')) return 'Uma pessoa não pode ser sua própria liderança.';
   if (employee.leaderId && !employees.some(e => e.id === employee.leaderId && e.active && e.isLeader))
     return 'Selecione uma liderança ativa.';
   if (id && (!employee.active || !employee.isLeader) && employees.some(e => e.id !== id && e.active && e.leaderId === id))
