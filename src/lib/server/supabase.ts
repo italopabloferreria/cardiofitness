@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { ApiError } from './http';
 
 export const isDemoMode = () => process.env.APP_DEMO_MODE === 'true';
+export const isSupabaseConfigured = () => Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
 export function getSupabaseConfig() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;

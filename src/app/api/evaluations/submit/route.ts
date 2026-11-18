@@ -1,4 +1,4 @@
-import { isDemoMode, createClient } from '@/lib/server/supabase';
+import { isDemoMode, isSupabaseConfigured, createClient } from '@/lib/server/supabase';
 import { handle, json, parseBody, ApiError } from '@/lib/server/http';
 import { savePersistedResponse } from '@/lib/server/local-storage';
 import type { EvaluationResponse } from '@/lib/types';
@@ -41,38 +41,36 @@ export async function POST(request: Request) {
     // Sempre persiste localmente para garantir integridade e visualização imediata
     await savePersistedResponse(newResponse);
 
-    if (isDemoMode()) {
-      return json(newResponse, 201);
-    }
+    if (isSupabaseConfigured()) {
+      try {
+        const client = await createClient();
+        const row = {
+          id: newResponse.id,
+          evaluation_id: newResponse.evaluationId,
+          google_response_id: newResponse.googleResponseId,
+          respondent_id: newResponse.respondentId,
+          subject_id: newResponse.subjectId,
+          kind: newResponse.kind,
+          submitted_at: newResponse.submittedAt,
+          scores: newResponse.scores,
+          ...(newResponse.textAnswers ? { text_answers: newResponse.textAnswers } : {})
+        };
 
-    try {
-      const client = await createClient();
-      const row = {
-        id: newResponse.id,
-        evaluation_id: newResponse.evaluationId,
-        google_response_id: newResponse.googleResponseId,
-        respondent_id: newResponse.respondentId,
-        subject_id: newResponse.subjectId,
-        kind: newResponse.kind,
-        submitted_at: newResponse.submittedAt,
-        scores: newResponse.scores,
-        ...(newResponse.textAnswers ? { text_answers: newResponse.textAnswers } : {})
-      };
+        const { data, error } = await client
+          .from('evaluation_responses')
+          .upsert(row, { onConflict: 'evaluation_id,respondent_id,subject_id' })
+          .select('*')
+          .single();
 
-      const { data, error } = await client
-        .from('evaluation_responses')
-        .upsert(row, { onConflict: 'evaluation_id,respondent_id,subject_id' })
-        .select('*')
-        .single();
-
-      if (error) {
-        console.error('Erro ao registrar resposta no Supabase:', error);
-        // Mesmo se o Supabase falhar, a resposta foi salva no armazenamento local
-      } else if (data) {
-        newResponse.id = data.id;
+        if (error) {
+          console.error('Erro ao registrar resposta no Supabase:', error);
+          // Mesmo se o Supabase falhar, a resposta foi salva no armazenamento local
+        } else if (data) {
+          newResponse.id = data.id;
+        }
+      } catch (err) {
+        console.warn('Supabase não conectado ou indisponível:', err);
       }
-    } catch (err) {
-      console.warn('Supabase não conectado ou indisponível:', err);
     }
 
     return json(newResponse, 201);

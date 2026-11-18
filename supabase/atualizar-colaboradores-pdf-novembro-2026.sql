@@ -16,14 +16,15 @@ begin;
 alter table public.employees add column if not exists access_token text;
 create unique index if not exists idx_employees_access_token on public.employees(access_token) where access_token is not null;
 
--- 2. Inserir ou atualizar as 5 Lideranças Oficiais
+-- 2. Inserir ou atualizar as Lideranças Oficiais
 insert into public.employees (id, name, email, form_name, department, leader_id, is_leader, active, access_token)
 values
   ('00000000-0000-4000-8000-100000000001', 'Lídia de Araujo Viana', 'lidia.viana@cardiofitness.com.br', 'Lídia de Araujo Viana', 'Faturamento', null, true, true, 'lidia-viana'),
   ('00000000-0000-4000-8000-100000000002', 'Cleuma Rodrigues Sol', 'cleuma.sol@cardiofitness.com.br', 'Cleuma Rodrigues Sol', 'Técnicas e Corredor / Copeiras', null, true, true, 'cleuma-sol'),
   ('00000000-0000-4000-8000-100000000003', 'Gabriel Hansel Pimentel da Silva', 'gabriel.hansel@cardiofitness.com.br', 'Gabriel Hansel Pimentel da Silva', 'Central e Resultados', null, true, true, 'gabriel-hansel'),
   ('00000000-0000-4000-8000-100000000004', 'Welisson Alves de Oliveira Franca', 'welisson.franca@cardiofitness.com.br', 'Welisson Alves de Oliveira Franca', 'Recepção e Triagem', null, true, true, 'welisson-franca'),
-  ('00000000-0000-4000-8000-100000000005', 'Maria Alzirene Rodrigues Monteiro', 'maria.alzirene@cardiofitness.com.br', 'Maria Alzirene Rodrigues Monteiro', 'Administrativo', null, true, true, 'maria-alzirene')
+  ('00000000-0000-4000-8000-100000000005', 'Maria Alzirene Rodrigues Monteiro', 'maria.alzirene@cardiofitness.com.br', 'Maria Alzirene Rodrigues Monteiro', 'Administrativo', null, true, true, 'maria-alzirene'),
+  ('00000000-0000-4000-8000-100000000006', 'Ítalo Pablo Ferreira', 'italopablo01@gmail.com', 'Ítalo Pablo Ferreira', 'Suporte', '00000000-0000-4000-8000-100000000006', true, true, 'italo-pablo')
 on conflict (id) do update set
   name = excluded.name,
   email = excluded.email,
