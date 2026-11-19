@@ -173,6 +173,23 @@ export function EvolutionDashboard({ data, activeCycleId }: EvolutionDashboardPr
     };
   }, [data.responses]);
 
+  // Resumo de engajamento do ciclo ativo
+  const cycleSummary = useMemo(() => {
+    if (!targetCycleId) return { responsesCount: 0, average: null, evaluatedDepts: 0, totalDepts: departmentMetrics.length };
+    const cycleEvals = data.evaluations.filter(e => e.cycleId === targetCycleId);
+    const evalIds = new Set(cycleEvals.map(e => e.id));
+    const cycleResponses = data.responses.filter(r => evalIds.has(r.evaluationId));
+    const scores = cycleResponses.map(responseAverage).filter((v): v is number => v !== null && !isNaN(v));
+    const avg = scores.length ? Number((scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(2)) : null;
+    const evaluatedDepts = departmentMetrics.filter(d => d.average !== null).length;
+    return {
+      responsesCount: cycleResponses.length,
+      average: avg,
+      evaluatedDepts,
+      totalDepts: departmentMetrics.length,
+    };
+  }, [targetCycleId, data.evaluations, data.responses, departmentMetrics]);
+
   // Dimensões do gráfico SVG de evolução
   const svgWidth = 620;
   const svgHeight = 220;
@@ -443,112 +460,36 @@ export function EvolutionDashboard({ data, activeCycleId }: EvolutionDashboardPr
         </div>
       </div>
 
-      {/* BLOCO 3: Grid de Desempenho por Setor & Distribuição de Notas */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
+      {/* BLOCO 3: Distribuição de Notas & Cobertura do Ciclo (2 Colunas Perfeitamente Simétricas) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24, marginBottom: 24 }}>
 
-        {/* COLUNA 1: Gráfico Horizontal por Setor da Clínica */}
+        {/* COLUNA 1: Distribuição de Notas da Clínica (1 a 4) */}
         <div style={{
           background: '#ffffff',
           border: '1px solid #e2e8f0',
           borderRadius: 14,
           padding: '24px 26px',
           boxShadow: '0 4px 14px rgba(15,23,42,0.03)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#0284c7', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                <Layers size={16} /> Clima & Desempenho
-              </div>
-              <h3 style={{ fontSize: 18, fontWeight: 800, color: '#0f172a', margin: '4px 0 0' }}>
-                Média por Setor da Clínica
-              </h3>
-            </div>
-            <span style={{ fontSize: 11, color: '#64748b', background: '#f1f5f9', padding: '4px 10px', borderRadius: 12, fontWeight: 600 }}>
-              Escala 1.0 a 4.0
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {departmentMetrics.map((dept, index) => {
-              const theme = getDeptTheme(dept.department, index);
-              const val = dept.average ?? 0;
-              const pct = val ? Math.min(100, Math.max(0, ((val - 1) / 3) * 100)) : 0;
-
-              return (
-                <div
-                  key={dept.department}
-                  style={{
-                    background: theme.bg,
-                    border: `1px solid ${theme.bar}25`,
-                    borderRadius: 12,
-                    padding: '14px 16px',
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
-                    <div>
-                      <b style={{ fontSize: 13, color: '#0f172a', letterSpacing: '0.02em' }}>
-                        {dept.department.toLocaleUpperCase('pt-BR')}
-                      </b>
-                      <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
-                        {dept.headcount} {dept.headcount === 1 ? 'colaborador' : 'colaboradores'} · {dept.responsesCount} avaliações
-                      </div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <span style={{ fontSize: 16, fontWeight: 850, color: theme.text }}>
-                        {dept.average !== null ? dept.average.toFixed(2) : '—'}
-                      </span>
-                      <small style={{ fontSize: 11, color: '#64748b', marginLeft: 2 }}>/ 4.0</small>
-                    </div>
-                  </div>
-
-                  {/* Barra de Progresso com Cor Temática do Setor */}
-                  <div style={{ height: 10, width: '100%', background: '#ffffff', borderRadius: 8, overflow: 'hidden', border: `1px solid ${theme.bar}30` }}>
-                    <div
-                      style={{
-                        height: '100%',
-                        width: `${pct}%`,
-                        background: theme.bar,
-                        borderRadius: 8,
-                        transition: 'width 0.4s ease',
-                      }}
-                    />
-                  </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#0284c7', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  <Award size={16} /> Distribuição Geral
                 </div>
-              );
-            })}
-
-            {!departmentMetrics.length && (
-              <p style={{ color: '#94a3b8', fontSize: 13, fontStyle: 'italic', textAlign: 'center', margin: '20px 0' }}>
-                Aguardando avaliações computadas para este ciclo.
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* COLUNA 2: Distribuição de Notas da Clínica (1 a 4) */}
-        <div style={{
-          background: '#ffffff',
-          border: '1px solid #e2e8f0',
-          borderRadius: 14,
-          padding: '24px 26px',
-          boxShadow: '0 4px 14px rgba(15,23,42,0.03)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#0284c7', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                <Award size={16} /> Distribuição Geral
+                <h3 style={{ fontSize: 18, fontWeight: 800, color: '#0f172a', margin: '4px 0 0' }}>
+                  Proporção das Notas
+                </h3>
               </div>
-              <h3 style={{ fontSize: 18, fontWeight: 800, color: '#0f172a', margin: '4px 0 0' }}>
-                Proporção das Notas
-              </h3>
+              <span style={{ fontSize: 11, color: '#64748b', background: '#f1f5f9', padding: '4px 10px', borderRadius: 12, fontWeight: 600 }}>
+                {scoreDistribution.total} respostas
+              </span>
             </div>
-            <span style={{ fontSize: 11, color: '#64748b', background: '#f1f5f9', padding: '4px 10px', borderRadius: 12, fontWeight: 600 }}>
-              {scoreDistribution.total} respostas
-            </span>
-          </div>
 
-          {/* Barra Segmentada 100% Contínua */}
-          {scoreDistribution.total > 0 && (
+            {/* Barra Segmentada 100% Contínua */}
             <div style={{ marginBottom: 18 }}>
               <div style={{ height: 14, width: '100%', borderRadius: 8, overflow: 'hidden', display: 'flex', background: '#e2e8f0' }}>
                 {scoreDistribution.percentages[4] > 0 && (
@@ -565,51 +506,275 @@ export function EvolutionDashboard({ data, activeCycleId }: EvolutionDashboardPr
                 )}
               </div>
             </div>
-          )}
 
-          {/* Cards Coloridos com as 4 Faixas */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
-            {[
-              { val: 4, label: 'Supera', color: '#10b981', bg: '#ecfdf5', border: '#a7f3d0' },
-              { val: 3, label: 'Atende', color: '#0284c7', bg: '#f0f9ff', border: '#bae6fd' },
-              { val: 2, label: 'Em desenvolvimento', color: '#f59e0b', bg: '#fffbeb', border: '#fde68a' },
-              { val: 1, label: 'Precisa melhorar', color: '#ef4444', bg: '#fef2f2', border: '#fecaca' },
-            ].map(col => {
-              const count = scoreDistribution.counts[col.val as 1 | 2 | 3 | 4];
-              const pct = scoreDistribution.percentages[col.val as 1 | 2 | 3 | 4];
+            {/* Cards Coloridos com as 4 Faixas */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
+              {[
+                { val: 4, label: 'Supera', color: '#10b981', bg: '#ecfdf5', border: '#a7f3d0' },
+                { val: 3, label: 'Atende', color: '#0284c7', bg: '#f0f9ff', border: '#bae6fd' },
+                { val: 2, label: 'Em desenvolvimento', color: '#f59e0b', bg: '#fffbeb', border: '#fde68a' },
+                { val: 1, label: 'Precisa melhorar', color: '#ef4444', bg: '#fef2f2', border: '#fecaca' },
+              ].map(col => {
+                const count = scoreDistribution.counts[col.val as 1 | 2 | 3 | 4];
+                const pct = scoreDistribution.percentages[col.val as 1 | 2 | 3 | 4];
 
-              return (
-                <div
-                  key={col.val}
-                  style={{
-                    background: col.bg,
-                    border: `1px solid ${col.border}`,
-                    borderRadius: 12,
-                    padding: '16px 14px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 4,
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: 13, fontWeight: 800, color: col.color }}>Nota {col.val}</span>
-                    <b style={{ fontSize: 18, color: '#0f172a', fontWeight: 850 }}>{pct}%</b>
+                return (
+                  <div
+                    key={col.val}
+                    style={{
+                      background: col.bg,
+                      border: `1px solid ${col.border}`,
+                      borderRadius: 12,
+                      padding: '16px 14px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 4,
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: col.color }}>Nota {col.val}</span>
+                      <b style={{ fontSize: 18, color: '#0f172a', fontWeight: 850 }}>{pct}%</b>
+                    </div>
+                    <strong style={{ fontSize: 12, color: '#1e293b' }}>{col.label}</strong>
+                    <small style={{ fontSize: 11, color: '#64748b' }}>
+                      {count} {count === 1 ? 'ocorrência' : 'ocorrências'}
+                    </small>
                   </div>
-                  <strong style={{ fontSize: 12, color: '#1e293b' }}>{col.label}</strong>
-                  <small style={{ fontSize: 11, color: '#64748b' }}>
-                    {count} {count === 1 ? 'ocorrência' : 'ocorrências'}
-                  </small>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
 
           <div style={{ marginTop: 20, padding: '12px 14px', background: '#f8fafc', borderRadius: 10, fontSize: 12, color: '#64748b', display: 'flex', alignItems: 'center', gap: 8, border: '1px solid #edf2f7' }}>
             <CheckCircle2 size={16} color="#0284c7" />
-            <span>Métricas oficiais extraídas das avaliações do portal Cardiofitness.</span>
+            <span>Distribuição acumulada de todas as respostas registradas.</span>
           </div>
         </div>
 
+        {/* COLUNA 2: Resumo e Cobertura do Ciclo Atual */}
+        <div style={{
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+          borderRadius: 14,
+          padding: '24px 26px',
+          boxShadow: '0 4px 14px rgba(15,23,42,0.03)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#0284c7', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  <TrendingUp size={16} /> Engajamento do Ciclo
+                </div>
+                <h3 style={{ fontSize: 18, fontWeight: 800, color: '#0f172a', margin: '4px 0 0' }}>
+                  Cobertura & Participação
+                </h3>
+              </div>
+              <span style={{ fontSize: 11, color: '#0284c7', background: '#e0f2fe', padding: '4px 10px', borderRadius: 12, fontWeight: 750 }}>
+                {cycleComparison?.current?.name || 'Ciclo Ativo'}
+              </span>
+            </div>
+
+            {/* Barra de Progresso de Cobertura de Setores */}
+            <div style={{ marginBottom: 18 }}>
+              {(() => {
+                const sectorCoveragePct = cycleSummary.totalDepts > 0
+                  ? Math.round((cycleSummary.evaluatedDepts / cycleSummary.totalDepts) * 100)
+                  : 0;
+                return (
+                  <div style={{ height: 14, width: '100%', borderRadius: 8, overflow: 'hidden', display: 'flex', background: '#e2e8f0' }}>
+                    <div
+                      style={{
+                        width: `${Math.max(5, sectorCoveragePct)}%`,
+                        background: 'linear-gradient(90deg, #0284c7, #10b981)',
+                        borderRadius: 8,
+                        transition: 'width 0.4s ease',
+                      }}
+                      title={`Cobertura dos setores: ${sectorCoveragePct}%`}
+                    />
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* 4 Cards de Métricas do Ciclo (Simétricos aos 4 Cards da Esquerda) */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: '16px 14px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: '#0284c7' }}>Média Geral</span>
+                  <b style={{ fontSize: 18, color: '#0f172a', fontWeight: 850 }}>
+                    {cycleSummary.average !== null ? cycleSummary.average.toFixed(2) : '—'}
+                  </b>
+                </div>
+                <strong style={{ fontSize: 12, color: '#1e293b' }}>Escala 1 a 4</strong>
+                <small style={{ fontSize: 11, color: '#64748b' }}>Notas do ciclo</small>
+              </div>
+
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: '16px 14px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: '#10b981' }}>Respostas</span>
+                  <b style={{ fontSize: 18, color: '#0f172a', fontWeight: 850 }}>
+                    {cycleSummary.responsesCount}
+                  </b>
+                </div>
+                <strong style={{ fontSize: 12, color: '#1e293b' }}>Submissões</strong>
+                <small style={{ fontSize: 11, color: '#64748b' }}>Entradas computadas</small>
+              </div>
+
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: '16px 14px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: '#6366f1' }}>Setores</span>
+                  <b style={{ fontSize: 18, color: '#0f172a', fontWeight: 850 }}>
+                    {cycleSummary.evaluatedDepts}/{cycleSummary.totalDepts}
+                  </b>
+                </div>
+                <strong style={{ fontSize: 12, color: '#1e293b' }}>Cobertura</strong>
+                <small style={{ fontSize: 11, color: '#64748b' }}>Setores com notas</small>
+              </div>
+
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: '16px 14px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: '#f59e0b' }}>Equipe Ativa</span>
+                  <b style={{ fontSize: 18, color: '#0f172a', fontWeight: 850 }}>
+                    {data.employees.filter(e => e.active).length}
+                  </b>
+                </div>
+                <strong style={{ fontSize: 12, color: '#1e293b' }}>Colaboradores</strong>
+                <small style={{ fontSize: 11, color: '#64748b' }}>Cadastrados no RH</small>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginTop: 20, padding: '12px 14px', background: '#f8fafc', borderRadius: 10, fontSize: 12, color: '#64748b', display: 'flex', alignItems: 'center', gap: 8, border: '1px solid #edf2f7' }}>
+            <CheckCircle2 size={16} color="#10b981" />
+            <span>Métricas oficiais em tempo real do portal Cardiofitness.</span>
+          </div>
+        </div>
+
+      </div>
+
+      {/* BLOCO 4: Média por Setor da Clínica (Grid Multi-colunas de Largura Total) */}
+      <div style={{
+        background: '#ffffff',
+        border: '1px solid #e2e8f0',
+        borderRadius: 14,
+        padding: '24px 26px',
+        boxShadow: '0 4px 14px rgba(15,23,42,0.03)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#0284c7', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <Layers size={16} /> Desempenho por Departamento
+            </div>
+            <h3 style={{ fontSize: 20, fontWeight: 800, color: '#0f172a', margin: '4px 0 2px' }}>
+              Média por Setor da Clínica
+            </h3>
+            <p style={{ fontSize: 13, color: '#64748b', margin: 0 }}>
+              Visão completa de todos os {departmentMetrics.length} setores cadastrados na Cardiofitness.
+            </p>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 12, color: '#64748b', background: '#f1f5f9', padding: '6px 12px', borderRadius: 12, fontWeight: 600 }}>
+              Escala 1.0 a 4.0
+            </span>
+          </div>
+        </div>
+
+        {/* Grid Responsivo de Cards de Setores */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+          gap: 16,
+        }}>
+          {departmentMetrics.map((dept, index) => {
+            const theme = getDeptTheme(dept.department, index);
+            const val = dept.average ?? 0;
+            const pct = val ? Math.min(100, Math.max(0, ((val - 1) / 3) * 100)) : 0;
+            const hasScore = dept.average !== null;
+
+            return (
+              <div
+                key={dept.department}
+                style={{
+                  background: theme.bg,
+                  border: `1px solid ${theme.bar}30`,
+                  borderRadius: 12,
+                  padding: '16px 18px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  gap: 12,
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+                  transition: 'transform 0.15s ease',
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 8 }}>
+                    <b style={{ fontSize: 13, color: '#0f172a', letterSpacing: '0.01em', lineHeight: 1.35 }}>
+                      {dept.department.toLocaleUpperCase('pt-BR')}
+                    </b>
+                    {hasScore ? (
+                      <span style={{
+                        background: '#ffffff',
+                        border: `1px solid ${theme.bar}40`,
+                        borderRadius: 8,
+                        padding: '2px 8px',
+                        fontWeight: 850,
+                        fontSize: 14,
+                        color: theme.text,
+                        whiteSpace: 'nowrap',
+                      }}>
+                        {dept.average!.toFixed(2)} <small style={{ fontSize: 10, color: '#64748b' }}>/ 4.0</small>
+                      </span>
+                    ) : (
+                      <span style={{
+                        background: '#f1f5f9',
+                        borderRadius: 8,
+                        padding: '2px 8px',
+                        fontWeight: 600,
+                        fontSize: 11,
+                        color: '#94a3b8',
+                        whiteSpace: 'nowrap',
+                      }}>
+                        Em coleta
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Barra de Progresso */}
+                  {hasScore ? (
+                    <div style={{ height: 8, width: '100%', background: '#ffffff', borderRadius: 6, overflow: 'hidden', border: `1px solid ${theme.bar}25`, marginTop: 6 }}>
+                      <div
+                        style={{
+                          height: '100%',
+                          width: `${pct}%`,
+                          background: theme.bar,
+                          borderRadius: 6,
+                          transition: 'width 0.4s ease',
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div style={{ height: 8, width: '100%', background: '#ffffff50', borderRadius: 6, overflow: 'hidden', border: '1px dashed #cbd5e1', marginTop: 6 }} />
+                  )}
+                </div>
+
+                <div style={{ fontSize: 11, color: '#64748b', display: 'flex', justifyContent: 'space-between', borderTop: `1px solid ${theme.bar}20`, paddingTop: 8 }}>
+                  <span>{dept.headcount} {dept.headcount === 1 ? 'colaborador' : 'colaboradores'}</span>
+                  <b>{dept.responsesCount} {dept.responsesCount === 1 ? 'avaliação' : 'avaliações'}</b>
+                </div>
+              </div>
+            );
+          })}
+
+          {!departmentMetrics.length && (
+            <p style={{ color: '#94a3b8', fontSize: 13, fontStyle: 'italic', textAlign: 'center', margin: '20px 0', gridColumn: '1 / -1' }}>
+              Nenhum departamento cadastrado neste ciclo.
+            </p>
+          )}
+        </div>
       </div>
 
     </div>
