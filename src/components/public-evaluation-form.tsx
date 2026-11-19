@@ -11,7 +11,11 @@ import styles from './native-prototype.module.css';
 
 const SCALE_LABELS = ['Precisa melhorar', 'Em desenvolvimento', 'Atende', 'Supera'];
 
-export function PublicEvaluationForm() {
+export interface PublicEvaluationFormProps {
+  forcedKind?: 'leadership' | 'team';
+}
+
+export function PublicEvaluationForm({ forcedKind }: PublicEvaluationFormProps = {}) {
   const { cycle, employees, evaluations, loading, error, submitResponse } = usePublicForm();
   const [evaluationId, setEvaluationId] = useState('');
   const [respondentId, setRespondentId] = useState('');
@@ -23,9 +27,16 @@ export function PublicEvaluationForm() {
   const [submitError, setSubmitError] = useState('');
 
   const activeCycle = cycle && cycleState(cycle) === 'Em andamento' ? cycle : null;
-  const currentEvaluations = useMemo(() => activeCycle
-    ? evaluations.filter(item => item.cycleId === activeCycle.id && item.sourceType === 'native')
-    : [], [activeCycle, evaluations]);
+  const currentEvaluations = useMemo(() => {
+    if (!activeCycle) return [];
+    const evals = evaluations.filter(item => item.cycleId === activeCycle.id && item.sourceType === 'native');
+    if (forcedKind) {
+      const match = evals.filter(item => item.kind === forcedKind);
+      return match.length > 0 ? match : evals;
+    }
+    return evals;
+  }, [activeCycle, evaluations, forcedKind]);
+
   const evaluation = currentEvaluations.find(item => item.id === evaluationId) ?? currentEvaluations[0];
   const participants = useMemo(() => {
     if (!activeCycle) return [];
@@ -103,8 +114,8 @@ export function PublicEvaluationForm() {
       <div className={styles.brand}><span className={styles.brandIcon}><HeartPulse size={24}/></span><span>Cardiofitness <small>Gestão de Pessoas</small></span></div>
       <div className={styles.asideCenter}>
         <div className={styles.asideEyebrow}>QUESTIONÁRIO DE AVALIAÇÃO</div>
-        <h1>Avaliação de Desempenho</h1>
-        <p>Responda às perguntas do ciclo aberto. O painel de acompanhamento é exclusivo do RH.</p>
+        <h1>{forcedKind === 'leadership' ? 'Avaliação de Líderes' : forcedKind === 'team' ? 'Avaliação da Equipe' : 'Avaliação de Desempenho'}</h1>
+        <p>{forcedKind === 'leadership' ? 'Responda à avaliação das lideranças do ciclo. O painel de acompanhamento é exclusivo do RH.' : forcedKind === 'team' ? 'Responda à sua autoavaliação e à avaliação dos colegas de equipe. O painel é exclusivo do RH.' : 'Responda às perguntas do ciclo aberto. O painel de acompanhamento é exclusivo do RH.'}</p>
         <div className={styles.asidePill}><CheckCircle2 size={16}/><span>Escala de 1 a 4</span></div>
       </div>
       <div className={styles.asideFooter}>Cardiofitness · Cardiologia e Medicina Preventiva</div>
@@ -118,24 +129,26 @@ export function PublicEvaluationForm() {
           : submitted ? <div className={styles.successState} role="status"><CheckCircle2 size={44}/><h2>Avaliação registrada</h2><p>Obrigado por responder. Você pode fechar esta página ou preencher outra avaliação disponível.</p><button type="button" className={styles.primaryButton} onClick={resetForm}>Responder outra avaliação</button></div>
           : <>
             <div className={styles.cycleBanner}><b><CalendarDays size={18}/> {activeCycle.name}</b><span>Disponível até {formatDate(activeCycle.endDate)}</span></div>
-            <h2 className={styles.formTitle}>Questionário do ciclo</h2>
-            <p className={styles.subtle}>Selecione a avaliação, informe quem responde e quem está sendo avaliado, e marque uma nota por pergunta.</p>
+            <h2 className={styles.formTitle}>{evaluation?.name || 'Questionário do ciclo'}</h2>
+            <p className={styles.subtle}>Informe quem responde e quem está sendo avaliado, e marque uma nota por pergunta.</p>
             <form onSubmit={submit} className={styles.form}>
-              <label className={styles.fieldLabel}>Avaliação
-                <select className={styles.input} value={evaluation?.id || ''} onChange={event => { setEvaluationId(event.target.value); resetForm(); }} required>
-                  {currentEvaluations.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
-                </select>
-              </label>
+              {!forcedKind && currentEvaluations.length > 1 && (
+                <label className={styles.fieldLabel}>Avaliação
+                  <select className={styles.input} value={evaluation?.id || ''} onChange={event => { setEvaluationId(event.target.value); resetForm(); }} required>
+                    {currentEvaluations.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
+                  </select>
+                </label>
+              )}
               <label className={styles.fieldLabel}>Quem está respondendo?
                 <select className={styles.input} value={respondentId} onChange={event => { setRespondentId(event.target.value); setSubjectId(''); setScores({}); setObservation(''); setSubmitError(''); }} required>
-                  <option value="">Selecione seu nome</option>
-                  {respondentOptions.map(item => <option key={item.id} value={item.id}>{item.name} · {item.department}</option>)}
+                  <option value="">SELECIONE SEU NOME</option>
+                  {respondentOptions.map(item => <option key={item.id} value={item.id}>{item.name.toLocaleUpperCase('pt-BR')} · {item.department.toLocaleUpperCase('pt-BR')}</option>)}
                 </select>
               </label>
               <label className={styles.fieldLabel}>Quem está sendo avaliado?
                 <select className={styles.input} value={subjectId} onChange={event => { setSubjectId(event.target.value); setScores({}); setSubmitError(''); }} required disabled={!respondent}>
-                  <option value="">Selecione uma pessoa</option>
-                  {subjectOptions.map(item => <option key={item.id} value={item.id}>{item.name} · {item.department}{item.id === respondentId ? ' (autoavaliação)' : ''}</option>)}
+                  <option value="">SELECIONE UMA PESSOA</option>
+                  {subjectOptions.map(item => <option key={item.id} value={item.id}>{item.name.toLocaleUpperCase('pt-BR')} · {item.department.toLocaleUpperCase('pt-BR')}{item.id === respondentId ? ' (AUTOAVALIAÇÃO)' : ''}</option>)}
                 </select>
               </label>
 

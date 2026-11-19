@@ -58,11 +58,12 @@ export async function getAppData(provided?: SupabaseClient): Promise<AppData> {
     const key = ((r.name as string) || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
     if (!seen.has(key)) {
       seen.add(key);
-      if (key.includes('italo')) {
-        uniqueEmps.push({ ...r, name: 'Ítalo Pablo Ferreira', form_name: 'Ítalo Pablo Ferreira', department: 'Suporte', is_leader: true });
-      } else {
-        uniqueEmps.push(r);
-      }
+      const isItalo = key.includes('italo');
+      const rawName = (r.name as string) || '';
+      const name = (isItalo ? 'ÍTALO PABLO FERREIRA' : rawName).toLocaleUpperCase('pt-BR');
+      const formName = (isItalo ? 'ÍTALO PABLO FERREIRA' : (((r.form_name as string) || rawName))).toLocaleUpperCase('pt-BR');
+      const department = (isItalo ? 'SUPORTE' : ((r.department as string) || '')).toLocaleUpperCase('pt-BR');
+      uniqueEmps.push({ ...r, name, form_name: formName, department, is_leader: isItalo ? true : !!r.is_leader });
     }
   }
 

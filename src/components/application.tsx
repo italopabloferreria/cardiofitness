@@ -593,7 +593,7 @@ function WhatsAppModal({cycle,leadUrl,teamUrl,onClose}:{cycle?:Pick<Cycle,'name'
   }
 
   return (
-    <Modal wide title="3 Mensagens Prontas para WhatsApp" subtitle="Os modelos incluem os links do Google Forms configurados para este ciclo." onClose={onClose}>
+    <Modal wide title="3 Mensagens Prontas para WhatsApp" subtitle="Os modelos incluem os links oficiais do portal de avaliação para este ciclo." onClose={onClose}>
       <div className="modal-body" style={{display:'flex',flexDirection:'column',gap:16}}>
         {messages.map((m, idx) => (
           <div key={idx} style={{background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:10,padding:16}}>
@@ -1038,14 +1038,15 @@ function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,on
 /** The primary RH workflow: share the evaluation links for the cycle. */
 function CycleLinks({forms,cycle,onOpenWhatsAppModal}:{forms:Evaluation[];cycle:Pick<Cycle,'startDate'|'endDate'> & {id?:string;name?:string};onOpenWhatsAppModal?:()=>void}) {
   const [copied,setCopied]=useState(''),[error,setError]=useState('');
-  const leadUrl = forms.find(form => form.kind === 'leadership')?.googleFormUrl || '';
-  const teamUrl = forms.find(form => form.kind === 'team')?.googleFormUrl || '';
+  const origin = typeof window !== 'undefined' && window.location?.origin ? window.location.origin : 'https://cardiofitness-smoky.vercel.app';
+  const leadUrl = `${origin}/avaliacao-de-lideres`;
+  const teamUrl = `${origin}/avaliacao-da-equipe`;
 
-  const waLeadMsg = leadUrl ? `Olá! 👋\n\nEstá aberto o ciclo de avaliação *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse o Google Forms abaixo para preencher a *Avaliação de Líderes*:\n${leadUrl}\n\nPeríodo aberto até ${formatDate(cycle.endDate)}.\nCardiofitness — Gestão de Pessoas` : '';
-  const waTeamMsg = teamUrl ? `Olá! 👋\n\nEstá aberto o ciclo de avaliação *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse o Google Forms abaixo para preencher a *Avaliação e Autoavaliação da Equipe*:\n${teamUrl}\n\nPeríodo aberto até ${formatDate(cycle.endDate)}.\nCardiofitness — Gestão de Pessoas` : '';
+  const waLeadMsg = `Olá! 👋\n\nEstá aberto o ciclo de avaliação *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse o link abaixo para preencher a *Avaliação de Líderes* (basta selecionar seu nome na lista):\n${leadUrl}\n\nPeríodo aberto até ${formatDate(cycle.endDate)}.\nCardiofitness — Gestão de Pessoas`;
+  const waTeamMsg = `Olá! 👋\n\nEstá aberto o ciclo de avaliação *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse o link abaixo para preencher a *Avaliação e Autoavaliação da Equipe* (basta selecionar seu nome na lista):\n${teamUrl}\n\nPeríodo aberto até ${formatDate(cycle.endDate)}.\nCardiofitness — Gestão de Pessoas`;
 
   async function copyLink(url:string){
-    if(!url){setError('Configure o link do Google Forms deste ciclo antes de compartilhar.');return;}
+    if(!url){setError('Endereço indisponível.');return;}
     try {
       if(!navigator.clipboard?.writeText)throw new Error('Clipboard indisponível');
       await navigator.clipboard.writeText(url);setCopied(url);setError('');
@@ -1056,38 +1057,38 @@ function CycleLinks({forms,cycle,onOpenWhatsAppModal}:{forms:Evaluation[];cycle:
     <div className="quick-link" style={{background:'#f0f7fd',borderColor:'#c5def1',padding:'12px 16px',borderRadius:8}}>
       <div>
         <b style={{color:'#0573b9',fontSize:14}}>Formulário 1: Avaliação de Líderes</b>
-        <small style={{display:'block',marginTop:2}}>Google Forms (coleta legada) · {leadUrl || 'Link não configurado'}</small>
+        <small style={{display:'block',marginTop:2}}>Portal Nativo · {leadUrl}</small>
       </div>
       <div className="quick-actions">
-        <button type="button" className="button small primary" disabled={!leadUrl} onClick={()=>void copyLink(leadUrl)}>
+        <button type="button" className="button small primary" onClick={()=>void copyLink(leadUrl)}>
           <Copy size={15}/>{copied===leadUrl?'Link copiado!':'Copiar link'}
         </button>
-        <button type="button" className="button small" disabled={!waLeadMsg} onClick={()=>void copyLink(waLeadMsg)} style={{color:'#067647'}}>
+        <button type="button" className="button small" onClick={()=>void copyLink(waLeadMsg)} style={{color:'#067647'}}>
           {copied===waLeadMsg?'✓ Copiado!':'WhatsApp'}
         </button>
-        {leadUrl?<a className="button small" href={leadUrl} target="_blank" rel="noopener noreferrer"><ExternalLink size={15}/>Abrir Google Forms</a>:<button className="button small" type="button" disabled><ExternalLink size={15}/>Indisponível</button>}
+        <a className="button small" href={leadUrl} target="_blank" rel="noopener noreferrer"><ExternalLink size={15}/>Abrir formulário</a>
       </div>
     </div>
 
     <div className="quick-link" style={{background:'#f0fdf4',borderColor:'#bbf7d0',padding:'12px 16px',borderRadius:8}}>
       <div>
         <b style={{color:'#16a34a',fontSize:14}}>Formulário 2: Avaliação e Autoavaliação da Equipe</b>
-        <small style={{display:'block',marginTop:2}}>Google Forms (coleta legada) · {teamUrl || 'Link não configurado'}</small>
+        <small style={{display:'block',marginTop:2}}>Portal Nativo · {teamUrl}</small>
       </div>
       <div className="quick-actions">
-        <button type="button" className="button small primary" disabled={!teamUrl} onClick={()=>void copyLink(teamUrl)}>
+        <button type="button" className="button small primary" onClick={()=>void copyLink(teamUrl)}>
           <Copy size={15}/>{copied===teamUrl?'Link copiado!':'Copiar link'}
         </button>
-        <button type="button" className="button small" disabled={!waTeamMsg} onClick={()=>void copyLink(waTeamMsg)} style={{color:'#067647'}}>
+        <button type="button" className="button small" onClick={()=>void copyLink(waTeamMsg)} style={{color:'#067647'}}>
           {copied===waTeamMsg?'✓ Copiado!':'WhatsApp'}
         </button>
-        {teamUrl?<a className="button small" href={teamUrl} target="_blank" rel="noopener noreferrer"><ExternalLink size={15}/>Abrir Google Forms</a>:<button className="button small" type="button" disabled><ExternalLink size={15}/>Indisponível</button>}
+        <a className="button small" href={teamUrl} target="_blank" rel="noopener noreferrer"><ExternalLink size={15}/>Abrir formulário</a>
       </div>
     </div>
 
     {onOpenWhatsAppModal && (
       <div style={{marginTop:8}}>
-        <button type="button" className="button small" disabled={!leadUrl||!teamUrl} onClick={onOpenWhatsAppModal} style={{borderColor:'#86efac',color:'#166534',background:'#f0fdf4'}}>
+        <button type="button" className="button small" onClick={onOpenWhatsAppModal} style={{borderColor:'#86efac',color:'#166534',background:'#f0fdf4'}}>
           <MessageCircle size={15}/>Ver as 3 Mensagens do WhatsApp
         </button>
       </div>
@@ -1100,15 +1101,16 @@ function QuickCycleHome({data,cycle,onQuickCycle,onConfigure,onOpenLinks}:{data:
   const [showWaModal, setShowWaModal] = useState(false);
   const forms=cycleEvaluations(data,cycle.id);
   const next=suggestNextCycle(data);
-  const leadUrl = forms.find(form => form.kind === 'leadership')?.googleFormUrl || '';
-  const teamUrl = forms.find(form => form.kind === 'team')?.googleFormUrl || '';
+  const origin = typeof window !== 'undefined' && window.location?.origin ? window.location.origin : 'https://cardiofitness-smoky.vercel.app';
+  const leadUrl = `${origin}/avaliacao-de-lideres`;
+  const teamUrl = `${origin}/avaliacao-da-equipe`;
 
   return <section className="quick-launch" aria-labelledby="quick-launch-title">
     {showWaModal && <WhatsAppModal cycle={cycle} leadUrl={leadUrl} teamUrl={teamUrl} onClose={()=>setShowWaModal(false)}/>}
     <div className="quick-launch-head">
-      <div><span className="quick-kicker">COLETA LEGADA · GOOGLE FORMS</span><h2 id="quick-launch-title">Links de avaliação do ciclo</h2><p>Compartilhe os links dos formulários vinculados. As respostas entram no painel após a sincronização do servidor; confira o status de cada avaliação.</p></div>
+      <div><span className="quick-kicker">PORTAL DE AVALIAÇÃO · LINKS DO CICLO</span><h2 id="quick-launch-title">Links de avaliação do ciclo</h2><p>Compartilhe os links oficiais com a equipe e com as lideranças. As respostas entram no painel em tempo real.</p></div>
       <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
-        <button type="button" className="button" disabled={!leadUrl||!teamUrl} onClick={()=>setShowWaModal(true)} style={{borderColor:'#86efac',color:'#166534',background:'#f0fdf4'}}>
+        <button type="button" className="button" onClick={()=>setShowWaModal(true)} style={{borderColor:'#86efac',color:'#166534',background:'#f0fdf4'}}>
           <MessageCircle size={17}/>Mensagens WhatsApp (3)
         </button>
         <button type="button" className="button" onClick={onOpenLinks}><ExternalLink size={17}/>Ver links dos formulários (2)</button>
@@ -1118,7 +1120,7 @@ function QuickCycleHome({data,cycle,onQuickCycle,onConfigure,onOpenLinks}:{data:
     <div className="quick-launch-bottom">
       <div className="quick-link-title"><b>Links do ciclo: {cycle.name}</b><small>{formatDate(cycle.startDate)} a {formatDate(cycle.endDate)}</small></div>
       <CycleLinks forms={forms} cycle={cycle} onOpenWhatsAppModal={()=>setShowWaModal(true)}/>
-      <p className="quick-help">Envie os links dos Google Forms configurados para o ciclo. As médias e os relatórios são atualizados após uma sincronização bem-sucedida. <button className="text-button" type="button" onClick={onConfigure}>Configurações avançadas</button></p>
+      <p className="quick-help">Envie os links do portal de avaliação para o ciclo. As médias e os relatórios são atualizados em tempo real. <button className="text-button" type="button" onClick={onConfigure}>Configurações avançadas</button></p>
     </div>
   </section>;
 }

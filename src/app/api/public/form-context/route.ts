@@ -61,12 +61,15 @@ export async function GET() {
 
     const employees: Employee[] = uniqueRaw.map(e => {
       const isItalo = e.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes('italo');
+      const name = (isItalo ? 'ÍTALO PABLO FERREIRA' : e.name).toLocaleUpperCase('pt-BR');
+      const formName = (isItalo ? 'ÍTALO PABLO FERREIRA' : (e.form_name || e.name)).toLocaleUpperCase('pt-BR');
+      const department = (isItalo ? 'SUPORTE' : normalizeDepartment(e.department)).toLocaleUpperCase('pt-BR');
       return {
         id: e.id,
-        name: isItalo ? 'Ítalo Pablo Ferreira' : e.name,
+        name,
         email: '',
-        formName: isItalo ? 'Ítalo Pablo Ferreira' : (e.form_name || e.name),
-        department: isItalo ? 'Suporte' : normalizeDepartment(e.department),
+        formName,
+        department,
         isLeader: isItalo ? true : !!e.is_leader,
         leaderId: e.leader_id,
         active: true,
