@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { ArrowDownToLine, ArrowLeft, ArrowRight, BarChart3, Bell, CalendarDays, Check, ChevronLeft, ChevronRight, ClipboardList, Copy, Database, ExternalLink, FileSpreadsheet, LayoutDashboard, LoaderCircle, LockKeyhole, LogOut, Menu, MessageCircle, Pencil, Plus, RefreshCw, Search, Settings2, ShieldCheck, UserRoundCheck, UsersRound, X, CircleOff, Trash2, TrendingUp } from 'lucide-react';
+import { ArrowDownToLine, ArrowLeft, ArrowRight, Award, BarChart3, Bell, CalendarDays, Check, CheckCircle2, ChevronLeft, ChevronRight, ClipboardList, Copy, Database, ExternalLink, FileSpreadsheet, LayoutDashboard, LoaderCircle, LockKeyhole, LogOut, Menu, MessageCircle, Pencil, Plus, RefreshCw, Search, Settings2, ShieldCheck, UserRoundCheck, UsersRound, X, CircleOff, Trash2, TrendingUp } from 'lucide-react';
 import { useApp } from '@/lib/store';
 import PasswordRecovery from './password-recovery';
 import RhAccess from './rh-access';
@@ -74,12 +74,87 @@ export default function Application() {
   if(app.status==='password')return <main className="first-password"><Brand/><PasswordSettings required/></main>;
   if(app.status!=='ready')return <AccessScreen/>;
   const activeNav=view==='employee'?'employees':view==='result'?'evaluations':view;
-  return <div className="app-shell"><a className="skip-link" href="#main">Ir para o conteúdo</a>{mobile&&<button className="sidebar-shade" aria-label="Fechar navegação" onClick={()=>setMobile(false)}/>}<aside className={`sidebar ${mobile?'sidebar-open':''}`}><Brand/><div className="sidebar-label">GESTÃO DE PESSOAS</div><nav aria-label="Menu principal">{NAV.map(item=><button type="button" key={item.id} className={`nav-item ${activeNav===item.id?'active':''}`} aria-current={activeNav===item.id?'page':undefined} onClick={()=>navigate(item.id)}><item.icon size={20}/>{item.label}{activeNav===item.id&&<span className="nav-dot"/>}</button>)}</nav><div className="sidebar-bottom"><div className="access-note"><LockKeyhole size={19}/><div><b>Acesso exclusivo do RH</b><span>Respostas identificadas</span></div></div><div className="sidebar-profile"><Avatar name="Recursos Humanos"/><div><b>Recursos Humanos</b><small>Cardiofitness</small></div></div></div></aside><div className="workspace"><header className="topbar"><div className="breadcrumb"><button type="button" className="icon-button mobile-toggle" aria-label="Abrir menu" onClick={()=>setMobile(true)}><Menu size={21}/></button><span>Gestão de pessoas</span><span className="breadcrumb-slash">/</span><b>{titles[view]}</b></div>    <div className="topbar-right">
-      <a href="/avaliar" target="_blank" rel="noopener noreferrer" className="button small" style={{display:'inline-flex',alignItems:'center',gap:6}}><ClipboardList size={16}/>Prévia do portal</a>
-      <Pill kind="green">RH Ativo</Pill><span className="topbar-muted">{app.user?.email || 'Gestão de Pessoas'}</span>
-      <Avatar name={app.user?.name||'Recursos Humanos'}/>
-      {app.mode==='live'&&<button type="button" className="icon-button" title="Sair da conta" aria-label="Sair da conta" onClick={()=>void app.logout().catch(error=>setNotice({text:errorMessage(error),success:false}))}><LogOut size={18}/></button>}
-    </div></header><main id="main" className="main"><div className="page-heading"><div>{(view==='employee'||view==='result')&&<button type="button" className="back-link" onClick={()=>navigate(view==='employee'?'employees':'evaluations')}><ArrowLeft size={16}/>Voltar para {view==='employee'?'colaboradores':'avaliações'}</button>}<h1>{view==='employee'&&employee?employee.name:view==='result'&&evaluation?evaluation.name:titles[view]}</h1><p>{subtitles[view]}</p></div><div className="page-actions">{view==='employees'?<button className="button primary" onClick={()=>setEditor({type:'employee'})}><Plus size={18}/>Adicionar colaborador</button>:view==='settings'?null:view==='result'?null:<Field label="Ciclo" className="cycle-select"><select value={selectedCycleId} onChange={event=>setCycleId(event.target.value)} aria-label="Selecionar ciclo">{!cycles.length&&<option value="">Nenhum ciclo cadastrado</option>}{cycles.map(cycle=><option key={cycle.id} value={cycle.id}>{cycle.name}</option>)}</select></Field>}</div></div>{notice&&<Notice message={notice.text} success={notice.success} onClose={()=>setNotice(null)}/ >}{app.error&&<Notice message={app.error}/ >}
+  return <div className="app-shell top-nav-shell">
+    <a className="skip-link" href="#main">Ir para o conteúdo</a>
+    <header className="main-topbar">
+      <div className="topbar-container">
+        <div className="topbar-left">
+          <div className="topbar-brand">
+            <img src="/brand/cardiofitness-logo.jpeg" alt="Cardiofitness" className="topbar-logo" />
+            <span className="topbar-product-tag">GESTÃO DE PESSOAS</span>
+          </div>
+          <nav className="topbar-nav" aria-label="Menu principal">
+            {NAV.map(item => (
+              <button
+                type="button"
+                key={item.id}
+                className={`topbar-nav-item ${activeNav === item.id ? 'active' : ''}`}
+                aria-current={activeNav === item.id ? 'page' : undefined}
+                onClick={() => navigate(item.id)}
+              >
+                <item.icon size={16} />
+                <span>{item.label}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
+        <div className="topbar-right">
+          <a href="/avaliar" target="_blank" rel="noopener noreferrer" className="button small topbar-portal-btn">
+            <ClipboardList size={15} /> Portal público
+          </a>
+          <Pill kind="green">RH Ativo</Pill>
+          <div className="topbar-user">
+            <Avatar name={app.user?.name || 'Recursos Humanos'} />
+            <div className="topbar-user-info">
+              <b>{app.user?.name || 'Recursos Humanos'}</b>
+              <small>{app.user?.email || 'cadiofit@gmail.com'}</small>
+            </div>
+          </div>
+          {app.mode === 'live' && (
+            <button
+              type="button"
+              className="icon-button"
+              title="Sair da conta"
+              aria-label="Sair da conta"
+              onClick={() => void app.logout().catch(error => setNotice({ text: errorMessage(error), success: false }))}
+            >
+              <LogOut size={17} />
+            </button>
+          )}
+        </div>
+      </div>
+    </header>
+    <div className="workspace-full">
+      <main id="main" className="main">
+        <div className="page-heading">
+          <div>
+            {(view === 'employee' || view === 'result') && (
+              <button type="button" className="back-link" onClick={() => navigate(view === 'employee' ? 'employees' : 'evaluations')}>
+                <ArrowLeft size={16} /> Voltar para {view === 'employee' ? 'colaboradores' : 'avaliações'}
+              </button>
+            )}
+            <h1>{view === 'employee' && employee ? employee.name : view === 'result' && evaluation ? evaluation.name : titles[view]}</h1>
+            <p>{subtitles[view]}</p>
+          </div>
+          <div className="page-actions">
+            {view === 'employees' ? (
+              <button className="button primary" onClick={() => setEditor({ type: 'employee' })}>
+                <Plus size={18} /> Adicionar colaborador
+              </button>
+            ) : view === 'settings' || view === 'result' ? null : (
+              <Field label="Ciclo" className="cycle-select">
+                <select value={selectedCycleId} onChange={event => setCycleId(event.target.value)} aria-label="Selecionar ciclo">
+                  {!cycles.length && <option value="">Nenhum ciclo cadastrado</option>}
+                  {cycles.map(cycle => (
+                    <option key={cycle.id} value={cycle.id}>{cycle.name}</option>
+                  ))}
+                </select>
+              </Field>
+            )}
+          </div>
+        </div>
+        {notice && <Notice message={notice.text} success={notice.success} onClose={() => setNotice(null)} />}
+        {app.error && <Notice message={app.error} />}
       {view==='dashboard'&&<Dashboard data={data} cycle={selectedCycle} onQuickCycle={()=>setEditor({type:'quick-cycle'})} onConfigure={()=>navigate('settings')} onResults={openEvaluation} onOpenLinks={()=>navigate('links')} onNavigate={navigate} onEditCycle={item=>setEditor({type:'cycle',item})}/>}
       {view==='evolution'&&<EvolutionDashboard data={data} activeCycleId={selectedCycleId}/>}
       {view==='links'&&<PermanentLinksPanel data={data} cycle={selectedCycle} onOpenEmployee={openEmployee} onAddEmployee={()=>setEditor({type:'employee'})} onEditEmployee={item=>setEditor({type:'employee',item})} onDeleteEmployee={item=>setEditor({type:'delete-employee',item})}/>}
@@ -808,234 +883,88 @@ function PermanentLinksPanel({data, cycle, onOpenEmployee, onAddEmployee, onEdit
 
 function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,onNavigate,onEditCycle}:{data:AppData;cycle?:Cycle;onQuickCycle:()=>void;onConfigure:()=>void;onResults:(id:string)=>void;onOpenLinks:()=>void;onNavigate:(view:View)=>void;onEditCycle:(cycle:Cycle)=>void}) {
   if(!cycle)return <Panel><Empty title="Vamos organizar o primeiro ciclo" action={<button className="button primary" onClick={onConfigure}><Plus size={18}/>Configurar o ciclo</button>}>Cadastre os colaboradores, selecione os participantes e vincule os formulários de avaliação.</Empty></Panel>;
-  const evaluations=cycleEvaluations(data,cycle.id),responses=cycleResponses(data,cycle.id),expected=expectedTotal(evaluations);const leaderIds=new Set(cycle.participants.map(item=>item.leaderId).filter(Boolean));
-  const kinds:EvaluationKind[]=['leadership','team','self','leader_to_employee'];
-
-  // Notificações e confirmações só usam dados cuja configuração/sincronização é verificável.
-  const rows = getParticipation(data, cycle.id);
-  const now = new Date();
+  const evaluations=cycleEvaluations(data,cycle.id),responses=cycleResponses(data,cycle.id),expected=expectedTotal(evaluations);
+  const leaderIds=new Set(cycle.participants.map(item=>item.leaderId).filter(Boolean));
+  const activeEmployees = data.employees.filter(employee=>employee.active);
   const cycleStatus = cycleState(cycle);
-  const syncStatuses = evaluations.map(evaluation => syncHealth(evaluation, cycle, now));
-  const syncIsVerified = evaluations.length > 0 && evaluations.every((evaluation, index) => {
-    const lastSyncAt = evaluation.lastSyncedAt ? Date.parse(evaluation.lastSyncedAt) : Number.NaN;
-    const status = syncStatuses[index].label;
-    return evaluation.expectedResponses !== null && (evaluation.sourceType==='native' || Number.isFinite(lastSyncAt)) &&
-      (status === 'Consulta recente' || status === 'Histórico preservado' || status === 'Coleta nativa ativa');
-  });
-  const pendingRows = syncIsVerified ? rows.filter(r => r.status === 'not_started' || r.status === 'partial') : [];
-  const pendingByPerson = Array.from(
-    pendingRows.reduce((map, row) => {
-      const existing = map.get(row.employee.id) || { employee: row.employee, missing: [] as string[] };
-      if (row.evaluation.kind === 'leadership') {
-        const leader = row.pendingSubjects[0]?.name ? row.pendingSubjects[0].name.split(' ')[0] : 'Líder';
-        existing.missing.push(`Líder (${leader})`);
-      } else if (row.evaluation.kind === 'team') {
-        const hasSelf = row.pendingSubjects.some(p => p.id === row.employee.id);
-        const peers = row.pendingSubjects.filter(p => p.id !== row.employee.id);
-        if (hasSelf) existing.missing.push('Autoavaliação');
-        if (peers.length > 0) existing.missing.push(`${quantity(peers.length, 'colega')}`);
-      } else {
-        existing.missing.push(row.evaluation.name);
-      }
-      map.set(row.employee.id, existing);
-      return map;
-    }, new Map<string, { employee: Employee; missing: string[] }>()).values()
-  );
 
-  const todayInSaoPaulo = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Sao_Paulo' }).format(now);
-  const utcDayNumber = (date: string) => {
-    const [year, month, day] = date.split('-').map(Number);
-    return Date.UTC(year, month - 1, day) / 86_400_000;
-  };
-  const daysDiff = utcDayNumber(cycle.endDate) - utcDayNumber(todayInSaoPaulo);
-  const daysUntilStart = utcDayNumber(cycle.startDate) - utcDayNumber(todayInSaoPaulo);
-  const evaluationRowsPresent = evaluations.every(evaluation => rows.some(row => row.evaluation.id === evaluation.id));
-  const completionVerified = syncIsVerified && expected !== null && expected > 0 && rows.length > 0 &&
-    evaluationRowsPresent && rows.every(row => row.status === 'completed');
-  const deadlineAccent = cycleStatus === 'Encerrado' ? '#64748b'
-    : cycleStatus === 'Em andamento' && daysDiff <= 3 ? '#e11d48'
-    : cycleStatus === 'Em andamento' && daysDiff <= 7 ? '#f59e0b' : '#0284c7';
-  const deadlineBackground = cycleStatus === 'Encerrado' ? '#f1f5f9'
-    : cycleStatus === 'Em andamento' && daysDiff <= 3 ? '#fff1f2'
-    : cycleStatus === 'Em andamento' && daysDiff <= 7 ? '#fffbeb' : '#f0f9ff';
-  const deadlineColor = cycleStatus === 'Encerrado' ? '#475569'
-    : cycleStatus === 'Em andamento' && daysDiff <= 3 ? '#be123c'
-    : cycleStatus === 'Em andamento' && daysDiff <= 7 ? '#b45309' : '#0369a1';
-  const deadlineBorder = cycleStatus === 'Encerrado' ? '#cbd5e1'
-    : cycleStatus === 'Em andamento' && daysDiff <= 3 ? '#fecdd3'
-    : cycleStatus === 'Em andamento' && daysDiff <= 7 ? '#fde68a' : '#bae6fd';
-  const deadlineLabel = cycleStatus === 'Programado'
-    ? daysUntilStart > 0 ? `Inicia em ${daysUntilStart} ${daysUntilStart === 1 ? 'dia' : 'dias'}` : 'Inicia hoje'
-    : cycleStatus === 'Encerrado' ? 'Prazo encerrado'
-    : daysDiff > 0 ? `Encerra em ${daysDiff} ${daysDiff === 1 ? 'dia' : 'dias'}` : 'Encerra hoje!';
+  const scores = responses.map(responseAverage).filter((v): v is number => v !== null && !isNaN(v));
+  const overallAverage = scores.length ? Number((scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(2)) : null;
 
   return (
     <>
-      {/* Notificação em Destaque no Topo do Dashboard */}
+      {/* Barra de Status Compacta e Ações Rápidas do Ciclo */}
       <div style={{
-        background: '#f8fafc',
-        border: '1px solid #cbd5e1',
-        borderLeft: `5px solid ${deadlineAccent}`,
-        borderRadius: 12,
-        padding: '20px 24px',
+        background: '#ffffff',
+        border: '1px solid #e2e8f0',
+        borderRadius: 14,
+        padding: '16px 22px',
         marginBottom: 24,
-        boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: 14,
+        boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-          <div style={{ flex: 1, minWidth: 280 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
-              <span style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 30,
-                height: 30,
-                borderRadius: '50%',
-                background: deadlineBackground,
-                color: deadlineColor
-              }}>
-                <Bell size={17} />
-              </span>
-              <b style={{ fontSize: 16, color: '#0f172a' }}>
-                Lembrete de Prazos e Pendências — {cycle.name}
-              </b>
-              <span style={{
-                fontSize: 12,
-                fontWeight: 700,
-                padding: '3px 10px',
-                borderRadius: 20,
-                background: deadlineBackground,
-                color: deadlineColor,
-                border: `1px solid ${deadlineBorder}`
-              }}>
-                {deadlineLabel}
-              </span>
-            </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <Pill kind={cycleStatus === 'Em andamento' ? 'green' : 'muted'}>{cycleStatus}</Pill>
+          <b style={{ fontSize: 16, color: '#0f172a' }}>{cycle.name}</b>
+          <span style={{ fontSize: 13, color: '#64748b' }}>
+            Período: <b>{formatDate(cycle.startDate)} a {formatDate(cycle.endDate)}</b>
+          </span>
+          <span style={{ fontSize: 11, color: '#0284c7', background: '#e0f2fe', padding: '4px 10px', borderRadius: 12, fontWeight: 700 }}>
+            Portal Web Cardiofitness (Nativo)
+          </span>
+        </div>
 
-            <p style={{ margin: '0 0 10px', fontSize: 14, color: '#475467', lineHeight: 1.5 }}>
-              {cycleStatus === 'Programado' ? (
-                <>Este ciclo está programado para começar em <b>{formatDate(cycle.startDate)}</b>.</>
-              ) : cycleStatus === 'Encerrado' ? (
-                <>Este ciclo foi encerrado em <b>{formatDate(cycle.endDate)}</b>.</>
-              ) : (
-                <>O ciclo está aberto até <b>{formatDate(cycle.endDate)}</b>.</>
-              )}
-              {cycleStatus !== 'Programado' && (!syncIsVerified ? (
-                <> A sincronização está ausente, atrasada ou requer conferência; não é possível confirmar as pendências ou a conclusão.</>
-              ) : pendingByPerson.length > 0 ? (
-                <> Ainda restam <b>{quantity(pendingByPerson.length, 'colaborador com pendência', 'colaboradores com pendências')}</b> para concluir:</>
-              ) : completionVerified ? (
-                <> Todos os participantes concluíram suas avaliações neste ciclo.</>
-              ) : (
-                <> A configuração ou o total esperado não permite confirmar a conclusão completa.</>
-              ))}
-            </p>
-
-            {syncIsVerified && pendingByPerson.length > 0 && (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 6 }}>
-                {pendingByPerson.slice(0, 6).map(p => (
-                  <span key={p.employee.id} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, padding: '5px 10px', fontSize: 12, color: '#1e293b' }}>
-                    👤 <b>{p.employee.name}</b> <small style={{ color: '#64748b' }}>({p.missing.join(', ')})</small>
-                  </span>
-                ))}
-                {pendingByPerson.length > 6 && (
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#0284c7', alignSelf: 'center', paddingLeft: 4 }}>
-                    + {pendingByPerson.length - 6} outros
-                  </span>
-                )}
-              </div>
-            )}
-          </div>
-
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignSelf: 'flex-start' }}>
-            <button
-              type="button"
-              className="button small primary"
-              onClick={() => onNavigate(syncIsVerified ? 'pending' : 'evaluations')}
-            >
-              <UserRoundCheck size={16} /> {syncIsVerified ? 'Ver todas as pendências' : 'Ver formulários e sincronização'}
-            </button>
-            <button
-              type="button"
-              className="button small"
-              onClick={() => onEditCycle(cycle)}
-            >
-              <CalendarDays size={16} /> Estender / Ajustar prazo
-            </button>
-          </div>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <button type="button" className="button small" onClick={onOpenLinks}>
+            <ExternalLink size={14} /> Links de Avaliação
+          </button>
+          <button type="button" className="button small" onClick={() => onEditCycle(cycle)}>
+            <CalendarDays size={14} /> Ajustar datas
+          </button>
+          <button type="button" className="button small primary" onClick={onQuickCycle}>
+            <Plus size={15} /> Próximo ciclo
+          </button>
         </div>
       </div>
 
-      <QuickCycleHome data={data} cycle={cycle} onQuickCycle={onQuickCycle} onConfigure={onConfigure} onOpenLinks={onOpenLinks}/>
+      {/* Grid com 4 KPIs Principais */}
       <div className="stat-grid">
-        <Stat label="Participantes do ciclo" value={cycle.participants.length} note={`${quantity(leaderIds.size,'liderança vinculada','lideranças vinculadas')}`} icon={<UsersRound size={19}/>}/>
-        <Stat label="Respostas recebidas" value={<>{responses.length}<em>{expected!==null?` / ${expected}`:''}</em></>} note={`${quantity(evaluations.length,'formulário vinculado','formulários vinculados')}`} icon={<ClipboardList size={19}/>}/>
-        <Stat label="Conclusão do ciclo" value={syncIsVerified ? formatPercent(responses.length,expected) : '—'} note={!syncIsVerified?'Confirme sincronização em Avaliações':expected===null?'Defina o total esperado por formulário':`${quantity(Math.max(0,expected-responses.length),'resposta pendente','respostas pendentes')}`}/>
-        <Stat label="Colaboradores ativos" value={data.employees.filter(employee=>employee.active).length} note={`${quantity(data.employees.length,'pessoa')} no cadastro`} icon={<UserRoundCheck size={19}/>}/>
+        <Stat
+          label="Média Geral da Clínica"
+          value={<>{overallAverage !== null ? overallAverage.toFixed(2) : '—'}<em> / 4.0</em></>}
+          note="Escala oficial de desempenho"
+          icon={<Award size={19}/>}
+        />
+        <Stat
+          label="Respostas recebidas"
+          value={<>{responses.length}<em>{expected !== null ? ` / ${expected}` : ''}</em></>}
+          note={`${quantity(evaluations.length, 'formulário vinculado', 'formulários vinculados')}`}
+          icon={<ClipboardList size={19}/>}
+        />
+        <Stat
+          label="Conclusão do ciclo"
+          value={expected ? formatPercent(responses.length, expected) : (responses.length > 0 ? '100%' : '0%')}
+          note={expected ? `${quantity(Math.max(0, expected - responses.length), 'resposta pendente', 'respostas pendentes')}` : 'Ciclo em andamento'}
+          icon={<CheckCircle2 size={19}/>}
+        />
+        <Stat
+          label="Colaboradores ativos"
+          value={activeEmployees.length}
+          note={`${quantity(leaderIds.size, 'liderança vinculada', 'lideranças vinculadas')}`}
+          icon={<UsersRound size={19}/>}
+        />
       </div>
-      <div className="dashboard-grid">
-        <Panel title="Participação por avaliação" subtitle="Respostas recebidas em cada formulário do ciclo" className="participation-panel">
-          {evaluations.length?evaluations.map(evaluation=>{
-            const stats=getEvaluationStats(data,evaluation.id);
-            return (
-              <div className="participation-row" key={evaluation.id}>
-                <div>
-                  <button className="text-button" onClick={()=>onResults(evaluation.id)}>
-                    {evaluation.name}<ArrowRight size={15}/>
-                  </button>
-                  <b>{stats.received}<span>{stats.expected!==null?` / ${stats.expected}`:stats.received===1?' resposta':' respostas'}</span></b>
-                </div>
-                <div>
-                  <Progress received={stats.received} expected={stats.expected}/>
-                  <small>{stats.expected===null?'Esperado não definido':formatPercent(stats.received,stats.expected)}</small>
-                </div>
-              </div>
-            );
-          }):<Empty title="Nenhum formulário vinculado" action={<button className="button" onClick={onConfigure}>Vincular formulários</button>}/> }
-        </Panel>
-        <Panel title="Ciclo de avaliação" subtitle={cycle.name}>
-          <div className="cycle-summary">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Pill kind={cycleStatus==='Em andamento'?'green':'muted'}>{cycleStatus}</Pill>
-              <button
-                type="button"
-                className="button small"
-                onClick={() => onEditCycle(cycle)}
-                style={{ fontSize: 12, height: 32 }}
-              >
-                <CalendarDays size={14} /> Ajustar datas
-              </button>
-            </div>
-            <dl>
-              <div><dt>Período</dt><dd>{formatDate(cycle.startDate)}<br/>{formatDate(cycle.endDate)}</dd></div>
-              <div><dt>Participantes</dt><dd>{quantity(cycle.participants.length,'pessoa')}</dd></div>
-              <div><dt>Coleta</dt><dd>Portal Web Cardiofitness</dd></div>
-            </dl>
-            <div className="mini-note"><ShieldCheck size={17}/>Acompanhamento exclusivo do RH</div>
-          </div>
-        </Panel>
-      </div>
-      <Panel title="Perspectivas do ciclo" subtitle="Médias calculadas separadamente · Escala de 1 a 4">
-        <div className="perspective-grid">
-          {kinds.filter(kind=>responses.some(response=>response.kind===kind)||evaluations.some(evaluation=>evaluation.kind===kind)).map(kind=>{
-            const subset=responses.filter(response=>response.kind===kind);
-            return (
-              <div className="perspective" key={kind}>
-                <span>{KIND_LABELS[kind]}</span>
-                <strong>{formatNumber(mean(subset.map(responseAverage).filter((value):value is number=>value!==null)))}<small> / 4</small></strong>
-                <p>{quantity(subset.length,'resposta')}{kind==='self'?(subset.length===1?' própria':' próprias'):kind==='team'?' entre colegas':''}</p>
-              </div>
-            );
-          })}
-          {!responses.length&&!evaluations.length&&<p className="muted padded">As médias aparecerão após a importação das respostas.</p>}
-        </div>
-      </Panel>
+
+      {/* Painel Analítico Completo (Comparativo de Ciclos, Gráficos Coloridos por Setor e Proporção das Notas) */}
       <EvolutionDashboard data={data} activeCycleId={cycle.id}/>
     </>
   );
 }
 
-/** The primary RH workflow: share the evaluation links for the cycle. */
 function CycleLinks({forms,cycle,onOpenWhatsAppModal}:{forms:Evaluation[];cycle:Pick<Cycle,'startDate'|'endDate'> & {id?:string;name?:string};onOpenWhatsAppModal?:()=>void}) {
   const [copied,setCopied]=useState(''),[error,setError]=useState('');
   const origin = typeof window !== 'undefined' && window.location?.origin ? window.location.origin : 'https://cardiofitness-smoky.vercel.app';
