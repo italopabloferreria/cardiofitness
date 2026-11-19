@@ -3,6 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { AppData, Cycle, Employee, Evaluation, EvaluationInput, EvaluationResponse } from '@/lib/types';
 import { requireRh } from './supabase';
 import { formatPersonName } from '../person-name';
+import { normalizeDepartment } from '../roster-data';
 import { ApiError, databaseError } from './http';
 
 type Row = Record<string, unknown>;
@@ -55,17 +56,55 @@ export async function getAppData(provided?: SupabaseClient): Promise<AppData> {
   const seen = new Set<string>();
   const uniqueEmps: Row[] = [];
   for (const r of filtered) {
-    const key = ((r.name as string) || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+    const rawName = (r.name as string) || '';
+    const key = rawName.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+    const rawDept = ((r.department as string) || '').trim();
+    if (key.includes('teste') || key.includes('test') || rawDept.toLowerCase().includes('teste') || rawDept.toLowerCase().includes('test')) {
+      continue;
+    }
     if (!seen.has(key)) {
       seen.add(key);
       const isItalo = key.includes('italo');
-      const rawName = (r.name as string) || '';
       const name = (isItalo ? 'ÍTALO PABLO FERREIRA' : rawName).toLocaleUpperCase('pt-BR');
       const formName = (isItalo ? 'ÍTALO PABLO FERREIRA' : (((r.form_name as string) || rawName))).toLocaleUpperCase('pt-BR');
-      const department = (isItalo ? 'SUPORTE' : ((r.department as string) || '')).toLocaleUpperCase('pt-BR');
+      const department = (isItalo ? 'SUPORTE' : normalizeDepartment(rawDept)).toLocaleUpperCase('pt-BR');
       uniqueEmps.push({ ...r, name, form_name: formName, department, is_leader: isItalo ? true : !!r.is_leader });
     }
   }
 
-  return { employees: uniqueEmps.map(employeeFromRow), cycles: cycles.map(cycleFromRow), evaluations: evaluations.map(evaluationFromRow), responses: responses.map(responseFromRow) };
+  // Purga de ciclos de teste e futuros
+  const cleanCycles = cycles.filter(c => {
+    const n = ((c.name as string) || '').toLowerCase();
+    const id = c.id as string;
+    if (n.includes('teste') || n.includes('test') || ((c.start_date as string) || '').startsWith('2027')) return false;
+    if (id === '88d6a7d2-184f-4313-80b3-cbb8ff30317f') return false;
+    return true;
+  });
+  const cycleIds = new Set(cleanCycles.map(c => c.id as string));
+
+  // Purga de avaliações de teste
+  const cleanEvaluations = evaluations.filter(e => {
+    const n = ((e.name as string) || '').toLowerCase();
+    const id = e.id as string;
+    if (n.includes('teste') || n.includes('test')) return false;
+    if (id === '392a2251-b6e1-40d5-9782-c7310b94613b') return false;
+    return cycleIds.has(e.cycle_id as string);
+  });
+  const evalIds = new Set(cleanEvaluations.map(e => e.id as string));
+
+  // Purga de respostas de teste e órfãs
+  const validEmpIds = new Set(uniqueEmps.map(e => e.id as string));
+  const cleanResponses = responses.filter(r => {
+    const gId = (r.google_response_id as string) || '';
+    const id = (r.id as string) || '';
+    if (gId.includes('test') || id === '6990f3b4-2f15-41d8-ba77-d3c14dc73090') return false;
+    return evalIds.has(r.evaluation_id as string) && validEmpIds.has(r.respondent_id as string) && validEmpIds.has(r.subject_id as string);
+  });
+
+  return {
+    employees: uniqueEmps.map(employeeFromRow),
+    cycles: cleanCycles.map(cycleFromRow),
+    evaluations: cleanEvaluations.map(evaluationFromRow),
+    responses: cleanResponses.map(responseFromRow),
+  };
 }

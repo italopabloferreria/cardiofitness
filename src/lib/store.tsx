@@ -4,6 +4,7 @@ import type { AppData, Bootstrap, Cycle, CycleInput, Employee, EmployeeInput, Ev
 import { createDemoData } from './demo';
 import { prepareCycleForms } from './cycle-template';
 import { cycleState } from './analytics';
+import { normalizeDepartment } from './roster-data';
 
 const EMPTY: AppData = {employees:[],cycles:[],evaluations:[],responses:[]};
 const DEMO_KEY = 'cardiofitness-app-v3';
@@ -54,7 +55,16 @@ export function AppProvider({children}:{children:ReactNode}) {
               for (const e of boot.data.employees) {
                 empMap.set(e.id, e);
               }
-              parsed.employees = Array.from(empMap.values());
+              parsed.employees = Array.from(empMap.values())
+                .filter(e => {
+                  const n = e.name.toLowerCase();
+                  const d = (e.department || '').toLowerCase();
+                  return !n.includes('teste') && !n.includes('test') && !d.includes('teste') && !d.includes('test');
+                })
+                .map(e => ({
+                  ...e,
+                  department: normalizeDepartment(e.department).toLocaleUpperCase('pt-BR'),
+                }));
 
               const cleanCycles = parsed.cycles.filter((c: Cycle) => {
                 const n = c.name.toLowerCase();
@@ -75,6 +85,8 @@ export function AppProvider({children}:{children:ReactNode}) {
                   responseMap.set(`${r.evaluationId}:${r.respondentId}:${r.subjectId}`, r);
                 }
                 parsed.responses = Array.from(responseMap.values()).filter((r: EvaluationResponse) =>
+                  r.id !== '6990f3b4-2f15-41d8-ba77-d3c14dc73090' &&
+                  !r.googleResponseId?.includes('test') &&
                   parsed.evaluations.some((e: Evaluation) => e.id === r.evaluationId)
                 );
                 initial = parsed;
