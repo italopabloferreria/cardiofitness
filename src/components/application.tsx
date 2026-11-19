@@ -10,8 +10,10 @@ import { EvolutionDashboard } from './evolution-dashboard';
 import { FormRoster } from './form-roster';
 import { downloadPending } from '@/lib/export-pending';
 import { bimonthlyEnd, cycleState, defaultCycle, formatDate, formatNumber, formatPercent, getEvaluationStats, mean, questionGroups, responseAverage } from '@/lib/analytics';
+import { syncHealth } from '@/lib/sync-health';
 import { downloadReport } from '@/lib/export';
 import { getParticipation } from '@/lib/participation';
+import { nativeEvaluationMapping } from '@/lib/native/evaluation-mapping';
 import { isNovember2026Cycle, november2026FormStatus, NOVEMBER_2026_END } from '@/lib/november-campaign';
 import { shareableCycleForms, suggestNextCycle } from '@/lib/quick-cycle';
 import { resolveFormId, resolveFormLink } from '@/lib/form-link';
@@ -19,7 +21,7 @@ import { getPermanentEvaluationUrl } from '@/lib/roster-data';
 import { KIND_LABELS, PROVIDED_FORMS, type AppData, type Cycle, type CycleInput, type Employee, type EmployeeInput, type Evaluation, type EvaluationInput, type EvaluationKind, type EvaluationResponse, type FormMetadata } from '@/lib/types';
 
 type View = 'dashboard' | 'evolution' | 'links' | 'employees' | 'employee' | 'evaluations' | 'pending' | 'result' | 'reports' | 'settings';
-type Editor = { type: 'quick-cycle' } | { type: 'employee'; item?: Employee } | { type: 'deactivate'; item: Employee } | { type: 'delete-employee'; item: Employee } | { type: 'cycle'; item?: Cycle; sourceCycleId?:string } | { type: 'evaluation'; item?: Evaluation; preset?: typeof PROVIDED_FORMS[number] } | null;
+type Editor = { type: 'quick-cycle' } | { type: 'employee'; item?: Employee } | { type: 'deactivate'; item: Employee } | { type: 'delete-employee'; item: Employee } | { type: 'cycle'; item?: Cycle; sourceCycleId?:string } | { type: 'evaluation'; item?: Evaluation; preset?: typeof PROVIDED_FORMS[number] } | { type: 'native-evaluation' } | null;
 const NAV = [{ id:'dashboard', label:'Dashboard', icon:LayoutDashboard }, { id:'evolution', label:'Evolução & Gráficos', icon:TrendingUp }, { id:'links', label:'Links de Avaliação', icon:ExternalLink }, { id:'employees', label:'Colaboradores', icon:UsersRound }, { id:'evaluations', label:'Avaliações', icon:ClipboardList }, { id:'pending', label:'Pendências', icon:UserRoundCheck }, { id:'reports', label:'Relatórios', icon:BarChart3 }, { id:'settings', label:'Configurações', icon:Settings2 }] as const;
 const titles: Record<View,string> = {dashboard:'Dashboard',evolution:'Evolução e Gráficos',links:'Links de Avaliação',employees:'Colaboradores',employee:'Detalhe do colaborador',evaluations:'Avaliações',pending:'Pendências',result:'Resultado da avaliação',reports:'Relatórios',settings:'Configurações'};
 const subtitles: Record<View,string> = {dashboard:'Uma visão clara das pessoas, das avaliações e de cada ciclo.',evolution:'Acompanhamento da evolução histórica de notas e comparativo de desempenho por setor.',links:'Links fixos de avaliação e quadro de equipes.',employees:'Estrutura de líderes e subordinados da Cardiofitness.',employee:'Resultados individuais e histórico ao longo dos ciclos.',evaluations:'Respostas e médias de cada avaliação do ciclo.',pending:'Veja quem ainda precisa responder às avaliações do ciclo.',result:'Notas e respostas de texto identificadas do formulário selecionado.',reports:'Selecione o recorte, confira a evolução histórica e exporte os resultados.',settings:'Organize ciclos, datas, participantes e os formulários de avaliação.'};
@@ -32,7 +34,7 @@ const errorMessage = (error:unknown) => error instanceof Error?error.message:'N�
 const quantity = (value:number,singular:string,plural=singular+'s') => `${value} ${value===1?singular:plural}`;
 const employeeInput = (employee:Employee):EmployeeInput => ({name:employee.name,email:employee.email,formName:employee.formName,department:employee.department,leaderId:employee.leaderId,isLeader:employee.isLeader,active:employee.active});
 const cycleInput = (cycle:Cycle):CycleInput => ({name:cycle.name,startDate:cycle.startDate,endDate:cycle.endDate,participants:cycle.participants});
-const evaluationInput = (evaluation:Evaluation):EvaluationInput => ({cycleId:evaluation.cycleId,name:evaluation.name,kind:evaluation.kind,googleFormId:evaluation.googleFormId,googleFormUrl:evaluation.googleFormUrl,expectedResponses:evaluation.expectedResponses,mapping:evaluation.mapping});
+const evaluationInput = (evaluation:Evaluation):EvaluationInput => ({cycleId:evaluation.cycleId,name:evaluation.name,kind:evaluation.kind,sourceType:evaluation.sourceType??(evaluation.googleFormId?'legacy':'native'),googleFormId:evaluation.googleFormId,googleFormUrl:evaluation.googleFormUrl,expectedResponses:evaluation.expectedResponses,mapping:evaluation.mapping,questionSections:evaluation.questionSections??{}});
 
 const scoreColor = (value:number|null) => value === null ? 'var(--muted)' : value < 2.5 ? '#b42318' : '#067647';
 function Score({value}:{value:number|null}) { return <span style={{color:scoreColor(value)}}>{formatNumber(value)}</span>; }
@@ -73,7 +75,7 @@ export default function Application() {
   if(app.status!=='ready')return <AccessScreen/>;
   const activeNav=view==='employee'?'employees':view==='result'?'evaluations':view;
   return <div className="app-shell"><a className="skip-link" href="#main">Ir para o conteúdo</a>{mobile&&<button className="sidebar-shade" aria-label="Fechar navegação" onClick={()=>setMobile(false)}/>}<aside className={`sidebar ${mobile?'sidebar-open':''}`}><Brand/><div className="sidebar-label">GESTÃO DE PESSOAS</div><nav aria-label="Menu principal">{NAV.map(item=><button type="button" key={item.id} className={`nav-item ${activeNav===item.id?'active':''}`} aria-current={activeNav===item.id?'page':undefined} onClick={()=>navigate(item.id)}><item.icon size={20}/>{item.label}{activeNav===item.id&&<span className="nav-dot"/>}</button>)}</nav><div className="sidebar-bottom"><div className="access-note"><LockKeyhole size={19}/><div><b>Acesso exclusivo do RH</b><span>Respostas identificadas</span></div></div><div className="sidebar-profile"><Avatar name="Recursos Humanos"/><div><b>Recursos Humanos</b><small>Cardiofitness</small></div></div></div></aside><div className="workspace"><header className="topbar"><div className="breadcrumb"><button type="button" className="icon-button mobile-toggle" aria-label="Abrir menu" onClick={()=>setMobile(true)}><Menu size={21}/></button><span>Gestão de pessoas</span><span className="breadcrumb-slash">/</span><b>{titles[view]}</b></div>    <div className="topbar-right">
-      <a href="/avaliar" target="_blank" rel="noopener noreferrer" className="button small" style={{display:'inline-flex',alignItems:'center',gap:6}}><ClipboardList size={16}/>Portal de Avaliações</a>
+      <a href="/avaliar" target="_blank" rel="noopener noreferrer" className="button small" style={{display:'inline-flex',alignItems:'center',gap:6}}><ClipboardList size={16}/>Prévia do portal</a>
       <Pill kind="green">RH Ativo</Pill><span className="topbar-muted">{app.user?.email || 'Gestão de Pessoas'}</span>
       <Avatar name={app.user?.name||'Recursos Humanos'}/>
       {app.mode==='live'&&<button type="button" className="icon-button" title="Sair da conta" aria-label="Sair da conta" onClick={()=>void app.logout().catch(error=>setNotice({text:errorMessage(error),success:false}))}><LogOut size={18}/></button>}
@@ -89,11 +91,12 @@ export default function Application() {
       {view==='reports'&&<Reports data={data} cycleId={selectedCycleId} onError={text=>setNotice({text,success:false})}/>}
       {view==='settings'&&<Configuration data={data} cycleId={selectedCycleId} setCycleId={setCycleId} onEdit={setEditor} demo={app.mode==='demo'} googleConfigured={app.googleConfigured}/>}
       <footer className="main-footer"><span>Cardiofitness · Avaliações de desempenho</span><span>Painel de Recursos Humanos · Respostas identificadas</span></footer></main></div>
-      {editor?.type==='quick-cycle'&&<QuickCycleEditor data={data} onClose={()=>setEditor(null)} onConfigure={()=>{setEditor(null);navigate('settings');}} onCreated={id=>{setCycleId(id);setNotice({text:'Novo ciclo criado com sucesso. Links do portal ativos.',success:true});}}/>}
+      {editor?.type==='quick-cycle'&&<QuickCycleEditor data={data} onClose={()=>setEditor(null)} onConfigure={()=>{setEditor(null);navigate('settings');}} onCreated={id=>{setCycleId(id);setNotice({text:'Novo ciclo criado. Confira os links do Google Forms antes de compartilhar.',success:true});}}/>}
       {editor?.type==='employee'&&<EmployeeEditor data={data} employee={editor.item} onClose={()=>setEditor(null)} onSaved={name=>{setEditor(null);setNotice({text:`Cadastro de ${name} salvo.`,success:true});}}/>}
       {editor?.type==='deactivate'&&<Deactivate employee={editor.item} onClose={()=>setEditor(null)} onSaved={()=>{setEditor(null);setNotice({text:'Colaborador desativado. O histórico foi preservado.',success:true});}}/>}
       {editor?.type==='delete-employee'&&<DeleteEmployeeModal data={data} employee={editor.item} onClose={()=>setEditor(null)} onDeleted={()=>{setEditor(null);setNotice({text:'Colaborador excluído com sucesso.',success:true});}} onDeactivated={()=>{setEditor(null);setNotice({text:'Colaborador desativado. O histórico foi preservado.',success:true});}}/>}
       {editor?.type==='cycle'&&<CycleEditor data={data} cycle={editor.item} sourceCycleId={editor.sourceCycleId} onClose={()=>setEditor(null)} onSaved={id=>{setEditor(null);setCycleId(id);setNotice({text:'Ciclo salvo.',success:true});}}/>}
+      {editor?.type==='native-evaluation'&&<NativeEvaluationEditor data={data} cycleId={selectedCycleId} onClose={()=>setEditor(null)} onSaved={()=>{setEditor(null);setNotice({text:'Avaliação nativa criada e pronta para compartilhar.',success:true});}}/>}
       {editor?.type==='evaluation'&&<EvaluationEditor data={data} cycleId={selectedCycleId} evaluation={editor.item} preset={editor.preset} onClose={()=>setEditor(null)} onSaved={()=>{setEditor(null);setNotice({text:'Configuração do formulário salva.',success:true});}}/>}
     </div>;
 }
@@ -590,7 +593,7 @@ function WhatsAppModal({cycle,leadUrl,teamUrl,onClose}:{cycle?:Pick<Cycle,'name'
   }
 
   return (
-    <Modal wide title="3 Mensagens Prontas para WhatsApp" subtitle="Copie o modelo de mensagem adequado e cole no WhatsApp para os colaboradores." onClose={onClose}>
+    <Modal wide title="3 Mensagens Prontas para WhatsApp" subtitle="Os modelos incluem os links do Google Forms configurados para este ciclo." onClose={onClose}>
       <div className="modal-body" style={{display:'flex',flexDirection:'column',gap:16}}>
         {messages.map((m, idx) => (
           <div key={idx} style={{background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:10,padding:16}}>
@@ -630,9 +633,9 @@ function PermanentLinksPanel({data, cycle, onOpenEmployee, onAddEmployee, onEdit
   const [copiedType, setCopiedType] = useState<'url'|'whatsapp'|'all'|null>(null);
   const [showWaModal, setShowWaModal] = useState(false);
 
-  const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const leadUrl = `${origin}/avaliacao-de-lideres`;
-  const teamUrl = `${origin}/avaliacao-da-equipe`;
+  const evaluations = cycle ? cycleEvaluations(data, cycle.id) : [];
+  const leadUrl = evaluations.find(evaluation => evaluation.kind === 'leadership')?.googleFormUrl || '';
+  const teamUrl = evaluations.find(evaluation => evaluation.kind === 'team')?.googleFormUrl || '';
 
   async function handleCopy(text: string, id: string, type: 'url'|'whatsapp'|'all') {
     try {
@@ -650,12 +653,13 @@ function PermanentLinksPanel({data, cycle, onOpenEmployee, onAddEmployee, onEdit
   }
 
   function handleCopyAll() {
+    if (!leadUrl || !teamUrl) return;
     const text = `Olá, equipe Cardiofitness! 👋\n\nEstá aberto o ciclo de avaliação de desempenho *${cycle?.name || 'Cardiofitness'}*.\n\nPreencham os dois formulários nos links fixos abaixo (basta selecionar seu próprio nome na lista):\n\n1️⃣ *Avaliação de Líderes:*\n${leadUrl}\n\n2️⃣ *Avaliação e Autoavaliação da Equipe:*\n${teamUrl}\n\n⏰ Disponível até ${cycle ? formatDate(cycle.endDate) : 'o prazo do ciclo'}.\nCardiofitness — Gestão de Pessoas`;
     void handleCopy(text, 'all', 'all');
   }
 
-  const waLeadMsg = `Olá! 👋\n\nEstá aberto o ciclo de avaliação *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse o link abaixo para preencher a *Avaliação de Líderes* (basta selecionar seu nome na lista):\n${leadUrl}\n\nPeríodo aberto até ${cycle ? formatDate(cycle.endDate) : 'o encerramento'}.\nCardiofitness — Gestão de Pessoas`;
-  const waTeamMsg = `Olá! 👋\n\nEstá aberto o ciclo de avaliação *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse o link abaixo para preencher a *Avaliação e Autoavaliação da Equipe* (basta selecionar seu nome na lista):\n${teamUrl}\n\nPeríodo aberto até ${cycle ? formatDate(cycle.endDate) : 'o encerramento'}.\nCardiofitness — Gestão de Pessoas`;
+  const waLeadMsg = leadUrl ? `Olá! 👋\n\nEstá aberto o ciclo de avaliação *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse o Google Forms abaixo para preencher a *Avaliação de Líderes*:\n${leadUrl}\n\nPeríodo aberto até ${cycle ? formatDate(cycle.endDate) : 'o encerramento'}.\nCardiofitness — Gestão de Pessoas` : '';
+  const waTeamMsg = teamUrl ? `Olá! 👋\n\nEstá aberto o ciclo de avaliação *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse o Google Forms abaixo para preencher a *Avaliação e Autoavaliação da Equipe*:\n${teamUrl}\n\nPeríodo aberto até ${cycle ? formatDate(cycle.endDate) : 'o encerramento'}.\nCardiofitness — Gestão de Pessoas` : '';
 
   return (
     <>
@@ -663,17 +667,17 @@ function PermanentLinksPanel({data, cycle, onOpenEmployee, onAddEmployee, onEdit
       <div className="info-banner" style={{background:'#f0f7fd',borderColor:'#c5def1',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:16}}>
         <div style={{maxWidth:760}}>
           <b style={{fontSize:16,color:'#0573b9',display:'flex',alignItems:'center',gap:8}}>
-            <ExternalLink size={20}/> Dois Links Fixos de Avaliação
+            <ExternalLink size={20}/> Google Forms do ciclo (coleta legada)
           </b>
           <p style={{margin:'6px 0 0',fontSize:13,lineHeight:1.6,color:'#365977'}}>
-            Não é necessário gerar links individuais. <b>Envie apenas estes dois links fixos para a equipe.</b> Em cada um, o colaborador apenas seleciona seu próprio nome na lista. As respostas são computadas automaticamente enquanto o ciclo estiver ativo (atualmente: <b>{cycle?.name || 'Sem ciclo'}</b>); após o fim da data definida pelo RH, os links se encerram automaticamente.
+            Compartilhe os links do Google Forms vinculados ao ciclo. As respostas aparecem no painel após consulta bem-sucedida de sincronização; o login no painel não confirma respostas atuais. Ciclo: <b>{cycle?.name || 'Sem ciclo'}</b>. Links ausentes precisam ser configurados.
           </p>
         </div>
         <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
-          <button type="button" className="button" onClick={()=>setShowWaModal(true)} style={{borderColor:'#86efac',color:'#166534',background:'#f0fdf4'}}>
+          <button type="button" className="button" disabled={!leadUrl || !teamUrl} onClick={()=>setShowWaModal(true)} style={{borderColor:'#86efac',color:'#166534',background:'#f0fdf4'}}>
             <MessageCircle size={16}/>Mensagens do WhatsApp (3)
           </button>
-          <button type="button" className="button primary" onClick={handleCopyAll}>
+          <button type="button" className="button primary" disabled={!leadUrl || !teamUrl} onClick={handleCopyAll}>
             <Copy size={16}/>{copiedType==='all'?'Mensagem com os 2 links copiada!':'Copiar mensagem geral (WhatsApp)'}
           </button>
           <button type="button" className="button" onClick={onAddEmployee}>
@@ -687,7 +691,7 @@ function PermanentLinksPanel({data, cycle, onOpenEmployee, onAddEmployee, onEdit
         {/* Formulário 1: Líderes */}
         <div style={{background:'#fff',border:'1px solid #bfdbfe',borderRadius:12,padding:'20px',boxShadow:'0 2px 8px rgba(0,0,0,0.03)'}}>
           <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:8}}>
-            <span style={{background:'#dbeafe',color:'#1d4ed8',padding:'4px 8px',borderRadius:6,fontSize:11,fontWeight:700}}>FORMULÁRIO 1</span>
+            <span style={{background:'#dbeafe',color:'#1d4ed8',padding:'4px 8px',borderRadius:6,fontSize:11,fontWeight:700}}>GOOGLE FORMS · LEGADO</span>
             <b style={{fontSize:16,color:'#1e3a8a'}}>Avaliação de Líderes</b>
           </div>
           <p style={{fontSize:13,color:'#475467',margin:'0 0 14px',lineHeight:1.5}}>
@@ -697,22 +701,20 @@ function PermanentLinksPanel({data, cycle, onOpenEmployee, onAddEmployee, onEdit
             {leadUrl}
           </code>
           <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-            <button type="button" className="button small primary" onClick={()=>void handleCopy(leadUrl, 'f1-url', 'url')}>
+            <button type="button" className="button small primary" disabled={!leadUrl} onClick={()=>void handleCopy(leadUrl, 'f1-url', 'url')}>
               <Copy size={14}/>{copiedLink==='f1-url'?'Link copiado!':'Copiar link'}
             </button>
-            <button type="button" className="button small" onClick={()=>void handleCopy(waLeadMsg, 'f1-wa', 'whatsapp')} style={{color:'#067647'}}>
+            <button type="button" className="button small" disabled={!waLeadMsg} onClick={()=>void handleCopy(waLeadMsg, 'f1-wa', 'whatsapp')} style={{color:'#067647'}}>
               {copiedLink==='f1-wa'?'✓ Copiado!':'WhatsApp'}
             </button>
-            <a className="button small" href={leadUrl} target="_blank" rel="noopener noreferrer">
-              <ExternalLink size={14}/>Abrir
-            </a>
+            {leadUrl ? <a className="button small" href={leadUrl} target="_blank" rel="noopener noreferrer"><ExternalLink size={14}/>Abrir Google Forms</a> : <button className="button small" type="button" disabled><ExternalLink size={14}/>Link não configurado</button>}
           </div>
         </div>
 
         {/* Formulário 2: Equipe */}
         <div style={{background:'#fff',border:'1px solid #bbf7d0',borderRadius:12,padding:'20px',boxShadow:'0 2px 8px rgba(0,0,0,0.03)'}}>
           <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:8}}>
-            <span style={{background:'#dcfce7',color:'#15803d',padding:'4px 8px',borderRadius:6,fontSize:11,fontWeight:700}}>FORMULÁRIO 2</span>
+            <span style={{background:'#dcfce7',color:'#15803d',padding:'4px 8px',borderRadius:6,fontSize:11,fontWeight:700}}>GOOGLE FORMS · LEGADO</span>
             <b style={{fontSize:16,color:'#14532d'}}>Avaliação e Autoavaliação da Equipe</b>
           </div>
           <p style={{fontSize:13,color:'#475467',margin:'0 0 14px',lineHeight:1.5}}>
@@ -722,15 +724,13 @@ function PermanentLinksPanel({data, cycle, onOpenEmployee, onAddEmployee, onEdit
             {teamUrl}
           </code>
           <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-            <button type="button" className="button small primary" onClick={()=>void handleCopy(teamUrl, 'f2-url', 'url')}>
+            <button type="button" className="button small primary" disabled={!teamUrl} onClick={()=>void handleCopy(teamUrl, 'f2-url', 'url')}>
               <Copy size={14}/>{copiedLink==='f2-url'?'Link copiado!':'Copiar link'}
             </button>
-            <button type="button" className="button small" onClick={()=>void handleCopy(waTeamMsg, 'f2-wa', 'whatsapp')} style={{color:'#067647'}}>
+            <button type="button" className="button small" disabled={!waTeamMsg} onClick={()=>void handleCopy(waTeamMsg, 'f2-wa', 'whatsapp')} style={{color:'#067647'}}>
               {copiedLink==='f2-wa'?'✓ Copiado!':'WhatsApp'}
             </button>
-            <a className="button small" href={teamUrl} target="_blank" rel="noopener noreferrer">
-              <ExternalLink size={14}/>Abrir
-            </a>
+            {teamUrl ? <a className="button small" href={teamUrl} target="_blank" rel="noopener noreferrer"><ExternalLink size={14}/>Abrir Google Forms</a> : <button className="button small" type="button" disabled><ExternalLink size={14}/>Link não configurado</button>}
           </div>
         </div>
       </div>
@@ -811,9 +811,18 @@ function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,on
   const evaluations=cycleEvaluations(data,cycle.id),responses=cycleResponses(data,cycle.id),expected=expectedTotal(evaluations);const leaderIds=new Set(cycle.participants.map(item=>item.leaderId).filter(Boolean));
   const kinds:EvaluationKind[]=['leadership','team','self','leader_to_employee'];
 
-  // Notificações do ciclo ativo para o RH
+  // Notificações e confirmações só usam dados cuja configuração/sincronização é verificável.
   const rows = getParticipation(data, cycle.id);
-  const pendingRows = rows.filter(r => r.status === 'not_started' || r.status === 'partial');
+  const now = new Date();
+  const cycleStatus = cycleState(cycle);
+  const syncStatuses = evaluations.map(evaluation => syncHealth(evaluation, cycle, now));
+  const syncIsVerified = evaluations.length > 0 && evaluations.every((evaluation, index) => {
+    const lastSyncAt = evaluation.lastSyncedAt ? Date.parse(evaluation.lastSyncedAt) : Number.NaN;
+    const status = syncStatuses[index].label;
+    return evaluation.expectedResponses !== null && (evaluation.sourceType==='native' || Number.isFinite(lastSyncAt)) &&
+      (status === 'Consulta recente' || status === 'Histórico preservado' || status === 'Coleta nativa ativa');
+  });
+  const pendingRows = syncIsVerified ? rows.filter(r => r.status === 'not_started' || r.status === 'partial') : [];
   const pendingByPerson = Array.from(
     pendingRows.reduce((map, row) => {
       const existing = map.get(row.employee.id) || { employee: row.employee, missing: [] as string[] };
@@ -833,9 +842,32 @@ function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,on
     }, new Map<string, { employee: Employee; missing: string[] }>()).values()
   );
 
-  const now = new Date();
-  const endDate = new Date(cycle.endDate + 'T23:59:59');
-  const daysDiff = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  const todayInSaoPaulo = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Sao_Paulo' }).format(now);
+  const utcDayNumber = (date: string) => {
+    const [year, month, day] = date.split('-').map(Number);
+    return Date.UTC(year, month - 1, day) / 86_400_000;
+  };
+  const daysDiff = utcDayNumber(cycle.endDate) - utcDayNumber(todayInSaoPaulo);
+  const daysUntilStart = utcDayNumber(cycle.startDate) - utcDayNumber(todayInSaoPaulo);
+  const evaluationRowsPresent = evaluations.every(evaluation => rows.some(row => row.evaluation.id === evaluation.id));
+  const completionVerified = syncIsVerified && expected !== null && expected > 0 && rows.length > 0 &&
+    evaluationRowsPresent && rows.every(row => row.status === 'completed');
+  const deadlineAccent = cycleStatus === 'Encerrado' ? '#64748b'
+    : cycleStatus === 'Em andamento' && daysDiff <= 3 ? '#e11d48'
+    : cycleStatus === 'Em andamento' && daysDiff <= 7 ? '#f59e0b' : '#0284c7';
+  const deadlineBackground = cycleStatus === 'Encerrado' ? '#f1f5f9'
+    : cycleStatus === 'Em andamento' && daysDiff <= 3 ? '#fff1f2'
+    : cycleStatus === 'Em andamento' && daysDiff <= 7 ? '#fffbeb' : '#f0f9ff';
+  const deadlineColor = cycleStatus === 'Encerrado' ? '#475569'
+    : cycleStatus === 'Em andamento' && daysDiff <= 3 ? '#be123c'
+    : cycleStatus === 'Em andamento' && daysDiff <= 7 ? '#b45309' : '#0369a1';
+  const deadlineBorder = cycleStatus === 'Encerrado' ? '#cbd5e1'
+    : cycleStatus === 'Em andamento' && daysDiff <= 3 ? '#fecdd3'
+    : cycleStatus === 'Em andamento' && daysDiff <= 7 ? '#fde68a' : '#bae6fd';
+  const deadlineLabel = cycleStatus === 'Programado'
+    ? daysUntilStart > 0 ? `Inicia em ${daysUntilStart} ${daysUntilStart === 1 ? 'dia' : 'dias'}` : 'Inicia hoje'
+    : cycleStatus === 'Encerrado' ? 'Prazo encerrado'
+    : daysDiff > 0 ? `Encerra em ${daysDiff} ${daysDiff === 1 ? 'dia' : 'dias'}` : 'Encerra hoje!';
 
   return (
     <>
@@ -843,7 +875,7 @@ function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,on
       <div style={{
         background: '#f8fafc',
         border: '1px solid #cbd5e1',
-        borderLeft: `5px solid ${daysDiff <= 3 ? '#e11d48' : daysDiff <= 7 ? '#f59e0b' : '#0284c7'}`,
+        borderLeft: `5px solid ${deadlineAccent}`,
         borderRadius: 12,
         padding: '20px 24px',
         marginBottom: 24,
@@ -859,8 +891,8 @@ function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,on
                 width: 30,
                 height: 30,
                 borderRadius: '50%',
-                background: daysDiff <= 3 ? '#ffe4e6' : daysDiff <= 7 ? '#fef3c7' : '#e0f2fe',
-                color: daysDiff <= 3 ? '#e11d48' : daysDiff <= 7 ? '#d97706' : '#0284c7'
+                background: deadlineBackground,
+                color: deadlineColor
               }}>
                 <Bell size={17} />
               </span>
@@ -872,24 +904,34 @@ function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,on
                 fontWeight: 700,
                 padding: '3px 10px',
                 borderRadius: 20,
-                background: daysDiff <= 3 ? '#fff1f2' : daysDiff <= 7 ? '#fffbeb' : '#f0f9ff',
-                color: daysDiff <= 3 ? '#be123c' : daysDiff <= 7 ? '#b45309' : '#0369a1',
-                border: `1px solid ${daysDiff <= 3 ? '#fecdd3' : daysDiff <= 7 ? '#fde68a' : '#bae6fd'}`
+                background: deadlineBackground,
+                color: deadlineColor,
+                border: `1px solid ${deadlineBorder}`
               }}>
-                {daysDiff > 0 ? `Encerra em ${daysDiff} ${daysDiff === 1 ? 'dia' : 'dias'}` : daysDiff === 0 ? 'Encerra hoje!' : 'Prazo expirado'}
+                {deadlineLabel}
               </span>
             </div>
 
             <p style={{ margin: '0 0 10px', fontSize: 14, color: '#475467', lineHeight: 1.5 }}>
-              O ciclo atual está aberto até <b>{formatDate(cycle.endDate)}</b>.
-              {pendingByPerson.length > 0 ? (
-                <> Ainda restam <b>{quantity(pendingByPerson.length, 'colaborador com pendência', 'colaboradores com pendências')}</b> para concluir:</>
+              {cycleStatus === 'Programado' ? (
+                <>Este ciclo está programado para começar em <b>{formatDate(cycle.startDate)}</b>.</>
+              ) : cycleStatus === 'Encerrado' ? (
+                <>Este ciclo foi encerrado em <b>{formatDate(cycle.endDate)}</b>.</>
               ) : (
-                <> Todos os participantes concluíram suas avaliações neste ciclo!</>
+                <>O ciclo está aberto até <b>{formatDate(cycle.endDate)}</b>.</>
               )}
+              {cycleStatus !== 'Programado' && (!syncIsVerified ? (
+                <> A sincronização está ausente, atrasada ou requer conferência; não é possível confirmar as pendências ou a conclusão.</>
+              ) : pendingByPerson.length > 0 ? (
+                <> Ainda restam <b>{quantity(pendingByPerson.length, 'colaborador com pendência', 'colaboradores com pendências')}</b> para concluir:</>
+              ) : completionVerified ? (
+                <> Todos os participantes concluíram suas avaliações neste ciclo.</>
+              ) : (
+                <> A configuração ou o total esperado não permite confirmar a conclusão completa.</>
+              ))}
             </p>
 
-            {pendingByPerson.length > 0 && (
+            {syncIsVerified && pendingByPerson.length > 0 && (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 6 }}>
                 {pendingByPerson.slice(0, 6).map(p => (
                   <span key={p.employee.id} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, padding: '5px 10px', fontSize: 12, color: '#1e293b' }}>
@@ -909,9 +951,9 @@ function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,on
             <button
               type="button"
               className="button small primary"
-              onClick={() => onNavigate('pending')}
+              onClick={() => onNavigate(syncIsVerified ? 'pending' : 'evaluations')}
             >
-              <UserRoundCheck size={16} /> Ver todas as pendências
+              <UserRoundCheck size={16} /> {syncIsVerified ? 'Ver todas as pendências' : 'Ver formulários e sincronização'}
             </button>
             <button
               type="button"
@@ -928,7 +970,7 @@ function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,on
       <div className="stat-grid">
         <Stat label="Participantes do ciclo" value={cycle.participants.length} note={`${quantity(leaderIds.size,'liderança vinculada','lideranças vinculadas')}`} icon={<UsersRound size={19}/>}/>
         <Stat label="Respostas recebidas" value={<>{responses.length}<em>{expected!==null?` / ${expected}`:''}</em></>} note={`${quantity(evaluations.length,'formulário vinculado','formulários vinculados')}`} icon={<ClipboardList size={19}/>}/>
-        <Stat label="Conclusão do ciclo" value={formatPercent(responses.length,expected)} note={expected===null?'Defina o total esperado por formulário':`${quantity(Math.max(0,expected-responses.length),'resposta pendente','respostas pendentes')}`}/>
+        <Stat label="Conclusão do ciclo" value={syncIsVerified ? formatPercent(responses.length,expected) : '—'} note={!syncIsVerified?'Confirme sincronização em Avaliações':expected===null?'Defina o total esperado por formulário':`${quantity(Math.max(0,expected-responses.length),'resposta pendente','respostas pendentes')}`}/>
         <Stat label="Colaboradores ativos" value={data.employees.filter(employee=>employee.active).length} note={`${quantity(data.employees.length,'pessoa')} no cadastro`} icon={<UserRoundCheck size={19}/>}/>
       </div>
       <div className="dashboard-grid">
@@ -954,7 +996,7 @@ function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,on
         <Panel title="Ciclo de avaliação" subtitle={cycle.name}>
           <div className="cycle-summary">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Pill kind={cycleState(cycle)==='Em andamento'?'green':'muted'}>{cycleState(cycle)}</Pill>
+              <Pill kind={cycleStatus==='Em andamento'?'green':'muted'}>{cycleStatus}</Pill>
               <button
                 type="button"
                 className="button small"
@@ -967,7 +1009,7 @@ function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,on
             <dl>
               <div><dt>Período</dt><dd>{formatDate(cycle.startDate)}<br/>{formatDate(cycle.endDate)}</dd></div>
               <div><dt>Participantes</dt><dd>{quantity(cycle.participants.length,'pessoa')}</dd></div>
-              <div><dt>Coleta</dt><dd>Portal Nativo (/avaliar)</dd></div>
+              <div><dt>Coleta</dt><dd>Google Forms (legado)</dd></div>
             </dl>
             <div className="mini-note"><ShieldCheck size={17}/>Acompanhamento exclusivo do RH</div>
           </div>
@@ -996,14 +1038,14 @@ function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,on
 /** The primary RH workflow: share the evaluation links for the cycle. */
 function CycleLinks({forms,cycle,onOpenWhatsAppModal}:{forms:Evaluation[];cycle:Pick<Cycle,'startDate'|'endDate'> & {id?:string;name?:string};onOpenWhatsAppModal?:()=>void}) {
   const [copied,setCopied]=useState(''),[error,setError]=useState('');
-  const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const leadUrl = `${origin}/avaliacao-de-lideres`;
-  const teamUrl = `${origin}/avaliacao-da-equipe`;
+  const leadUrl = forms.find(form => form.kind === 'leadership')?.googleFormUrl || '';
+  const teamUrl = forms.find(form => form.kind === 'team')?.googleFormUrl || '';
 
-  const waLeadMsg = `Olá! 👋\n\nEstá aberto o ciclo de avaliação *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse o link abaixo para preencher a *Avaliação de Líderes* (basta selecionar seu nome na lista):\n${leadUrl}\n\nPeríodo aberto até ${formatDate(cycle.endDate)}.\nCardiofitness — Gestão de Pessoas`;
-  const waTeamMsg = `Olá! 👋\n\nEstá aberto o ciclo de avaliação *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse o link abaixo para preencher a *Avaliação e Autoavaliação da Equipe* (basta selecionar seu nome na lista):\n${teamUrl}\n\nPeríodo aberto até ${formatDate(cycle.endDate)}.\nCardiofitness — Gestão de Pessoas`;
+  const waLeadMsg = leadUrl ? `Olá! 👋\n\nEstá aberto o ciclo de avaliação *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse o Google Forms abaixo para preencher a *Avaliação de Líderes*:\n${leadUrl}\n\nPeríodo aberto até ${formatDate(cycle.endDate)}.\nCardiofitness — Gestão de Pessoas` : '';
+  const waTeamMsg = teamUrl ? `Olá! 👋\n\nEstá aberto o ciclo de avaliação *${cycle?.name || 'Cardiofitness'}*.\n\nAcesse o Google Forms abaixo para preencher a *Avaliação e Autoavaliação da Equipe*:\n${teamUrl}\n\nPeríodo aberto até ${formatDate(cycle.endDate)}.\nCardiofitness — Gestão de Pessoas` : '';
 
   async function copyLink(url:string){
+    if(!url){setError('Configure o link do Google Forms deste ciclo antes de compartilhar.');return;}
     try {
       if(!navigator.clipboard?.writeText)throw new Error('Clipboard indisponível');
       await navigator.clipboard.writeText(url);setCopied(url);setError('');
@@ -1014,42 +1056,38 @@ function CycleLinks({forms,cycle,onOpenWhatsAppModal}:{forms:Evaluation[];cycle:
     <div className="quick-link" style={{background:'#f0f7fd',borderColor:'#c5def1',padding:'12px 16px',borderRadius:8}}>
       <div>
         <b style={{color:'#0573b9',fontSize:14}}>Formulário 1: Avaliação de Líderes</b>
-        <small style={{display:'block',marginTop:2}}>Colaborador avalia o líder do setor · Seleção direta do nome na lista · {leadUrl}</small>
+        <small style={{display:'block',marginTop:2}}>Google Forms (coleta legada) · {leadUrl || 'Link não configurado'}</small>
       </div>
       <div className="quick-actions">
-        <button type="button" className="button small primary" onClick={()=>void copyLink(leadUrl)}>
+        <button type="button" className="button small primary" disabled={!leadUrl} onClick={()=>void copyLink(leadUrl)}>
           <Copy size={15}/>{copied===leadUrl?'Link copiado!':'Copiar link'}
         </button>
-        <button type="button" className="button small" onClick={()=>void copyLink(waLeadMsg)} style={{color:'#067647'}}>
+        <button type="button" className="button small" disabled={!waLeadMsg} onClick={()=>void copyLink(waLeadMsg)} style={{color:'#067647'}}>
           {copied===waLeadMsg?'✓ Copiado!':'WhatsApp'}
         </button>
-        <a className="button small" href={leadUrl} target="_blank" rel="noopener noreferrer">
-          <ExternalLink size={15}/>Abrir
-        </a>
+        {leadUrl?<a className="button small" href={leadUrl} target="_blank" rel="noopener noreferrer"><ExternalLink size={15}/>Abrir Google Forms</a>:<button className="button small" type="button" disabled><ExternalLink size={15}/>Indisponível</button>}
       </div>
     </div>
 
     <div className="quick-link" style={{background:'#f0fdf4',borderColor:'#bbf7d0',padding:'12px 16px',borderRadius:8}}>
       <div>
         <b style={{color:'#16a34a',fontSize:14}}>Formulário 2: Avaliação e Autoavaliação da Equipe</b>
-        <small style={{display:'block',marginTop:2}}>Autoavaliação e avaliação entre colegas · Seleção direta do nome · {teamUrl}</small>
+        <small style={{display:'block',marginTop:2}}>Google Forms (coleta legada) · {teamUrl || 'Link não configurado'}</small>
       </div>
       <div className="quick-actions">
-        <button type="button" className="button small primary" onClick={()=>void copyLink(teamUrl)}>
+        <button type="button" className="button small primary" disabled={!teamUrl} onClick={()=>void copyLink(teamUrl)}>
           <Copy size={15}/>{copied===teamUrl?'Link copiado!':'Copiar link'}
         </button>
-        <button type="button" className="button small" onClick={()=>void copyLink(waTeamMsg)} style={{color:'#067647'}}>
+        <button type="button" className="button small" disabled={!waTeamMsg} onClick={()=>void copyLink(waTeamMsg)} style={{color:'#067647'}}>
           {copied===waTeamMsg?'✓ Copiado!':'WhatsApp'}
         </button>
-        <a className="button small" href={teamUrl} target="_blank" rel="noopener noreferrer">
-          <ExternalLink size={15}/>Abrir
-        </a>
+        {teamUrl?<a className="button small" href={teamUrl} target="_blank" rel="noopener noreferrer"><ExternalLink size={15}/>Abrir Google Forms</a>:<button className="button small" type="button" disabled><ExternalLink size={15}/>Indisponível</button>}
       </div>
     </div>
 
     {onOpenWhatsAppModal && (
       <div style={{marginTop:8}}>
-        <button type="button" className="button small" onClick={onOpenWhatsAppModal} style={{borderColor:'#86efac',color:'#166534',background:'#f0fdf4'}}>
+        <button type="button" className="button small" disabled={!leadUrl||!teamUrl} onClick={onOpenWhatsAppModal} style={{borderColor:'#86efac',color:'#166534',background:'#f0fdf4'}}>
           <MessageCircle size={15}/>Ver as 3 Mensagens do WhatsApp
         </button>
       </div>
@@ -1062,16 +1100,15 @@ function QuickCycleHome({data,cycle,onQuickCycle,onConfigure,onOpenLinks}:{data:
   const [showWaModal, setShowWaModal] = useState(false);
   const forms=cycleEvaluations(data,cycle.id);
   const next=suggestNextCycle(data);
-  const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const leadUrl = `${origin}/avaliacao-de-lideres`;
-  const teamUrl = `${origin}/avaliacao-da-equipe`;
+  const leadUrl = forms.find(form => form.kind === 'leadership')?.googleFormUrl || '';
+  const teamUrl = forms.find(form => form.kind === 'team')?.googleFormUrl || '';
 
   return <section className="quick-launch" aria-labelledby="quick-launch-title">
     {showWaModal && <WhatsAppModal cycle={cycle} leadUrl={leadUrl} teamUrl={teamUrl} onClose={()=>setShowWaModal(false)}/>}
     <div className="quick-launch-head">
-      <div><span className="quick-kicker">PORTAL DE AVALIAÇÕES</span><h2 id="quick-launch-title">Links de avaliação do ciclo</h2><p>Compartilhe os dois links com os colaboradores. Todas as avaliações respondidas são computadas em tempo real durante o período ativo.</p></div>
+      <div><span className="quick-kicker">COLETA LEGADA · GOOGLE FORMS</span><h2 id="quick-launch-title">Links de avaliação do ciclo</h2><p>Compartilhe os links dos formulários vinculados. As respostas entram no painel após a sincronização do servidor; confira o status de cada avaliação.</p></div>
       <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
-        <button type="button" className="button" onClick={()=>setShowWaModal(true)} style={{borderColor:'#86efac',color:'#166534',background:'#f0fdf4'}}>
+        <button type="button" className="button" disabled={!leadUrl||!teamUrl} onClick={()=>setShowWaModal(true)} style={{borderColor:'#86efac',color:'#166534',background:'#f0fdf4'}}>
           <MessageCircle size={17}/>Mensagens WhatsApp (3)
         </button>
         <button type="button" className="button" onClick={onOpenLinks}><ExternalLink size={17}/>Ver links dos formulários (2)</button>
@@ -1081,7 +1118,7 @@ function QuickCycleHome({data,cycle,onQuickCycle,onConfigure,onOpenLinks}:{data:
     <div className="quick-launch-bottom">
       <div className="quick-link-title"><b>Links do ciclo: {cycle.name}</b><small>{formatDate(cycle.startDate)} a {formatDate(cycle.endDate)}</small></div>
       <CycleLinks forms={forms} cycle={cycle} onOpenWhatsAppModal={()=>setShowWaModal(true)}/>
-      <p className="quick-help">Envie os dois links para a equipe. Cada colaborador seleciona seu próprio nome na lista e responde. As notas alimentam as médias e os relatórios automaticamente durante o período ativo. <button className="text-button" type="button" onClick={onConfigure}>Configurações avançadas</button></p>
+      <p className="quick-help">Envie os links dos Google Forms configurados para o ciclo. As médias e os relatórios são atualizados após uma sincronização bem-sucedida. <button className="text-button" type="button" onClick={onConfigure}>Configurações avançadas</button></p>
     </div>
   </section>;
 }
@@ -1103,7 +1140,7 @@ function QuickCycleEditor({data,onClose,onConfigure,onCreated}:{data:AppData;onC
       <div className="quick-cycle-summary"><div><small>Próximo período</small><b>{draft.input.name}</b><span>{formatDate(draft.input.startDate)} a {formatDate(draft.input.endDate)}</span></div><div><small>Colaboradores ativos</small><b>{draft.input.participants.length}</b><span>Vínculos atuais do cadastro</span></div><div><small>Formulários</small><b>{draft.forms.length}</b><span>Avaliações vinculadas</span></div></div>
       {!created&&draft.error&&<Notice message={draft.error}/>}
       {!created&&draft.warnings.map((warning,i)=><p className="quick-warning" key={i}><ShieldCheck size={16}/>{warning}</p>)}
-      {created&&<><h3>Links de avaliação</h3><CycleLinks forms={draft.forms} cycle={draft.input}/><p className="quick-help">Compartilhe o link do portal com os colaboradores para responderem as avaliações deste período.</p></>}
+      {created&&<><h3>Links de avaliação</h3><CycleLinks forms={draft.forms} cycle={draft.input}/><p className="quick-help">Compartilhe os links dos Google Forms vinculados a este ciclo.</p></>}
       </>}
       {error&&<Notice message={error}/>}
     </div>
@@ -1149,13 +1186,20 @@ function HistoryChart({data,employeeId,kinds}:{data:AppData;employeeId:string;ki
 
 function Evaluations({data,cycle,onResults,onConfigure}:{data:AppData;cycle?:Cycle;onResults:(id:string)=>void;onConfigure:()=>void}) {
   const evaluations=cycle?cycleEvaluations(data,cycle.id):[];
-  return <><div className="info-banner"><ClipboardList size={26}/><div><b>Portal de Avaliações Cardiofitness</b><p>As respostas são preenchidas nos links fixos e computadas diretamente em tempo real por colaborador e ciclo ativo.</p></div></div><div className="section-heading"><h2>Formulários do ciclo</h2>{cycle&&<><Pill kind={cycleState(cycle)==='Em andamento'?'green':'muted'}>{cycleState(cycle)}</Pill><span>{formatDate(cycle.startDate)} a {formatDate(cycle.endDate)}</span></>}</div>{evaluations.length?<div className="evaluation-grid">{evaluations.map(evaluation=>{const stats=getEvaluationStats(data,evaluation.id);const self=stats.responses.filter(response=>response.kind==='self').length;return <Panel key={evaluation.id} className="evaluation-card"><div className="evaluation-card-top"><span className="form-icon"><ClipboardList size={25}/></span><Pill kind="green">Portal Nativo</Pill></div><h2>{evaluation.name}</h2><p className="muted">{evaluation.kind==='team'?'Avaliação entre colegas e autoavaliação':'Avaliação da liderança responsável pelo setor'}</p><div className="evaluation-count"><strong>{stats.received}</strong><span>{stats.expected!==null?`de ${quantity(stats.expected,'resposta')}`:stats.received===1?'resposta recebida':'respostas recebidas'}</span></div><Progress received={stats.received} expected={stats.expected}/><div className="evaluation-meta"><span>{stats.pending!==null?quantity(stats.pending,'pendente'):'Total esperado não definido'}</span><b>{formatPercent(stats.received,stats.expected)}</b></div>{evaluation.kind==='team'&&<div className="form-split"><span>{stats.received-self} entre colegas</span><span>{quantity(self,'autoavaliação','autoavaliações')}</span></div>}<div style={{display:'flex',gap:10,marginTop:16}}><button className="button primary full" onClick={()=>onResults(evaluation.id)}><BarChart3 size={18}/>Ver resultados<ArrowRight size={17}/></button><a className="button" href={evaluation.kind==='leadership'?'/avaliacao-de-lideres':'/avaliacao-da-equipe'} target="_blank" rel="noopener noreferrer"><ExternalLink size={15}/>Abrir formulário</a></div><div className="evaluation-sync"><span><Check size={15} style={{color:'#059669'}}/>Coleta nativa integrada em tempo real</span></div></Panel>;})}</div>:<Panel><Empty title={cycle?'Vincule os formulários deste ciclo':'Nenhum ciclo cadastrado'} action={<button className="button primary" onClick={onConfigure}><Plus size={18}/>Configurar avaliações</button>}>Os dois formulários fornecidos estão disponíveis nas configurações.</Empty></Panel>}</>;
+  return <><div className="info-banner"><ClipboardList size={26}/><div><b>Coleta legada pelo Google Forms</b><p>As respostas são importadas pelo servidor. Confira o estado e o horário da última consulta em cada formulário; login no painel não confirma sincronização recente.</p></div></div><div className="section-heading"><h2>Formulários do ciclo</h2>{cycle&&<><Pill kind={cycleState(cycle)==='Em andamento'?'green':'muted'}>{cycleState(cycle)}</Pill><span>{formatDate(cycle.startDate)} a {formatDate(cycle.endDate)}</span></>}</div>{evaluations.length?<div className="evaluation-grid">{evaluations.map(evaluation=>{const stats=getEvaluationStats(data,evaluation.id);const self=stats.responses.filter(response=>response.kind==='self').length;const health=syncHealth(evaluation,cycle);return <Panel key={evaluation.id} className="evaluation-card"><div className="evaluation-card-top"><span className="form-icon"><ClipboardList size={25}/></span><Pill kind={health.kind}>{health.label}</Pill></div><h2>{evaluation.name}</h2><p className="muted">{evaluation.kind==='team'?'Avaliação entre colegas e autoavaliação':'Avaliação da liderança responsável pelo setor'}</p><div className="evaluation-count"><strong>{stats.received}</strong><span>{stats.expected!==null?`de ${quantity(stats.expected,'resposta')}`:stats.received===1?'resposta recebida':'respostas recebidas'}</span></div><Progress received={stats.received} expected={stats.expected}/><div className="evaluation-meta"><span>{stats.pending!==null?quantity(stats.pending,'pendente'):'Total esperado não definido'}</span><b>{formatPercent(stats.received,stats.expected)}</b></div>{evaluation.kind==='team'&&<div className="form-split"><span>{stats.received-self} entre colegas</span><span>{quantity(self,'autoavaliação','autoavaliações')}</span></div>}<div style={{display:'flex',gap:10,marginTop:16}}><button className="button primary full" onClick={()=>onResults(evaluation.id)}><BarChart3 size={18}/>Ver resultados<ArrowRight size={17}/></button>{evaluation.googleFormUrl?<a className="button" href={evaluation.googleFormUrl} target="_blank" rel="noopener noreferrer"><ExternalLink size={15}/>Abrir Google Forms</a>:<button className="button" type="button" disabled><ExternalLink size={15}/>Link não configurado</button>}</div><div className="evaluation-sync"><span>{health.kind==='green'?<Check size={15} style={{color:'#059669'}}/>:<CircleOff size={15} style={{color:health.kind==='amber'?'#b45309':'#64748b'}}/>}{evaluation.lastSyncedAt?`Última consulta: ${formatDate(evaluation.lastSyncedAt)}`:'Sem consulta registrada; respostas não confirmadas no painel'}</span></div></Panel>;})}</div>:<Panel><Empty title={cycle?'Vincule os formulários deste ciclo':'Nenhum ciclo cadastrado'} action={<button className="button primary" onClick={onConfigure}><Plus size={18}/>Configurar avaliações</button>}>Os dois formulários fornecidos estão disponíveis nas configurações.</Empty></Panel>}</>;
 }
 
 function Pending({data,cycleId,onPerson,onConfigure}:{data:AppData;cycleId:string;onPerson:(id:string)=>void;onConfigure:()=>void}) {
   const [exporting,setExporting]=useState<'pdf'|'xlsx'|null>(null),[exportError,setExportError]=useState('');const [evaluationId,setEvaluationId]=useState(''),[department,setDepartment]=useState(''),[query,setQuery]=useState(''),[status,setStatus]=useState('pending'),[page,setPage]=useState(1);
   const evaluations=cycleEvaluations(data,cycleId),selectedEvaluation=evaluations.some(item=>item.id===evaluationId)?evaluationId:'';
-  const rows=getParticipation(data,cycleId,selectedEvaluation||undefined);
+  const syncEvaluations=evaluations.filter(evaluation=>!selectedEvaluation||evaluation.id===selectedEvaluation);
+  const syncIsVerified=syncEvaluations.length>0&&syncEvaluations.every(evaluation=>{
+    const lastSyncAt=evaluation.lastSyncedAt?Date.parse(evaluation.lastSyncedAt):Number.NaN;
+    const status=syncHealth(evaluation,data.cycles.find(cycle=>cycle.id===cycleId)).label;
+    return evaluation.expectedResponses!==null&&(evaluation.sourceType==='native'||Number.isFinite(lastSyncAt))&&(status==='Consulta recente'||status==='Histórico preservado'||status==='Coleta nativa ativa');
+  });
+  const participationRows=getParticipation(data,cycleId,selectedEvaluation||undefined);
+  const rows=syncIsVerified?participationRows:participationRows.map(row=>({...row,status:'unconfigured' as const}));
   const departments=[...new Set(rows.map(row=>row.employee.department))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
   const selectedDepartment=departments.includes(department)?department:'';
   const scoped=rows.filter(row=>(!selectedDepartment||row.employee.department===selectedDepartment)&&row.employee.name.toLocaleLowerCase('pt-BR').includes(query.toLocaleLowerCase('pt-BR')));
@@ -1164,13 +1208,14 @@ function Pending({data,cycleId,onPerson,onConfigure}:{data:AppData;cycleId:strin
   const statusLabels={not_started:'Não iniciou',partial:'Em andamento',completed:'Concluiu',unconfigured:'A conferir'};
   useEffect(()=>{setPage(1);},[cycleId]);
   return <>
-    <div className="info-banner pending-explanation"><UserRoundCheck size={26}/><div><b>Quem respondeu, e o que ainda falta responder.</b><p>A lista usa os participantes e vínculos do ciclo e as respostas registradas em tempo real. Receber uma avaliação de outra pessoa não significa ter respondido.</p></div></div>
-    <div className="stat-grid three">
+    <div className="info-banner pending-explanation"><UserRoundCheck size={26}/><div><b>Quem respondeu, e o que ainda falta responder.</b><p>A lista usa os participantes, vínculos do ciclo e respostas importadas na última sincronização bem-sucedida. Confira a última consulta em Avaliações antes de tratar o status como atual. Receber uma avaliação de outra pessoa não significa ter respondido.</p></div></div>
+    {syncIsVerified&&<div className="stat-grid three">
       <Stat label="Não iniciaram" value={scoped.filter(row=>row.status==='not_started').length} note="Participações sem resposta registrada" icon={<CircleOff size={19}/>}/>
       <Stat label="Em andamento" value={scoped.filter(row=>row.status==='partial').length} note="Já responderam, mas ainda têm pendências" icon={<ClipboardList size={19}/>}/>
       <Stat label="Concluíram" value={scoped.filter(row=>row.status==='completed').length} note="Todas as pessoas esperadas avaliadas" icon={<Check size={19}/>}/>
-    </div>
-    {scoped.some(row=>row.status==='unconfigured')&&<div className="notice notice-error" role="status">{quantity(scoped.filter(row=>row.status==='unconfigured').length,'participação a conferir','participações a conferir')}: o formulário ainda não possui perguntas numéricas configuradas ou o total esperado difere das atribuições do ciclo. Selecione “A conferir” para consultar.</div>}
+    </div>}
+    {!syncIsVerified&&<div className="notice notice-error" role="status">A sincronização está ausente, atrasada, com erros ou sem total esperado configurado. O painel não pode confirmar o status atual; atualize a consulta em Avaliações e confira as configurações.</div>}
+    {syncIsVerified&&scoped.some(row=>row.status==='unconfigured')&&<div className="notice notice-error" role="status">{quantity(scoped.filter(row=>row.status==='unconfigured').length,'participação a conferir','participações a conferir')}: confira as perguntas numéricas, o total esperado e os vínculos do ciclo. Selecione “A conferir” para consultar.</div>}
     {exportError&&<Notice message={exportError}/>}
     <Panel title="Participação por pessoa e formulário" subtitle="Abra as pendências para ver quem ainda precisa ser avaliado." action={<div className="report-export">{(['pdf','xlsx'] as const).map(format=><button key={format} className="button small" disabled={!filtered.length||!!exporting} onClick={async()=>{setExporting(format);setExportError('');try{await downloadPending(filtered,data.cycles.find(c=>c.id===cycleId)?.name||'Ciclo',format);}catch(error){setExportError(errorMessage(error));}finally{setExporting(null);}}}>{exporting===format?'Exportando…':format==='pdf'?'Pendências PDF':'Pendências Excel'}</button>)}</div>}>
       <div className="table-filters pending-filters">
@@ -1210,7 +1255,61 @@ function PasswordSettings({required=false}:{required?:boolean}) {
 
 function Configuration({data,cycleId,setCycleId,onEdit,demo,googleConfigured}:{data:AppData;cycleId:string;setCycleId:(id:string)=>void;onEdit:(editor:Editor)=>void;demo:boolean;googleConfigured:boolean}) {
   const [tab,setTab]=useState<'cycles'|'forms'|'account'|'access'>('cycles');const [rosterId,setRosterId]=useState('');const evaluations=cycleEvaluations(data,cycleId);const selectedRoster=evaluations.find(e=>e.id===rosterId)||evaluations[0];
-  return <><div className="settings-tabs" role="tablist" aria-label="Configurações"><button role="tab" aria-selected={tab==='cycles'} onClick={()=>setTab('cycles')}><CalendarDays size={18}/>Ciclos e participantes</button><button role="tab" aria-selected={tab==='forms'} onClick={()=>setTab('forms')}><ClipboardList size={18}/>Formulários de Avaliação</button><button role="tab" aria-selected={tab==='account'} onClick={()=>setTab('account')}><LockKeyhole size={18}/>Minha conta</button><button role="tab" aria-selected={tab==='access'} onClick={()=>setTab('access')}><UsersRound size={18}/>Acessos do RH</button></div>{tab==='access'?<RhAccess mode={demo?'demo':'live'}/>:tab==='account'?<PasswordSettings/>:tab==='cycles'?<Panel title="Ciclos de avaliação" subtitle="Crie o próximo mês automaticamente ou use o editor avançado" action={<div className="quick-actions"><button className="button primary" onClick={()=>onEdit({type:'quick-cycle'})}><Plus size={17}/>Criar próximo ciclo</button><button className="button" onClick={()=>onEdit({type:'cycle'})}>Avançado</button></div>}><div className="table-scroll"><table><thead><tr><th>Ciclo</th><th>Período</th><th>Participantes</th><th>Status</th><th>Ação</th></tr></thead><tbody>{[...data.cycles].sort((a,b)=>b.startDate.localeCompare(a.startDate)).map(cycle=><tr key={cycle.id}><td className="strong">{cycle.name}</td><td>{formatDate(cycle.startDate)} a {formatDate(cycle.endDate)}</td><td>{quantity(cycle.participants.length,'pessoa')}</td><td><Pill kind={cycleState(cycle)==='Em andamento'?'green':'muted'}>{cycleState(cycle)}</Pill></td><td><button className="button small" onClick={()=>onEdit({type:'cycle',item:cycle})}><Pencil size={15}/>Editar</button><button className="button small" onClick={()=>onEdit({type:'cycle',sourceCycleId:cycle.id})}>Preparar próximo</button></td></tr>)}</tbody></table></div>{!data.cycles.length&&<Empty title="Cadastre o primeiro ciclo">Defina o período e selecione as pessoas que participarão.</Empty>}<div className="settings-note"><ShieldCheck size={19}/><p>Os vínculos de liderança são preservados em cada ciclo. Ciclos que já receberam respostas mantêm suas datas e participantes.</p></div></Panel>:<><Panel title="Formulários do ciclo" subtitle="Configuração dos formulários do ciclo de avaliação" action={<button className="button primary" disabled={!cycleId} onClick={()=>onEdit({type:'evaluation'})}><Plus size={17}/>Vincular formulário</button>}><div className="table-filters"><Field label="Ciclo de avaliação"><select value={cycleId} onChange={event=>setCycleId(event.target.value)}>{!data.cycles.length&&<option value="">Cadastre um ciclo primeiro</option>}{data.cycles.map(cycle=><option key={cycle.id} value={cycle.id}>{cycle.name}</option>)}</select></Field></div><div className="settings-form-list">{evaluations.map(evaluation=><div className="settings-form-row" key={evaluation.id}><span className="form-icon"><ClipboardList size={22}/></span><div><h3>{evaluation.name}</h3><p>{quantity(evaluation.mapping.scoreQuestions.length,'pergunta numérica','perguntas numéricas')} · {evaluation.expectedResponses===null?'Total esperado não definido':`${quantity(evaluation.expectedResponses,'resposta esperada','respostas esperadas')}`}</p><small>{evaluation.googleFormId?demo?'Identificação de demonstração':`ID do formulário: ${evaluation.googleFormId}`:'ID de edição ainda não informado'}</small></div><button className="button small" onClick={()=>onEdit({type:'evaluation',item:evaluation})}><Pencil size={16}/>Configurar</button></div>)}</div>{!evaluations.length&&<Empty title="Nenhum formulário neste ciclo">Vincule um dos formulários fornecidos abaixo ou configure outro formulário de avaliação.</Empty>}</Panel><Panel title="Relação de participantes e opções dos formulários" subtitle="Confira a relação de colaboradores deste ciclo."><div className="padded"><label className="field"><span>Formulário a conferir</span><select value={selectedRoster?.id||''} onChange={e=>setRosterId(e.target.value)}>{evaluations.map(e=><option key={e.id} value={e.id}>{e.name}</option>)}</select></label>{selectedRoster&&<FormRoster key={selectedRoster.id} evaluationId={selectedRoster.id}/>}</div></Panel><Panel title="Formulários fornecidos" subtitle="Links de coleta informados para este projeto"><div className="settings-form-list">{PROVIDED_FORMS.map(form=><div className="settings-form-row" key={form.kind}><span className="form-icon"><ExternalLink size={21}/></span><div><h3>{form.name}</h3><a href={form.kind==='leadership'?'/avaliacao-de-lideres':'/avaliacao-da-equipe'} target="_blank" rel="noopener noreferrer">Abrir formulário<ExternalLink size={13}/></a></div><button className="button small" disabled={!cycleId} onClick={()=>onEdit({type:'evaluation',preset:form})}><Plus size={16}/>Vincular ao ciclo</button></div>)}</div></Panel></>}<div className="connection-note"><Database size={22}/><div><b>Base de Dados e Cadastros Cardiofitness</b><p>Cadastros, ciclos, vínculos de liderança e respostas registradas com segurança no sistema.</p></div><Pill kind="green">Sistema Conectado</Pill></div></>;
+  return <><div className="settings-tabs" role="tablist" aria-label="Configurações"><button role="tab" aria-selected={tab==='cycles'} onClick={()=>setTab('cycles')}><CalendarDays size={18}/>Ciclos e participantes</button><button role="tab" aria-selected={tab==='forms'} onClick={()=>setTab('forms')}><ClipboardList size={18}/>Formulários de Avaliação</button><button role="tab" aria-selected={tab==='account'} onClick={()=>setTab('account')}><LockKeyhole size={18}/>Minha conta</button><button role="tab" aria-selected={tab==='access'} onClick={()=>setTab('access')}><UsersRound size={18}/>Acessos do RH</button></div>{tab==='access'?<RhAccess mode={demo?'demo':'live'}/>:tab==='account'?<PasswordSettings/>:tab==='cycles'?<Panel title="Ciclos de avaliação" subtitle="Crie o próximo mês automaticamente ou use o editor avançado" action={<div className="quick-actions"><button className="button primary" onClick={()=>onEdit({type:'quick-cycle'})}><Plus size={17}/>Criar próximo ciclo</button><button className="button" onClick={()=>onEdit({type:'cycle'})}>Avançado</button></div>}><div className="table-scroll"><table><thead><tr><th>Ciclo</th><th>Período</th><th>Participantes</th><th>Status</th><th>Ação</th></tr></thead><tbody>{[...data.cycles].sort((a,b)=>b.startDate.localeCompare(a.startDate)).map(cycle=><tr key={cycle.id}><td className="strong">{cycle.name}</td><td>{formatDate(cycle.startDate)} a {formatDate(cycle.endDate)}</td><td>{quantity(cycle.participants.length,'pessoa')}</td><td><Pill kind={cycleState(cycle)==='Em andamento'?'green':'muted'}>{cycleState(cycle)}</Pill></td><td><button className="button small" onClick={()=>onEdit({type:'cycle',item:cycle})}><Pencil size={15}/>Editar</button><button className="button small" onClick={()=>onEdit({type:'cycle',sourceCycleId:cycle.id})}>Preparar próximo</button></td></tr>)}</tbody></table></div>{!data.cycles.length&&<Empty title="Cadastre o primeiro ciclo">Defina o período e selecione as pessoas que participarão.</Empty>}<div className="settings-note"><ShieldCheck size={19}/><p>Os vínculos de liderança são preservados em cada ciclo. Ciclos que já receberam respostas mantêm suas datas e participantes.</p></div></Panel>:<><Panel title="Formulários do ciclo" subtitle="Configuração dos formulários do ciclo de avaliação" action={<div className="quick-actions"><button className="button primary" disabled={!cycleId} onClick={()=>onEdit({type:'native-evaluation'})}><Plus size={17}/>Nova avaliação nativa</button><button className="button" disabled={!cycleId} onClick={()=>onEdit({type:'evaluation'})}>Vínculo legado</button></div>}><div className="table-filters"><Field label="Ciclo de avaliação"><select value={cycleId} onChange={event=>setCycleId(event.target.value)}>{!data.cycles.length&&<option value="">Cadastre um ciclo primeiro</option>}{data.cycles.map(cycle=><option key={cycle.id} value={cycle.id}>{cycle.name}</option>)}</select></Field></div><div className="settings-form-list">{evaluations.map(evaluation=><div className="settings-form-row" key={evaluation.id}><span className="form-icon"><ClipboardList size={22}/></span><div><h3>{evaluation.name}</h3><p>{quantity(evaluation.mapping.scoreQuestions.length,'pergunta numérica','perguntas numéricas')} · {evaluation.expectedResponses===null?'Total esperado não definido':`${quantity(evaluation.expectedResponses,'resposta esperada','respostas esperadas')}`}</p><small>{evaluation.googleFormId?demo?'Identificação de demonstração':`ID do formulário: ${evaluation.googleFormId}`:'ID de edição ainda não informado'}</small></div>{evaluation.sourceType==='native'?<Pill kind="green">Portal ativo</Pill>:<button className="button small" onClick={()=>onEdit({type:'evaluation',item:evaluation})}><Pencil size={16}/>Configurar legado</button>}</div>)}</div>{!evaluations.length&&<Empty title="Nenhum formulário neste ciclo">Vincule um dos formulários fornecidos abaixo ou configure outro formulário de avaliação.</Empty>}</Panel><Panel title="Relação de participantes e opções dos formulários" subtitle="Confira a relação de colaboradores deste ciclo."><div className="padded"><label className="field"><span>Formulário a conferir</span><select value={selectedRoster?.id||''} onChange={e=>setRosterId(e.target.value)}>{evaluations.map(e=><option key={e.id} value={e.id}>{e.name}</option>)}</select></label>{selectedRoster&&<FormRoster key={selectedRoster.id} evaluationId={selectedRoster.id}/>}</div></Panel><Panel title="Formulários fornecidos" subtitle="Links do Google Forms para a coleta legada"><div className="settings-form-list">{PROVIDED_FORMS.map(form=><div className="settings-form-row" key={form.kind}><span className="form-icon"><ExternalLink size={21}/></span><div><h3>{form.name}</h3><a href={form.url} target="_blank" rel="noopener noreferrer">Abrir Google Forms<ExternalLink size={13}/></a></div><button className="button small" disabled={!cycleId} onClick={()=>onEdit({type:'evaluation',preset:form})}><Plus size={16}/>Vincular ao ciclo</button></div>)}</div></Panel></>}<div className="connection-note"><Database size={22}/><div><b>Origem dos dados e sincronização</b><p>{demo ? 'Demonstração: somente dados fictícios locais.' : googleConfigured ? 'Leitura do Google Forms configurada; cada avaliação ainda precisa ter consulta recente e sem erros.' : 'Leitura do Google Forms não configurada; respostas podem não ser importadas automaticamente.'}</p></div><Pill kind={demo?'muted':googleConfigured?'green':'amber'}>{demo?'Demo local':googleConfigured?'Leitura Forms configurada':'Leitura Forms indisponível'}</Pill></div></>;
+}
+
+function NativeEvaluationEditor({data,cycleId,onClose,onSaved}:{data:AppData;cycleId:string;onClose:()=>void;onSaved:()=>void}) {
+  const {saveEvaluation}=useApp();
+  const cycle=data.cycles.find(item=>item.id===cycleId);
+  const [kind,setKind]=useState<EvaluationKind>('team');
+  const [name,setName]=useState('Avaliação da equipe');
+  const [error,setError]=useState('');
+  const [busy,setBusy]=useState(false);
+  const existingNative=!!cycle&&data.evaluations.some(item=>item.cycleId===cycle.id&&item.sourceType==='native'&&item.kind===kind);
+  function changeKind(value:EvaluationKind){
+    setKind(value);
+    setName(({leadership:'Avaliação de líderes',team:'Avaliação da equipe',self:'Autoavaliação',leader_to_employee:'Líder avalia colaborador'})[value]);
+  }
+  async function submit(event:FormEvent){
+    event.preventDefault();
+    if(!cycle){setError('Selecione um ciclo antes de criar a avaliação.');return;}
+    if(existingNative){setError('Este ciclo já possui uma avaliação nativa deste tipo.');return;}
+    setBusy(true);setError('');
+    try{
+      const participantIds=new Set(cycle.participants.map(item=>item.employeeId));
+      const departments=data.employees.filter(employee=>employee.active&&participantIds.has(employee.id)).map(employee=>employee.department);
+      const {mapping,questionSections}=nativeEvaluationMapping(kind,departments);
+      const id=crypto.randomUUID();
+      const draft:Evaluation={id,cycleId:cycle.id,name:name.trim(),kind,sourceType:'native',googleFormId:'',googleFormUrl:'',expectedResponses:null,mapping,questionSections,lastSyncedAt:null,syncMessage:null};
+      const projected:AppData={...data,evaluations:[...data.evaluations,draft]};
+      const expected=getParticipation(projected,cycle.id,id).reduce((total,row)=>total+row.expected,0);
+      if(!mapping.scoreQuestions.length||expected<1)throw new Error('O ciclo precisa ter pessoas ativas com pelo menos uma avaliação prevista.');
+      await saveEvaluation({...draft,expectedResponses:expected});
+      onSaved();
+    }catch(failure){setError(failure instanceof Error?failure.message:'Não foi possível criar a avaliação.');}
+    finally{setBusy(false);}
+  }
+  return <Modal title="Criar avaliação nativa" subtitle="As respostas serão gravadas no ciclo e aparecerão nos resultados do RH." onClose={onClose}>
+    <form onSubmit={submit}>
+      <div className="modal-body">
+        {error&&<Notice message={error}/>}
+        {!cycle&&<Notice message="Cadastre ou selecione um ciclo primeiro."/>}
+        {cycle&&<div className="info-banner compact"><ClipboardList size={19}/><p>Ciclo: <b>{cycle.name}</b> · {quantity(cycle.participants.length,'participante')}</p></div>}
+        <Field label="Tipo de avaliação">
+          <select value={kind} onChange={event=>changeKind(event.target.value as EvaluationKind)}>
+            <option value="team">Equipe e autoavaliação</option>
+            <option value="leadership">Colaborador avalia liderança</option>
+            <option value="leader_to_employee">Liderança avalia colaborador</option>
+            <option value="self">Autoavaliação</option>
+          </select>
+        </Field>
+        <Field label="Nome exibido no questionário"><input required maxLength={140} value={name} onChange={event=>setName(event.target.value)}/></Field>
+        <div className="settings-note"><ShieldCheck size={19}/><p>O link público é <b>/avaliar</b>. Não exige conta das pessoas; somente o RH entra no painel. Cada par pessoa-avaliada/respondente pode ser registrado uma vez neste ciclo.</p></div>
+        {existingNative&&<Notice message="Este ciclo já possui uma avaliação nativa deste tipo."/>}
+      </div>
+      <div className="modal-actions"><button type="button" className="button" onClick={onClose}>Cancelar</button><button className="button primary" disabled={busy||!cycle||existingNative}>{busy&&<LoaderCircle className="spin" size={17}/>}Criar e ativar</button></div>
+    </form>
+  </Modal>;
 }
 
 function EmployeeEditor({data,employee,onClose,onSaved}:{data:AppData;employee?:Employee;onClose:()=>void;onSaved:(name:string)=>void}) {

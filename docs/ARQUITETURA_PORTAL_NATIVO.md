@@ -76,7 +76,7 @@ Estas rotas de API **não estão implementadas** na fase 1. O dashboard atual co
 
 ## Migração e ativação seguras
 
-1. Obter acesso confirmado **ao projeto Supabase da Cardiofitness**. No momento, as conexões disponíveis nesta conversa não listam esse banco; não usar Thayná/Entrelinhas/Seidler/ICB-AI por engano.
+1. Obter acesso de leitura autenticada **ao projeto Supabase da Cardiofitness**. A verificação de 18/11 confirmou somente o endpoint Auth e que `anon` é bloqueado; ainda falta consultar o banco como RH autorizado. Não usar Thayná/Entrelinhas/Seidler/ICB-AI por engano.
 2. Realizar **somente leitura** do banco institucional, inventário de tabelas, campanhas e respostas. Identificar o ciclo de novembro de 2026 e comparar com o Google Forms antes de mudar qualquer coisa.
 3. Criar migração **aditiva**, validada em ambiente de testes isolado. Não apagar dados de novembro e não editar tabela histórica com migração destrutiva.
 4. Criar APIs com testes de acesso não autorizado, replay, duplicidade, expiração de código, limite de tentativas e proteção de dados.
@@ -90,6 +90,26 @@ Estas rotas de API **não estão implementadas** na fase 1. O dashboard atual co
 - **Pendente:** banco correto, tabelas novas, autorização, API, cron, persistência de respostas, exportação integrada, migração de histórico, release.
 - **Nunca presumir:** que o link novo já funciona, que respostas já estão sendo contabilizadas ou que o Supabase institucional foi conectado sem inspeção.
 
+## Verificação de segurança do portal público — 18/11/2026
+
+- A API pública de contexto e a rota de envio existiam como scaffolding, mas o contexto usava fallback fixo de ciclo/colaboradores e o envio retornava sucesso mesmo quando o Supabase falhava.
+- O teste local de conectividade alcançou Auth do projeto (HTTP 200); uma leitura anônima de `employees` foi recusada com `42501`, consistente com os privilégios/RLS restritivos. Isso não comprova estado nem persistência do banco como RH autorizado.
+- Corrigido para falhar fechado fora de `APP_DEMO_MODE=true`: contexto indisponível sem fallback de pessoas/ciclo e envio HTTP 503 sem gravar em arquivo local ou tentar gravar anonimamente no Supabase. O modo de demonstração usa somente fixtures locais; respostas locais órfãs, fora dos IDs fictícios das fixtures, não entram no dashboard demo.
+- **Não executar** `supabase/migrations/20261118_public_evaluation_portal.sql` nem `supabase/ativar-portal-e-sincronizar-supabase.sql`: a migration concede leitura anônima de colaboradores/ciclos/avaliações e inserções sem vínculo verificado; o script também libera SELECT amplo das respostas e altera cadastros/ciclo. Nenhum SQL remoto foi aplicado.
+- Até implementar e homologar código individual forte (hash), sessão curta, atribuições verificadas no servidor, rate limit e políticas RLS, Google Forms continua sendo o coletor legado; o portal nativo não está recebendo respostas.
+
 ### Recomendação de URL
 
 Depois que o domínio oficial for confirmado, usar \`https://DOMINIO-OFICIAL/avaliar\`. Sem novo link a cada ciclo. Até a ativação, distribuir somente o formulário existente do Google para a campanha atual, se validado pelo RH.
+
+## Auditoria operacional do ciclo Outubro — 18/11/2026
+
+- Consulta **somente leitura** no projeto correto `cadiofit@gmail.com` confirmou o ciclo oficial `Outubro - 2026` (08–20/10), com 2 avaliações e 117 respostas no cache (117 IDs de origem distintos): 22/28 em liderança e 95/182 em equipe. As duas avaliações foram consultadas por último em 22/10; a tentativa registrada mais recente é de 28/10.
+- A sincronização automática não volta a consultar ciclos encerrados há mais de sete dias. Outubro requer sincronização manual autenticada pelo RH nas duas avaliações, pela rota existente `/api/evaluations/{id}/sync`; validar importadas/rejeitadas após cada execução. Nenhuma sincronização foi executada nesta revisão.
+- A consulta encontrou ainda o ciclo conhecido de teste `88d6a7d2-184f-4313-80b3-cbb8ff30317f`, com 1 avaliação e 1 resposta. Nenhum registro foi excluído, renomeado ou movido para a lixeira; obter confirmação imediatamente antes de qualquer exclusão permanente.
+- O painel de produção aberto na mesma conta RH ainda mostra Novembro selecionado com 1 participante, sem totais esperados e zero respostas. A atualização local corrige indicadores que alegavam conclusão sem uma sincronização verificável, mas não foi publicada.
+
+## Isolamento das demonstrações — 18/11/2026
+
+- Auditoria encontrou que `src/lib/demo.ts` usava anteriormente `OFFICIAL_STAFF`, `OFFICIAL_LEADERS`, os IDs dos Google Forms oficiais e perguntas reais. Substituído localmente por pessoas/IDs fictícios, endereços `example.invalid`, perguntas de demonstração e respostas determinísticas isoladas. O modo demo continua exigindo `APP_DEMO_MODE=true` e a produção fixa `false`.
+- Adicionada regressão para garantir que o dataset de demonstração não reutiliza IDs/nomes oficiais ou URLs dos formulários oficiais. A prévia `/preview/avaliar` usa somente estado local do navegador; `/avaliar` continua bloqueado para persistência real.

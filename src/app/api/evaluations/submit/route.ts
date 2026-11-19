@@ -1,78 +1,62 @@
-import { isDemoMode, isSupabaseConfigured, createClient } from '@/lib/server/supabase';
-import { handle, json, parseBody, ApiError } from '@/lib/server/http';
+import { isDemoMode, createPublicClient } from '@/lib/server/supabase';
+import { ApiError, assertOrigin, handle, json, parseBody } from '@/lib/server/http';
 import { savePersistedResponse } from '@/lib/server/local-storage';
 import type { EvaluationResponse } from '@/lib/types';
 import { z } from 'zod';
 
 const submitSchema = z.object({
-  id: z.string().optional(),
-  evaluationId: z.string().min(1),
-  googleResponseId: z.string().default(''),
-  respondentId: z.string().min(1),
-  subjectId: z.string().min(1),
+  evaluationId: z.uuid(),
+  respondentId: z.uuid(),
+  subjectId: z.uuid(),
   kind: z.enum(['leadership', 'team', 'self', 'leader_to_employee']),
-  submittedAt: z.string().optional(),
-  scores: z.record(z.string(), z.number().int().min(1).max(4)),
+  scores: z.record(z.string().min(1).max(100), z.number().int().min(1).max(4)).refine(value => Object.keys(value).length > 0 && Object.keys(value).length <= 200),
   textAnswers: z.array(z.object({
-    questionId: z.string(),
-    question: z.string(),
-    answer: z.string()
-  })).optional()
-});
+    questionId: z.string().min(1).max(100),
+    question: z.string().min(1).max(500),
+    answer: z.string().max(3000),
+  }).strict()).max(20).optional().default([]),
+}).strict();
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   return handle(async () => {
+    assertOrigin(request);
     const input = await parseBody(request, submitSchema);
 
-    const newResponse: EvaluationResponse = {
-      id: input.id || crypto.randomUUID(),
-      evaluationId: input.evaluationId,
-      googleResponseId: input.googleResponseId || `native-${Date.now()}`,
-      respondentId: input.respondentId,
-      subjectId: input.subjectId,
-      kind: input.kind,
-      submittedAt: input.submittedAt || new Date().toISOString(),
-      scores: input.scores,
-      textAnswers: input.textAnswers || []
-    };
-
-    // Sempre persiste localmente para garantir integridade e visualização imediata
-    await savePersistedResponse(newResponse);
-
-    if (isSupabaseConfigured()) {
-      try {
-        const client = await createClient();
-        const row = {
-          id: newResponse.id,
-          evaluation_id: newResponse.evaluationId,
-          google_response_id: newResponse.googleResponseId,
-          respondent_id: newResponse.respondentId,
-          subject_id: newResponse.subjectId,
-          kind: newResponse.kind,
-          submitted_at: newResponse.submittedAt,
-          scores: newResponse.scores,
-          ...(newResponse.textAnswers ? { text_answers: newResponse.textAnswers } : {})
-        };
-
-        const { data, error } = await client
-          .from('evaluation_responses')
-          .upsert(row, { onConflict: 'evaluation_id,respondent_id,subject_id' })
-          .select('*')
-          .single();
-
-        if (error) {
-          console.error('Erro ao registrar resposta no Supabase:', error);
-          // Mesmo se o Supabase falhar, a resposta foi salva no armazenamento local
-        } else if (data) {
-          newResponse.id = data.id;
-        }
-      } catch (err) {
-        console.warn('Supabase não conectado ou indisponível:', err);
-      }
+    if (isDemoMode()) {
+      const id = crypto.randomUUID();
+      const newResponse: EvaluationResponse = {
+        id,
+        evaluationId: input.evaluationId,
+        googleResponseId: `native-${id}`,
+        respondentId: input.respondentId,
+        subjectId: input.subjectId,
+        kind: input.kind,
+        submittedAt: new Date().toISOString(),
+        scores: input.scores,
+        textAnswers: input.textAnswers,
+      };
+      await savePersistedResponse(newResponse);
+      return json({ accepted: true }, 201);
     }
 
-    return json(newResponse, 201);
+    const client = createPublicClient();
+    const { data, error } = await client.rpc('submit_public_native_evaluation', {
+      p_evaluation_id: input.evaluationId,
+      p_respondent_id: input.respondentId,
+      p_subject_id: input.subjectId,
+      p_kind: input.kind,
+      p_scores: input.scores,
+      p_text_answers: input.textAnswers,
+    });
+    if (error) {
+      if (error.code === '23505') throw new ApiError(409, 'Esta avaliação já foi registrada.');
+      if (error.code === '23514') throw new ApiError(409, 'Confira o ciclo, as pessoas escolhidas e as notas antes de enviar.');
+      throw new ApiError(503, 'Não foi possível registrar a avaliação. Nenhum dado foi confirmado.');
+    }
+    if (data?.duplicate) throw new ApiError(409, 'Esta avaliação já foi registrada.');
+    if (data?.accepted !== true) throw new ApiError(503, 'Não foi possível confirmar o envio.');
+    return json({ accepted: true }, 201);
   });
 }

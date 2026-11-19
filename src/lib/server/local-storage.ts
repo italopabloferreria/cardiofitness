@@ -67,6 +67,14 @@ export async function savePersistedResponse(response: EvaluationResponse): Promi
   writeStorage(store);
 }
 
+export function responseBelongsToDataset(response: EvaluationResponse, data: AppData): boolean {
+  const employeeIds = new Set(data.employees.map(employee => employee.id));
+  const evaluationIds = new Set(data.evaluations.map(evaluation => evaluation.id));
+  return evaluationIds.has(response.evaluationId) &&
+    employeeIds.has(response.respondentId) &&
+    employeeIds.has(response.subjectId);
+}
+
 export async function mergeWithPersistedData(baseData: AppData): Promise<AppData> {
   const store = ensureStorage();
   if (!store.responses.length && !store.cycles?.length && !store.employees?.length) {
@@ -78,6 +86,7 @@ export async function mergeWithPersistedData(baseData: AppData): Promise<AppData
     responseMap.set(`${r.evaluationId}:${r.respondentId}:${r.subjectId}`, r);
   }
   for (const r of store.responses) {
+    if (!responseBelongsToDataset(r, baseData)) continue;
     responseMap.set(`${r.evaluationId}:${r.respondentId}:${r.subjectId}`, r);
   }
 

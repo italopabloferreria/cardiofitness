@@ -23,6 +23,13 @@
 .prototypeNotice svg{flex:none}
 .formShell,.questionShell{width:100%;max-width:630px;margin:auto;align-self:center;padding:38px 0}
 .formShell{text-align:left}
+.form{display:grid;gap:15px}
+.cycleBanner{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;border:1px solid #c5def1;background:#f0f7fd;border-radius:12px;padding:14px 16px;margin-bottom:22px;color:#315875;font-size:12px}
+.cycleBanner b{display:inline-flex;align-items:center;gap:8px;color:#135982;font-size:14px}
+.emptyState,.successState{min-height:230px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:13px;text-align:center;color:#6b7d91;line-height:1.65;padding:32px}
+.emptyState>b,.successState h2{font-size:22px;color:#193b5a;margin:0}
+.successState svg{color:#0a8d75}
+.formError{border:1px solid #f5c4c0;background:#fff3f1;color:#9e3125;border-radius:9px;padding:12px 14px;font-size:12px;line-height:1.5}
 .roundIcon{height:63px;width:63px;display:grid;place-items:center;background:#e5f5fa;color:#036f9f;border-radius:18px;margin-bottom:24px}
 .formShell h2,.questionShell h2{font-size:clamp(26px,3vw,39px);line-height:1.17;letter-spacing:-1px;margin:14px 0 14px;font-weight:700;color:#152f4d}
 .subtle{font-size:14px;color:#6b7d91;line-height:1.8;margin:0 0 25px}

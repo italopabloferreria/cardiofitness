@@ -16,6 +16,8 @@ export interface FormMapping {
 }
 export interface Evaluation {
   id: string; cycleId: string; name: string; kind: EvaluationKind;
+  /** Legacy rows default to legacy; new cycles collect natively. */
+  sourceType?: 'legacy' | 'native';
   googleFormId: string; googleFormUrl: string; expectedResponses: number | null;
   mapping: FormMapping; questionSections?: Record<string, string>; syncIssues?: string[]; lastSyncAttemptAt?: string | null; lastSyncedAt: string | null; syncMessage: string | null;
 }
@@ -36,7 +38,7 @@ export interface SyncSummary { fetched: number; imported: number; outsideCycle: 
 export interface SyncResult { evaluation: Evaluation; responses: EvaluationResponse[]; summary: SyncSummary }
 export type EmployeeInput = Omit<Employee, 'id'>;
 export type CycleInput = Omit<Cycle, 'id'>;
-export type EvaluationInput = Omit<Evaluation, 'id' | 'lastSyncedAt' | 'syncMessage' | 'questionSections' | 'syncIssues' | 'lastSyncAttemptAt'>;
+export type EvaluationInput = Omit<Evaluation, 'id' | 'lastSyncedAt' | 'syncMessage' | 'syncIssues' | 'lastSyncAttemptAt'>;
 export interface ResponseSubmissionInput {
   evaluationId: string;
   respondentId: string;

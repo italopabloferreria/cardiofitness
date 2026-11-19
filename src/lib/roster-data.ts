@@ -78,7 +78,7 @@ export const OFFICIAL_LEADERS: Employee[] = [
     email: 'italopablo01@gmail.com',
     formName: 'Ítalo Pablo Ferreira',
     department: 'Suporte',
-    leaderId: uid(1000, 6),
+    leaderId: null,
     isLeader: true,
     active: true,
     accessToken: 'italo-pablo',

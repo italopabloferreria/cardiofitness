@@ -3,7 +3,7 @@ import { getAppData, employeeToRow, cycleToRow, evaluationToRow, employeeFromRow
 import { assertOrigin, ApiError, databaseError, json, parseBody, requireId } from './http';
 import { requireRh } from './supabase';
 import { cyclePeriodConflict, formPeriodConflict } from './integrity';
-import { employeeSchema, cycleSchema, evaluationSchema, validateEmployeeRelations, validateParticipants, evaluationStructure, cycleStructure } from './validation';
+import { employeeSchema, cycleSchema, evaluationSchema, validateEmployeeRelations, validateParticipants, evaluationStructure, evaluationConfigurationStructure, cycleStructure } from './validation';
 
 export async function saveEmployee(request: Request, id?: string) {
   assertOrigin(request);
@@ -73,7 +73,7 @@ export async function saveEvaluation(request: Request, id?: string) {
   if (!app.cycles.some(c => c.id === input.cycleId)) throw new ApiError(409, 'Selecione um ciclo existente.');
   const periodProblem = formPeriodConflict(input, app, id);
   if (periodProblem) throw new ApiError(409, periodProblem);
-  if (existing && JSON.stringify(evaluationStructure(existing)) !== JSON.stringify(evaluationStructure(input)) && app.responses.some(r => r.evaluationId === id))
+  if (existing && JSON.stringify(evaluationConfigurationStructure(existing)) !== JSON.stringify(evaluationConfigurationStructure(input)) && app.responses.some(r => r.evaluationId === id))
     throw new ApiError(409, 'Esta avaliação possui resultados. Crie uma nova avaliação para alterar formulário, ciclo ou mapeamento.');
   const operation = id ? client.from('evaluations').update(evaluationToRow(input)).eq('id', id) : client.from('evaluations').insert(evaluationToRow(input));
   const { data, error } = await operation.select('*').single();

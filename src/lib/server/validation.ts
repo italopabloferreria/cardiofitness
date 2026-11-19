@@ -31,13 +31,24 @@ export const mappingSchema = z.object({
   .refine(m => m.scoreQuestions.every(q => q.min === m.scoreQuestions[0].min && q.max === m.scoreQuestions[0].max), 'Use a mesma escala em todas as perguntas da avaliação.');
 export const evaluationSchema = z.object({
   cycleId: idSchema, name: text(140), kind: z.enum(['leadership', 'team', 'self', 'leader_to_employee']),
+  sourceType: z.enum(['legacy', 'native']).default('legacy'),
   googleFormId: z.union([z.literal(''), formIdSchema]),
-  googleFormUrl: z.url().max(1000).refine(value => {
+  googleFormUrl: z.string().max(1000).refine(value => value === '' || (() => {
+    try {
     const url = new URL(value);
     return url.protocol === 'https:' && url.hostname === 'docs.google.com' && url.pathname.startsWith('/forms/') && !url.username && !url.password;
-  }, 'Use um link HTTPS do Google Forms.'),
+    } catch { return false; }
+  })(), 'Use um link HTTPS de formulário válido.'),
   expectedResponses: z.number().int().min(1).max(1000000).nullable(), mapping: mappingSchema,
-}).strict();
+  questionSections: z.record(z.string().max(100), z.string().max(140)).optional().default({}),
+}).strict().superRefine((value, ctx) => {
+  if (value.sourceType === 'native' && (value.googleFormId || value.googleFormUrl)) {
+    ctx.addIssue({ code: 'custom', path: ['sourceType'], message: 'Avaliação nativa não pode depender de link externo.' });
+  }
+  if (value.sourceType === 'legacy' && !value.googleFormUrl) {
+    ctx.addIssue({ code: 'custom', path: ['googleFormUrl'], message: 'Informe o link de coleta da avaliação.' });
+  }
+});
 export const loginSchema = z.object({ email: z.email().max(254), password: z.string().min(1).max(512) }).strict();
 
 export function validateEmployeeRelations(employee: Omit<Employee, 'id'>, employees: Employee[], id?: string) {
@@ -61,7 +72,12 @@ export function validateParticipants(cycle: Omit<Cycle, 'id'>, employees: Employ
 }
 
 export function evaluationStructure(evaluation: Omit<Evaluation, 'id' | 'lastSyncedAt' | 'syncMessage'>) {
+  // This is the long-standing sync RPC contract; keep it unchanged until the
+  // database sync functions are migrated as a separate operation.
   return { cycleId: evaluation.cycleId, kind: evaluation.kind, googleFormId: evaluation.googleFormId, mapping: evaluation.mapping };
+}
+export function evaluationConfigurationStructure(evaluation: Omit<Evaluation, 'id' | 'lastSyncedAt' | 'syncMessage'>) {
+  return { ...evaluationStructure(evaluation), sourceType: evaluation.sourceType ?? (evaluation.googleFormId ? 'legacy' : 'native'), googleFormUrl: evaluation.googleFormUrl, questionSections: evaluation.questionSections ?? {} };
 }
 export function cycleStructure(cycle: Omit<Cycle, 'id'>) {
   return { startDate: cycle.startDate, endDate: cycle.endDate, participants: cycle.participants };

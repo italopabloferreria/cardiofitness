@@ -29,7 +29,8 @@ export function getParticipation(data: AppData, cycleId: string, evaluationId?: 
       }
     }
     const total = assignments.reduce((sum, row) => sum + row.subjects.length, 0);
-    const configured = !!evaluation.lastSyncedAt && !!evaluation.googleFormId && evaluation.mapping.scoreQuestions.length > 0 &&
+    const native = evaluation.sourceType === 'native';
+    const configured = (native || (!!evaluation.lastSyncedAt && !!evaluation.googleFormId)) && evaluation.mapping.scoreQuestions.length > 0 &&
       participants.length === cycle.participants.length &&
       [...leaders].every(id => people.has(id)) &&
       (evaluation.expectedResponses === null || evaluation.expectedResponses === total);

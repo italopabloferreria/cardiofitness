@@ -1,5 +1,6 @@
 import 'server-only';
 import { createServerClient } from '@supabase/ssr';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { ApiError } from './http';
 
@@ -14,6 +15,13 @@ export function getSupabaseConfig() {
     if (parsed.protocol !== 'https:' && !(parsed.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(parsed.hostname))) throw new Error();
   } catch { throw new ApiError(503, 'Endereço do Supabase inválido.'); }
   return { url, key };
+}
+/** Anonymous server client: public routes can call only explicitly granted RPCs. */
+export function createPublicClient() {
+  const { url, key } = getSupabaseConfig();
+  return createSupabaseClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+  });
 }
 export async function createClient() {
   const { url, key } = getSupabaseConfig();
