@@ -43,8 +43,28 @@ export async function readAll(client: SupabaseClient, table: string): Promise<Ro
 }
 export async function getAppData(provided?: SupabaseClient): Promise<AppData> {
   const client = provided || (await requireRh()).client;
-  const [employees, cycles, evaluations, responses] = await Promise.all([
+  const [employeesRaw, cycles, evaluations, responses] = await Promise.all([
     readAll(client, 'employees'), readAll(client, 'cycles'), readAll(client, 'evaluations'), readAll(client, 'evaluation_responses'),
   ]);
-  return { employees: employees.map(employeeFromRow), cycles: cycles.map(cycleFromRow), evaluations: evaluations.map(evaluationFromRow), responses: responses.map(responseFromRow) };
+
+  const hasReal = employeesRaw.some(r => !(r.id as string).startsWith('00000000-'));
+  const filtered = hasReal
+    ? employeesRaw.filter(r => !(r.id as string).startsWith('00000000-') || ['rayra', 'josiane', 'vitoria'].some(n => ((r.name as string) || '').toLowerCase().includes(n)))
+    : employeesRaw;
+
+  const seen = new Set<string>();
+  const uniqueEmps: Row[] = [];
+  for (const r of filtered) {
+    const key = ((r.name as string) || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+    if (!seen.has(key)) {
+      seen.add(key);
+      if (key.includes('italo')) {
+        uniqueEmps.push({ ...r, name: 'Ítalo Pablo Ferreira', form_name: 'Ítalo Pablo Ferreira', department: 'Suporte', is_leader: true });
+      } else {
+        uniqueEmps.push(r);
+      }
+    }
+  }
+
+  return { employees: uniqueEmps.map(employeeFromRow), cycles: cycles.map(cycleFromRow), evaluations: evaluations.map(evaluationFromRow), responses: responses.map(responseFromRow) };
 }

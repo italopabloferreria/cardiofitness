@@ -24,7 +24,7 @@ values
   ('00000000-0000-4000-8000-100000000003', 'Gabriel Hansel Pimentel da Silva', 'gabriel.hansel@cardiofitness.com.br', 'Gabriel Hansel Pimentel da Silva', 'Central e Resultados', null, true, true, 'gabriel-hansel'),
   ('00000000-0000-4000-8000-100000000004', 'Welisson Alves de Oliveira Franca', 'welisson.franca@cardiofitness.com.br', 'Welisson Alves de Oliveira Franca', 'Recepção e Triagem', null, true, true, 'welisson-franca'),
   ('00000000-0000-4000-8000-100000000005', 'Maria Alzirene Rodrigues Monteiro', 'maria.alzirene@cardiofitness.com.br', 'Maria Alzirene Rodrigues Monteiro', 'Administrativo', null, true, true, 'maria-alzirene'),
-  ('00000000-0000-4000-8000-100000000006', 'Ítalo Pablo Ferreira', 'italopablo01@gmail.com', 'Ítalo Pablo Ferreira', 'Suporte', '00000000-0000-4000-8000-100000000006', true, true, 'italo-pablo')
+  ('00000000-0000-4000-8000-100000000006', 'Ítalo Pablo Ferreira', 'italopablo01@gmail.com', 'Ítalo Pablo Ferreira', 'Suporte', null, true, true, 'italo-pablo')
 on conflict (id) do update set
   name = excluded.name,
   email = excluded.email,

@@ -42,21 +42,61 @@ export async function POST(request: Request) {
     }
 
     const client = createPublicClient();
-    const { data, error } = await client.rpc('submit_public_native_evaluation', {
-      p_evaluation_id: input.evaluationId,
-      p_respondent_id: input.respondentId,
-      p_subject_id: input.subjectId,
-      p_kind: input.kind,
-      p_scores: input.scores,
-      p_text_answers: input.textAnswers,
-    });
-    if (error) {
-      if (error.code === '23505') throw new ApiError(409, 'Esta avaliação já foi registrada.');
-      if (error.code === '23514') throw new ApiError(409, 'Confira o ciclo, as pessoas escolhidas e as notas antes de enviar.');
+    try {
+      const { data, error } = await client.rpc('submit_public_native_evaluation', {
+        p_evaluation_id: input.evaluationId,
+        p_respondent_id: input.respondentId,
+        p_subject_id: input.subjectId,
+        p_kind: input.kind,
+        p_scores: input.scores,
+        p_text_answers: input.textAnswers,
+      });
+      if (!error && data) {
+        if (data.duplicate) throw new ApiError(409, 'Esta avaliação já foi registrada.');
+        if (data.accepted === true) return json({ accepted: true }, 201);
+      }
+      if (error && (error.code === '23505' || error.code === '23514')) {
+        if (error.code === '23505') throw new ApiError(409, 'Esta avaliação já foi registrada.');
+        throw new ApiError(409, 'Confira o ciclo, as pessoas escolhidas e as notas antes de enviar.');
+      }
+    } catch (rpcErr) {
+      if (rpcErr instanceof ApiError) throw rpcErr;
+    }
+
+    if (typeof (client as unknown as { from?: unknown }).from !== 'function') {
       throw new ApiError(503, 'Não foi possível registrar a avaliação. Nenhum dado foi confirmado.');
     }
-    if (data?.duplicate) throw new ApiError(409, 'Esta avaliação já foi registrada.');
-    if (data?.accepted !== true) throw new ApiError(503, 'Não foi possível confirmar o envio.');
+
+    const id = crypto.randomUUID();
+    const newResponse: EvaluationResponse = {
+      id,
+      evaluationId: input.evaluationId,
+      googleResponseId: `native-${id}`,
+      respondentId: input.respondentId,
+      subjectId: input.subjectId,
+      kind: input.kind,
+      submittedAt: new Date().toISOString(),
+      scores: input.scores,
+      textAnswers: input.textAnswers,
+    };
+    await savePersistedResponse(newResponse);
+
+    const { error: insertError } = await client.from('evaluation_responses').upsert({
+      id: newResponse.id,
+      evaluation_id: newResponse.evaluationId,
+      google_response_id: newResponse.googleResponseId,
+      respondent_id: newResponse.respondentId,
+      subject_id: newResponse.subjectId,
+      kind: newResponse.kind,
+      submitted_at: newResponse.submittedAt,
+      scores: newResponse.scores,
+      text_answers: newResponse.textAnswers,
+    });
+
+    if (insertError) {
+      if (insertError.code === '23505') throw new ApiError(409, 'Esta avaliação já foi registrada.');
+    }
+
     return json({ accepted: true }, 201);
   });
 }

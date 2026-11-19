@@ -1,5 +1,7 @@
 # Continuidade para a próxima IA — Portal de Avaliações Cardiofitness
 
+> **Atualização de 2026-11-19:** este documento contém histórico de handoffs anteriores e há afirmações abaixo que ficaram desatualizadas após a implementação local `d3680a2`. Para o estado corrente, restrições e plano de execução, a fonte autoritativa é `../CODEX_START.md`, em conjunto com `../AGENTS.md`. Migration e produção seguem sem aplicação/validação confirmada.
+
 > **Leia antes de mexer no projeto.** Este arquivo é uma passagem de bastão, não uma afirmação de que o portal está pronto ou publicado. Confirme o estado real do Git, do Supabase e da Vercel no momento em que retomar.
 
 ## Pedido confirmado pelo usuário

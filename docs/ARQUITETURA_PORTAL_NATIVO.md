@@ -1,5 +1,7 @@
 # Cardiofitness 2.0 — arquitetura de avaliações nativas (proposta, fase 1)
 
+> **Decisão atualizada em novembro de 2026:** este documento registra uma proposta anterior e alguns requisitos abaixo foram supersedidos. O usuário escolheu um portal mais simples: link público sem login/código de funcionário, formulário dentro do sistema e acesso ao dashboard somente pelo RH. Não implemente tokens individuais, portal de colaborador ou novos módulos de campanha/cron sem nova aprovação. Para estado e plano atuais, leia `../CODEX_START.md` e `PLANO_PORTAL_NATIVO_SIMPLES.md`. A parte abaixo é referência histórica/técnica, não aceite vigente.
+
 > **ESTADO:** planejamento e protótipo visual em branch separada. Nenhum banco alterado, nenhuma resposta importada ou novo formulário ativado. Os Google Forms históricos permanecem operacionais e intocados.
 
 ## Objetivo: um link permanente
