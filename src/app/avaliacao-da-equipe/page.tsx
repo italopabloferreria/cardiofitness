@@ -114,7 +114,14 @@ function TeamEvaluationContent() {
   // Colaboradores filtrados pelo setor selecionado
   const departmentEmployees = useMemo(() => {
     if (!selectedDepartment) return [];
-    return activeEmployees.filter(e => normalizeDepartment(e.department) === selectedDepartment);
+    const targetDept = normalizeDepartment(selectedDepartment).toUpperCase().trim();
+    return activeEmployees.filter(e => {
+      const empDept = normalizeDepartment(e.department).toUpperCase().trim();
+      if (targetDept === 'SUPORTE' && (empDept === 'SUPORTE' || e.name.toUpperCase().includes('ITALO'))) {
+        return true;
+      }
+      return empDept === targetDept;
+    });
   }, [activeEmployees, selectedDepartment]);
 
   const respondent = useMemo(() => {
@@ -171,7 +178,15 @@ function TeamEvaluationContent() {
     setSubmitted(false);
     setErrorMessage('');
 
-    const deptEmps = activeEmployees.filter(e => normalizeDepartment(e.department) === dept);
+    const targetDept = normalizeDepartment(dept).toUpperCase().trim();
+    const deptEmps = activeEmployees.filter(e => {
+      const empDept = normalizeDepartment(e.department).toUpperCase().trim();
+      if (targetDept === 'SUPORTE' && (empDept === 'SUPORTE' || e.name.toUpperCase().includes('ITALO'))) {
+        return true;
+      }
+      return empDept === targetDept;
+    });
+
     if (deptEmps.length === 1) {
       setRespondentId(deptEmps[0].id);
       setSelectedTargetId(deptEmps[0].id);

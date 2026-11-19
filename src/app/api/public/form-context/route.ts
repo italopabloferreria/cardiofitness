@@ -15,11 +15,20 @@ export async function GET() {
       const demoData = await mergeWithPersistedData(createDemoData());
       const activeCycle = demoData.cycles.find(c => cycleState(c) === 'Em andamento') || demoData.cycles[demoData.cycles.length - 1];
       const evals = demoData.evaluations.filter(e => e.cycleId === activeCycle.id);
-      return NextResponse.json({
-        cycle: activeCycle,
-        employees: demoData.employees.filter(e => e.active),
-        evaluations: evals,
-      });
+      return NextResponse.json(
+        {
+          cycle: activeCycle,
+          employees: demoData.employees.filter(e => e.active),
+          evaluations: evals,
+        },
+        {
+          headers: {
+            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+            Pragma: 'no-cache',
+            Expires: '0',
+          },
+        }
+      );
     }
 
     // 1. Dados locais oficiais como fallback garantido

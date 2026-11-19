@@ -135,11 +135,18 @@ function LeadershipEvaluationContent() {
 
   const departmentEmployees = useMemo(() => {
     if (!selectedDepartment) return [];
-    return activeEmployees.filter(e => normalizeDepartment(e.department) === selectedDepartment);
+    const targetDept = normalizeDepartment(selectedDepartment).toUpperCase().trim();
+    return activeEmployees.filter(e => {
+      const empDept = normalizeDepartment(e.department).toUpperCase().trim();
+      if (targetDept === 'SUPORTE' && (empDept === 'SUPORTE' || e.name.toUpperCase().includes('ITALO'))) {
+        return true;
+      }
+      return empDept === targetDept;
+    });
   }, [activeEmployees, selectedDepartment]);
 
   const activeLeaders = useMemo(() => {
-    return activeEmployees.filter(e => e.isLeader);
+    return activeEmployees.filter(e => e.isLeader || e.name.toUpperCase().includes('ITALO'));
   }, [activeEmployees]);
 
   const respondent = useMemo(() => {
@@ -189,8 +196,21 @@ function LeadershipEvaluationContent() {
     setSubmitted(false);
     setErrorMessage('');
 
-    const deptEmps = activeEmployees.filter(e => normalizeDepartment(e.department) === dept);
-    const sectorLeader = activeLeaders.find(l => normalizeDepartment(l.department) === dept);
+    const targetDept = normalizeDepartment(dept).toUpperCase().trim();
+    const deptEmps = activeEmployees.filter(e => {
+      const empDept = normalizeDepartment(e.department).toUpperCase().trim();
+      if (targetDept === 'SUPORTE' && (empDept === 'SUPORTE' || e.name.toUpperCase().includes('ITALO'))) {
+        return true;
+      }
+      return empDept === targetDept;
+    });
+    const sectorLeader = activeLeaders.find(l => {
+      const leaderDept = normalizeDepartment(l.department).toUpperCase().trim();
+      if (targetDept === 'SUPORTE' && (leaderDept === 'SUPORTE' || l.name.toUpperCase().includes('ITALO'))) {
+        return true;
+      }
+      return leaderDept === targetDept;
+    });
 
     // Se houver apenas 1 colaborador no setor (ex: Suporte com Ítalo), seleciona automaticamente!
     if (deptEmps.length === 1) {

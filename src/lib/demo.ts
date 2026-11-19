@@ -41,14 +41,14 @@ export function createDemoData(): AppData {
       name: 'Setembro - Outubro / 2026',
       startDate: '2026-09-01',
       endDate: '2026-10-31',
-      participants: OFFICIAL_STAFF.map(e => ({ employeeId: e.id, leaderId: e.leaderId })),
+      participants: [...OFFICIAL_STAFF, ...OFFICIAL_LEADERS].map(e => ({ employeeId: e.id, leaderId: e.leaderId })),
     },
     {
       id: uid(103),
       name: 'Novembro / 2026',
       startDate: '2026-11-01',
       endDate: '2026-11-30',
-      participants: OFFICIAL_STAFF.map(e => ({ employeeId: e.id, leaderId: e.leaderId })),
+      participants: [...OFFICIAL_STAFF, ...OFFICIAL_LEADERS].map(e => ({ employeeId: e.id, leaderId: e.leaderId })),
     },
   ];
 
