@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { ArrowDownToLine, ArrowLeft, ArrowRight, Award, BarChart3, Bell, CalendarDays, Check, CheckCircle2, ChevronLeft, ChevronRight, ClipboardList, Copy, Database, ExternalLink, FileSpreadsheet, LayoutDashboard, LoaderCircle, LockKeyhole, LogOut, Menu, MessageCircle, Pencil, Plus, RefreshCw, Search, Settings2, ShieldCheck, UserRoundCheck, UsersRound, X, CircleOff, Trash2, TrendingUp } from 'lucide-react';
+import { ArrowDownToLine, ArrowLeft, ArrowRight, Award, BarChart3, Bell, CalendarDays, Check, CheckCircle2, ChevronLeft, ChevronRight, ClipboardList, Copy, Database, ExternalLink, Eye, FileSpreadsheet, LayoutDashboard, LoaderCircle, LockKeyhole, LogOut, Menu, MessageCircle, Pencil, Plus, RefreshCw, Search, Settings2, ShieldCheck, UserRoundCheck, UsersRound, X, CircleOff, Trash2, TrendingUp } from 'lucide-react';
 import { useApp } from '@/lib/store';
 import PasswordRecovery from './password-recovery';
 import RhAccess from './rh-access';
@@ -48,7 +48,19 @@ function Avatar({name,large=false}:{name:string;large?:boolean}) { return <span 
 function Pill({children,kind='green'}:{children:ReactNode;kind?:'green'|'muted'|'amber'}) { return <span className={`pill pill-${kind}`}>{children}</span>; }
 function Empty({title,children,action}:{title:string;children?:ReactNode;action?:ReactNode}) { return <div className="empty"><span className="empty-icon"><ClipboardList size={27}/></span><h3>{title}</h3><p>{children}</p>{action}</div>; }
 function Panel({title,subtitle,children,className='',action}:{title?:string;subtitle?:string;children:ReactNode;className?:string;action?:ReactNode}) { return <section className={`panel ${className}`}>{title&&<header className="panel-head"><div><h2>{title}</h2>{subtitle&&<p>{subtitle}</p>}</div>{action}</header>}{children}</section>; }
-function Stat({label,value,note,icon}:{label:string;value:ReactNode;note:string;icon?:ReactNode}) { return <div className="stat"><div className="stat-label">{label}</div><span className="stat-icon">{icon||<BarChart3 size={19}/>}</span><strong>{value}</strong><small>{note}</small></div>; }
+function Stat({label,value,note,icon,action}:{label:string;value:ReactNode;note:string;icon?:ReactNode;action?:ReactNode}) {
+  return (
+    <div className="stat" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <div>
+        <div className="stat-label">{label}</div>
+        <span className="stat-icon">{icon||<BarChart3 size={19}/>}</span>
+        <strong>{value}</strong>
+        <small>{note}</small>
+      </div>
+      {action && <div style={{ marginTop: 10 }}>{action}</div>}
+    </div>
+  );
+}
 function Progress({received,expected}:{received:number;expected:number|null}) { const ratio=expected?Math.min(100,received/expected*100):0;return <div className="progress" role={expected?'progressbar':undefined} aria-label="Participação" aria-valuemin={expected?0:undefined} aria-valuemax={expected?expected:undefined} aria-valuenow={expected?Math.min(received,expected):undefined}><span style={{width:`${ratio}%`}}/></div>; }
 function Field({label,children,hint,className=''}:{label:string;children:ReactNode;hint?:string;className?:string}) { return <label className={`field ${className}`}><span>{label}</span>{children}{hint&&<small>{hint}</small>}</label>; }
 function Notice({message,onClose,success=false}:{message:string;onClose?:()=>void;success?:boolean}) { return <div className={`notice ${success?'notice-success':'notice-error'}`} role={success?'status':'alert'}><span>{message}</span>{onClose&&<button type="button" className="icon-button" aria-label="Fechar mensagem" onClick={onClose}><X size={18}/></button>}</div>; }
@@ -162,7 +174,7 @@ export default function Application() {
       {view==='employees'&&<Employees data={data} cycle={selectedCycle} onOpen={openEmployee} onAdd={()=>setEditor({type:'employee'})} onEdit={item=>setEditor({type:'employee',item})} onDeactivate={item=>setEditor({type:'deactivate',item})} onDelete={item=>setEditor({type:'delete-employee',item})}/>}
       {view==='employee'&&(employee?<EmployeeDetail data={data} employee={employee} cycleId={selectedCycleId} onEdit={()=>setEditor({type:'employee',item:employee})} onResults={openEvaluation}/>:<Empty title="Selecione um colaborador" action={<button className="button" onClick={()=>navigate('employees')}>Ver colaboradores</button>}/>)}
       {view==='result'&&(evaluation?<Result data={data} evaluation={evaluation} onPerson={openEmployee}/>:<Empty title="Selecione uma avaliação"/>)}
-      {view==='reports'&&<Reports data={data} cycleId={selectedCycleId} onError={text=>setNotice({text,success:false})}/>}
+      {view==='reports'&&<Reports data={data} cycleId={selectedCycleId} onError={text=>setNotice({text,success:false})} onPerson={openEmployee}/>}
       {view==='settings'&&<Configuration data={data} cycleId={selectedCycleId} setCycleId={setCycleId} onEdit={setEditor} demo={app.mode==='demo'} googleConfigured={app.googleConfigured}/>}
       <footer className="main-footer"><span>Cardiofitness · Avaliações de desempenho</span><span>Painel de Recursos Humanos · Respostas identificadas</span></footer></main></div>
       {editor?.type==='quick-cycle'&&<QuickCycleEditor data={data} onClose={()=>setEditor(null)} onConfigure={()=>{setEditor(null);navigate('settings');}} onCreated={id=>{setCycleId(id);setNotice({text:'Novo ciclo criado. Os links do portal já estão disponíveis para compartilhamento.',success:true});}}/>}
@@ -802,24 +814,104 @@ function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,on
           value={<>{overallAverage !== null ? overallAverage.toFixed(2) : '—'}<em> / 4.0</em></>}
           note="Escala oficial de desempenho"
           icon={<Award size={19}/>}
+          action={
+            <button
+              type="button"
+              className="button small"
+              onClick={() => onNavigate('reports')}
+              style={{
+                width: '100%',
+                justifyContent: 'center',
+                gap: 6,
+                background: '#ffffff',
+                borderColor: '#e2e8f0',
+                color: '#475569',
+                fontWeight: 600,
+                fontSize: 12,
+                cursor: 'pointer',
+              }}
+            >
+              <FileSpreadsheet size={14} /> Relatórios
+            </button>
+          }
         />
         <Stat
           label="Respostas recebidas"
           value={<>{responses.length}<em>{expected !== null ? ` / ${expected}` : ''}</em></>}
           note={`${quantity(evaluations.length, 'formulário vinculado', 'formulários vinculados')}`}
           icon={<ClipboardList size={19}/>}
+          action={
+            <button
+              type="button"
+              className="button small"
+              onClick={() => onNavigate('reports')}
+              style={{
+                width: '100%',
+                justifyContent: 'center',
+                gap: 6,
+                background: '#f0f9ff',
+                borderColor: '#bae6fd',
+                color: '#0284c7',
+                fontWeight: 650,
+                fontSize: 12,
+                cursor: 'pointer',
+              }}
+            >
+              <BarChart3 size={14} /> Ver análise
+            </button>
+          }
         />
         <Stat
           label="Conclusão do ciclo"
           value={expected ? formatPercent(responses.length, expected) : (responses.length > 0 ? '100%' : '0%')}
           note={expected ? `${quantity(Math.max(0, expected - responses.length), 'resposta pendente', 'respostas pendentes')}` : 'Ciclo em andamento'}
           icon={<CheckCircle2 size={19}/>}
+          action={
+            <button
+              type="button"
+              className="button small"
+              onClick={() => onNavigate('reports')}
+              style={{
+                width: '100%',
+                justifyContent: 'center',
+                gap: 6,
+                background: '#ffffff',
+                borderColor: '#e2e8f0',
+                color: '#475569',
+                fontWeight: 600,
+                fontSize: 12,
+                cursor: 'pointer',
+              }}
+            >
+              <TrendingUp size={14} /> Acompanhar
+            </button>
+          }
         />
         <Stat
           label="Colaboradores ativos"
           value={activeEmployees.length}
           note={`${quantity(leaderIds.size, 'liderança vinculada', 'lideranças vinculadas')}`}
           icon={<UsersRound size={19}/>}
+          action={
+            <button
+              type="button"
+              className="button small"
+              onClick={() => onNavigate('employees')}
+              style={{
+                width: '100%',
+                justifyContent: 'center',
+                gap: 6,
+                background: '#ffffff',
+                borderColor: '#e2e8f0',
+                color: '#475569',
+                fontWeight: 600,
+                fontSize: 12,
+                cursor: 'pointer',
+              }}
+            >
+              <UsersRound size={14} /> Ver equipe
+            </button>
+          }
         />
       </div>
 
@@ -962,11 +1054,384 @@ function Result({data,evaluation,onPerson}:{data:AppData;evaluation:Evaluation;o
 }
 function Distribution({responses}:{responses:EvaluationResponse[]}) { const scores=responses.flatMap(response=>Object.values(response.scores));const counts=[1,2,3,4].map(score=>scores.filter(value=>value===score).length),max=Math.max(1,...counts);return <div className="distribution"><ScoreLegend/><div className="distribution-chart" role="img" aria-label={counts.map((count,index)=>`Nota ${index+1}: ${quantity(count,'ocorrência')}`).join('; ')}>{counts.map((count,index)=><div className="distribution-col" key={index}><span>{count}</span><i style={{height:`${count/max*120}px`,background:scoreColor(index+1)}}/><b>{index+1}</b></div>)}</div><p>{quantity(scores.length,'nota')} nas respostas selecionadas</p></div>; }
 
-function Reports({data,cycleId,onError}:{data:AppData;cycleId:string;onError:(message:string)=>void}) {
+function Reports({data,cycleId,onError,onPerson}:{data:AppData;cycleId:string;onError:(message:string)=>void;onPerson:(id:string)=>void}) {
   const {mode}=useApp();
-  const [evaluationId,setEvaluationId]=useState(''),[employeeId,setEmployeeId]=useState(''),[busy,setBusy]=useState('');const evaluations=cycleEvaluations(data,cycleId),selectedId=evaluations.some(evaluation=>evaluation.id===evaluationId)?evaluationId:'';const responses=cycleResponses(data,cycleId).filter(response=>(!selectedId||response.evaluationId===selectedId)&&(!employeeId||response.subjectId===employeeId));
-  async function exportFile(format:'pdf'|'xlsx'){setBusy(format);try{await downloadReport(data,{cycleId,evaluationId:selectedId||undefined,employeeId:employeeId||undefined},format,mode==='demo');}catch(error){onError(errorMessage(error));}finally{setBusy('');}}
-  return <><Panel title="Monte seu relatório" subtitle="O arquivo respeita o ciclo e os filtros selecionados"><div className="report-filters"><Field label="Avaliação"><select value={selectedId} onChange={event=>setEvaluationId(event.target.value)}><option value="">Todas as avaliações</option>{evaluations.map(evaluation=><option key={evaluation.id} value={evaluation.id}>{evaluation.name}</option>)}</select></Field><Field label="Pessoa avaliada"><select value={employeeId} onChange={event=>setEmployeeId(event.target.value)}><option value="">Todos os colaboradores</option>{data.employees.map(employee=><option value={employee.id} key={employee.id}>{employee.name}</option>)}</select></Field><div className="report-export"><button className="button primary" disabled={!responses.length||!!busy} onClick={()=>void exportFile('pdf')}>{busy==='pdf'?<LoaderCircle className="spin" size={18}/>:<ArrowDownToLine size={18}/>}Exportar PDF</button><button className="button" disabled={!responses.length||!!busy} onClick={()=>void exportFile('xlsx')}>{busy==='xlsx'?<LoaderCircle className="spin" size={18}/>:<FileSpreadsheet size={18}/>}Exportar Excel</button></div></div></Panel><div className="report-summary"><span className="form-icon"><BarChart3 size={25}/></span><div><h2>{data.cycles.find(cycle=>cycle.id===cycleId)?.name||'Selecione um ciclo'}</h2><p>{quantity(responses.length,'resposta')} · {quantity(new Set(responses.map(response=>response.subjectId)).size,'pessoa avaliada','pessoas avaliadas')} · {quantity(new Set(responses.map(response=>response.evaluationId)).size,'formulário')}</p></div><Pill kind="muted">Prévia do relatório</Pill></div><Panel title="Resultados por pessoa, formulário e perspectiva" subtitle="Cada média reúne somente as respostas da mesma avaliação e perspectiva"><div className="table-scroll"><table><thead><tr><th>Colaborador</th><th>Setor</th><th>Avaliação</th><th>Respostas</th><th>Média / 4</th></tr></thead><tbody>{data.employees.flatMap(employee=>evaluations.flatMap(evaluation=>(Object.keys(KIND_LABELS) as EvaluationKind[]).map(kind=>{const subset=responses.filter(response=>response.subjectId===employee.id&&response.evaluationId===evaluation.id&&response.kind===kind);return subset.length?<tr key={`${employee.id}-${evaluation.id}-${kind}`}><td className="strong">{employee.name}</td><td>{employee.department}</td><td><span className="strong">{evaluation.name}</span><br/><small>{KIND_LABELS[kind]}</small></td><td>{subset.length}</td><td className="score-cell"><Score value={mean(subset.map(responseAverage).filter((n):n is number=>n!==null))}/></td></tr>:null;})))}</tbody></table></div>{!responses.length&&<Empty title="Sem respostas para exportar">Selecione outro ciclo ou ajuste os filtros.</Empty>}</Panel><CycleComparison data={data}/><p className="report-foot"><ShieldCheck size={17}/>Relatórios contêm respostas identificadas. Uso exclusivo do RH.</p></>;
+  const [activeTab, setActiveTab] = useState<'singular' | 'consolidated' | 'comparison'>('singular');
+  const [evaluationId, setEvaluationId] = useState('');
+  const [employeeId, setEmployeeId] = useState('');
+  const [kindFilter, setKindFilter] = useState<'all' | EvaluationKind>('all');
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [selectedResponse, setSelectedResponse] = useState<EvaluationResponse | null>(null);
+  const [busy, setBusy] = useState('');
+
+  const evaluations = cycleEvaluations(data, cycleId);
+  const selectedEvalId = evaluations.some(evaluation => evaluation.id === evaluationId) ? evaluationId : '';
+  const cycleAllResponses = cycleResponses(data, cycleId);
+
+  // Filtra as respostas para visão singular
+  const filteredResponses = cycleAllResponses.filter(r => {
+    const matchEval = !selectedEvalId || r.evaluationId === selectedEvalId;
+    const matchSubject = !employeeId || r.subjectId === employeeId;
+    const matchKind = kindFilter === 'all' || r.kind === kindFilter;
+    const subjName = person(data, r.subjectId)?.name || '';
+    const respName = person(data, r.respondentId)?.name || '';
+    const q = query.trim().toLocaleLowerCase('pt-BR');
+    const matchQuery = !q || `${subjName} ${respName}`.toLocaleLowerCase('pt-BR').includes(q);
+    return matchEval && matchSubject && matchKind && matchQuery;
+  }).sort((a, b) => b.submittedAt.localeCompare(a.submittedAt));
+
+  const pageSize = 10;
+  const effectivePage = Math.min(page, Math.max(1, Math.ceil(filteredResponses.length / pageSize)));
+  const pageRows = filteredResponses.slice((effectivePage - 1) * pageSize, effectivePage * pageSize);
+
+  // Respostas agregadas por colaborador
+  const consolidatedResponses = cycleAllResponses.filter(response =>
+    (!selectedEvalId || response.evaluationId === selectedEvalId) &&
+    (!employeeId || response.subjectId === employeeId)
+  );
+
+  async function exportFile(format: 'pdf' | 'xlsx') {
+    setBusy(format);
+    try {
+      await downloadReport(data, { cycleId, evaluationId: selectedEvalId || undefined, employeeId: employeeId || undefined }, format, mode === 'demo');
+    } catch (error) {
+      onError(errorMessage(error));
+    } finally {
+      setBusy('');
+    }
+  }
+
+  // Dados do modal de detalhe singular
+  const detailEval = selectedResponse ? data.evaluations.find(e => e.id === selectedResponse.evaluationId) : null;
+  const detailSubject = selectedResponse ? person(data, selectedResponse.subjectId) : null;
+  const detailRespondent = selectedResponse ? person(data, selectedResponse.respondentId) : null;
+  const detailAvg = selectedResponse ? responseAverage(selectedResponse) : null;
+
+  return (
+    <>
+      {/* Modal de Análise Singular Completa */}
+      {selectedResponse && (
+        <Modal
+          wide
+          title={`Análise Singular: ${detailSubject?.name || 'Colaborador'}`}
+          subtitle={`Avaliado por ${detailRespondent?.name || 'Avaliador'} em ${formatDate(selectedResponse.submittedAt)} · ${KIND_LABELS[selectedResponse.kind]}`}
+          onClose={() => setSelectedResponse(null)}
+        >
+          <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: 18, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>
+              <div>
+                <b style={{ fontSize: 17, color: '#0f172a' }}>{detailSubject?.name}</b>
+                <p style={{ margin: '4px 0 0', fontSize: 13, color: '#64748b' }}>
+                  Setor: <b>{detailSubject?.department}</b> · Formulário: <b>{detailEval?.name || 'Avaliação'}</b>
+                </p>
+                <p style={{ margin: '2px 0 0', fontSize: 12, color: '#64748b' }}>
+                  Respondente: <b>{selectedResponse.kind === 'self' ? 'Própria pessoa (Autoavaliação)' : detailRespondent?.name || 'Não identificado'}</b>
+                </p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Pill kind={selectedResponse.kind === 'self' ? 'muted' : 'green'}>{KIND_LABELS[selectedResponse.kind]}</Pill>
+                <div style={{ textAlign: 'right', background: '#ffffff', padding: '8px 14px', borderRadius: 10, border: '1px solid #e2e8f0' }}>
+                  <small style={{ display: 'block', fontSize: 11, color: '#64748b', fontWeight: 600 }}>NOTA DESTA AVALIAÇÃO</small>
+                  <b style={{ fontSize: 22, color: scoreColor(detailAvg), fontWeight: 850 }}>
+                    {formatNumber(detailAvg)} <small style={{ fontSize: 13, color: '#64748b' }}>/ 4.0</small>
+                  </b>
+                </div>
+              </div>
+            </div>
+
+            {/* Perguntas e Notas */}
+            <div>
+              <h3 style={{ fontSize: 15, fontWeight: 800, color: '#0f172a', margin: '0 0 12px' }}>Notas por critério avaliado (Escala 1 a 4)</h3>
+              {detailEval ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {detailEval.mapping.scoreQuestions.map(q => {
+                    const score = selectedResponse.scores[q.id];
+                    const pct = score !== undefined ? Math.min(100, Math.max(0, ((score - 1) / 3) * 100)) : 0;
+                    return (
+                      <div key={q.id} style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 10, padding: '12px 16px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 6 }}>
+                          <span style={{ fontSize: 13, color: '#1e293b', fontWeight: 600 }}>{q.title}</span>
+                          <span style={{ fontWeight: 850, fontSize: 14, color: scoreColor(score), whiteSpace: 'nowrap' }}>
+                            {score !== undefined ? `${score.toFixed(1)} / 4` : '—'}
+                          </span>
+                        </div>
+                        <div style={{ height: 6, width: '100%', background: '#f1f5f9', borderRadius: 4, overflow: 'hidden' }}>
+                          <div style={{ width: `${pct}%`, height: '100%', background: scoreColor(score), borderRadius: 4, transition: 'width 0.3s ease' }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="muted">Perguntas da avaliação não encontradas.</p>
+              )}
+            </div>
+
+            {/* Respostas de texto e comentários */}
+            <div>
+              <h3 style={{ fontSize: 15, fontWeight: 800, color: '#0f172a', margin: '12px 0 10px' }}>Feedbacks e comentários registrados</h3>
+              {selectedResponse.textAnswers && selectedResponse.textAnswers.some(t => t.answer.trim()) ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {selectedResponse.textAnswers.filter(t => t.answer.trim()).map((t, idx) => (
+                    <div key={idx} style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: 10, padding: '14px 16px' }}>
+                      <b style={{ fontSize: 12, color: '#475569', display: 'block', marginBottom: 4 }}>{t.question}</b>
+                      <p style={{ margin: 0, fontSize: 13, color: '#0f172a', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{t.answer}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p style={{ margin: 0, fontSize: 13, color: '#94a3b8', fontStyle: 'italic' }}>Nenhum comentário em texto informado nesta avaliação.</p>
+              )}
+            </div>
+          </div>
+          <div className="modal-actions">
+            <button type="button" className="button primary" onClick={() => setSelectedResponse(null)}>Fechar</button>
+          </div>
+        </Modal>
+      )}
+
+      {/* Painel de Filtros e Exportação do Relatório */}
+      <Panel title="Relatórios e Análises de Desempenho" subtitle="Consulte as avaliações de forma singular ou consolidada, com exportação oficial para PDF e Excel.">
+        <div className="report-filters">
+          <Field label="Formulário">
+            <select value={selectedEvalId} onChange={event => { setEvaluationId(event.target.value); setPage(1); }}>
+              <option value="">Todos os formulários</option>
+              {evaluations.map(evaluation => (
+                <option key={evaluation.id} value={evaluation.id}>{evaluation.name}</option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Pessoa avaliada">
+            <select value={employeeId} onChange={event => { setEmployeeId(event.target.value); setPage(1); }}>
+              <option value="">Todos os colaboradores</option>
+              {data.employees.map(employee => (
+                <option value={employee.id} key={employee.id}>{employee.name}</option>
+              ))}
+            </select>
+          </Field>
+          <div className="report-export">
+            <button className="button primary" disabled={!cycleAllResponses.length || !!busy} onClick={() => void exportFile('pdf')}>
+              {busy === 'pdf' ? <LoaderCircle className="spin" size={18} /> : <ArrowDownToLine size={18} />}
+              Exportar PDF
+            </button>
+            <button className="button" disabled={!cycleAllResponses.length || !!busy} onClick={() => void exportFile('xlsx')}>
+              {busy === 'xlsx' ? <LoaderCircle className="spin" size={18} /> : <FileSpreadsheet size={18} />}
+              Exportar Excel
+            </button>
+          </div>
+        </div>
+      </Panel>
+
+      {/* Resumo do Ciclo Selecionado */}
+      <div className="report-summary">
+        <span className="form-icon"><BarChart3 size={25} /></span>
+        <div>
+          <h2>{data.cycles.find(cycle => cycle.id === cycleId)?.name || 'Selecione um ciclo'}</h2>
+          <p>
+            {quantity(cycleAllResponses.length, 'resposta recebida', 'respostas recebidas')} · {quantity(new Set(cycleAllResponses.map(r => r.subjectId)).size, 'colaborador avaliado', 'colaboradores avaliados')} · {quantity(evaluations.length, 'formulário vinculado', 'formulários vinculados')}
+          </p>
+        </div>
+        <Pill kind="green">Relatórios Oficiais</Pill>
+      </div>
+
+      {/* Abas de Navegação entre Visões */}
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', margin: '4px 0 16px' }}>
+        <button
+          type="button"
+          className={`button ${activeTab === 'singular' ? 'primary' : ''}`}
+          onClick={() => setActiveTab('singular')}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 18px', fontSize: 13, fontWeight: 700 }}
+        >
+          <ClipboardList size={17} /> Análise Singular das Respostas ({filteredResponses.length})
+        </button>
+        <button
+          type="button"
+          className={`button ${activeTab === 'consolidated' ? 'primary' : ''}`}
+          onClick={() => setActiveTab('consolidated')}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 18px', fontSize: 13, fontWeight: 700 }}
+        >
+          <BarChart3 size={17} /> Médias Consolidadas por Colaborador
+        </button>
+        <button
+          type="button"
+          className={`button ${activeTab === 'comparison' ? 'primary' : ''}`}
+          onClick={() => setActiveTab('comparison')}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 18px', fontSize: 13, fontWeight: 700 }}
+        >
+          <TrendingUp size={17} /> Comparativo de Ciclos
+        </button>
+      </div>
+
+      {/* ABA 1: VISÃO SINGULAR DAS RESPOSTAS */}
+      {activeTab === 'singular' && (
+        <Panel
+          title="Análises Singulares das Avaliações"
+          subtitle="Visualize cada submissão individualmente. Clique em 'Ver análise' para conferir as notas de cada critério e os comentários de texto."
+        >
+          <div className="table-filters" style={{ flexWrap: 'wrap', gap: 10 }}>
+            <label className="search-field" style={{ flex: '1 1 240px' }}>
+              <Search size={18} />
+              <span className="sr-only">Buscar por colaborador ou avaliador</span>
+              <input
+                value={query}
+                onChange={event => { setQuery(event.target.value); setPage(1); }}
+                placeholder="Buscar por colaborador avaliado ou avaliador"
+              />
+            </label>
+            <select
+              aria-label="Filtrar por perspectiva"
+              value={kindFilter}
+              onChange={event => { setKindFilter(event.target.value as 'all' | EvaluationKind); setPage(1); }}
+            >
+              <option value="all">Todas as perspectivas</option>
+              <option value="leadership">Avaliação de Líderes</option>
+              <option value="team">Entre Colegas</option>
+              <option value="self">Autoavaliação</option>
+            </select>
+            <span className="record-count">{quantity(filteredResponses.length, 'avaliação singular', 'avaliações singulares')}</span>
+          </div>
+
+          <div className="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Pessoa Avaliada</th>
+                  <th>Setor</th>
+                  <th>Avaliador (Respondente)</th>
+                  <th>Formulário</th>
+                  <th>Data</th>
+                  <th>Média</th>
+                  <th>Perspectiva</th>
+                  <th style={{ textAlign: 'right' }}>Ação</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pageRows.map(response => {
+                  const subj = person(data, response.subjectId);
+                  const resp = person(data, response.respondentId);
+                  const ev = evaluations.find(e => e.id === response.evaluationId);
+                  const avg = responseAverage(response);
+
+                  return (
+                    <tr key={response.id}>
+                      <td className="strong">
+                        <button type="button" className="text-button" onClick={() => onPerson(response.subjectId)}>
+                          {subj?.name || 'Não identificado'}
+                        </button>
+                      </td>
+                      <td>{subj?.department || '—'}</td>
+                      <td>
+                        {response.kind === 'self' ? (
+                          <span style={{ color: '#64748b', fontStyle: 'italic' }}>Própria pessoa (Autoavaliação)</span>
+                        ) : (
+                          resp?.name || 'Não identificado'
+                        )}
+                      </td>
+                      <td><small>{ev?.name || 'Avaliação'}</small></td>
+                      <td>{formatDate(response.submittedAt)}</td>
+                      <td className="score-cell">
+                        <b style={{ color: scoreColor(avg) }}>{formatNumber(avg)}</b>
+                      </td>
+                      <td>
+                        <Pill kind={response.kind === 'self' ? 'muted' : 'green'}>{KIND_LABELS[response.kind]}</Pill>
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        <button
+                          type="button"
+                          className="button small"
+                          onClick={() => setSelectedResponse(response)}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#0284c7', borderColor: '#bae6fd', background: '#f0f9ff', fontWeight: 650 }}
+                        >
+                          <Eye size={14} /> Ver análise
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {!filteredResponses.length && (
+            <Empty title="Nenhuma avaliação encontrada para os filtros selecionados">
+              Ajuste os filtros de formulário ou colaborador para consultar as avaliações registradas.
+            </Empty>
+          )}
+
+          <Pager page={effectivePage} total={filteredResponses.length} setPage={setPage} size={pageSize} />
+        </Panel>
+      )}
+
+      {/* ABA 2: VISÃO CONSOLIDADA POR COLABORADOR */}
+      {activeTab === 'consolidated' && (
+        <Panel
+          title="Médias Consolidadas por Pessoa e Formulário"
+          subtitle="Cada média reúne todas as respostas recebidas pela mesma pessoa nesta avaliação e perspectiva."
+        >
+          <div className="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Colaborador</th>
+                  <th>Setor</th>
+                  <th>Avaliação</th>
+                  <th>Respostas</th>
+                  <th>Média / 4</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.employees.flatMap(employee =>
+                  evaluations.flatMap(evaluation =>
+                    (Object.keys(KIND_LABELS) as EvaluationKind[]).map(kind => {
+                      const subset = consolidatedResponses.filter(response =>
+                        response.subjectId === employee.id &&
+                        response.evaluationId === evaluation.id &&
+                        response.kind === kind
+                      );
+                      return subset.length ? (
+                        <tr key={`${employee.id}-${evaluation.id}-${kind}`}>
+                          <td className="strong">
+                            <button type="button" className="text-button" onClick={() => onPerson(employee.id)}>
+                              {employee.name}
+                            </button>
+                          </td>
+                          <td>{employee.department}</td>
+                          <td>
+                            <span className="strong">{evaluation.name}</span>
+                            <br />
+                            <small>{KIND_LABELS[kind]}</small>
+                          </td>
+                          <td>{quantity(subset.length, 'resposta')}</td>
+                          <td className="score-cell">
+                            <Score value={mean(subset.map(responseAverage).filter((n): n is number => n !== null))} />
+                          </td>
+                        </tr>
+                      ) : null;
+                    })
+                  )
+                )}
+              </tbody>
+            </table>
+          </div>
+          {!consolidatedResponses.length && (
+            <Empty title="Sem respostas para exibir neste ciclo">
+              Selecione outro ciclo ou aguarde novas avaliações dos colaboradores.
+            </Empty>
+          )}
+        </Panel>
+      )}
+
+      {/* ABA 3: COMPARATIVO ENTRE CICLOS */}
+      {activeTab === 'comparison' && (
+        <CycleComparison data={data} />
+      )}
+
+      <p className="report-foot">
+        <ShieldCheck size={17} /> Relatórios contêm respostas identificadas. Uso exclusivo do RH.
+      </p>
+    </>
+  );
 }
 
 function PasswordSettings({required=false}:{required?:boolean}) {
