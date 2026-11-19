@@ -9,13 +9,38 @@ import {
   CalendarDays,
   Award,
   Layers,
+  ArrowUpRight,
+  ArrowDownRight,
+  Minus,
+  Sparkles,
+  CheckCircle2,
 } from 'lucide-react';
 import type { AppData, EvaluationKind } from '@/lib/types';
-import { KIND_LABELS } from '@/lib/types';
 import { responseAverage, formatNumber } from '@/lib/analytics';
 
-const scoreColor = (value: number | null) =>
-  value === null ? '#94a3b8' : value < 2.5 ? '#b42318' : '#067647';
+const DEPT_THEMES: Record<string, { bar: string; text: string; bg: string }> = {
+  'RECEPCÃO E TRIAGEM': { bar: '#0284c7', text: '#0369a1', bg: '#f0f9ff' },
+  'RECEPÇÃO E TRIAGEM': { bar: '#0284c7', text: '#0369a1', bg: '#f0f9ff' },
+  'FATURAMENTO': { bar: '#6366f1', text: '#4338ca', bg: '#eef2ff' },
+  'CENTRAL E RESULTADOS': { bar: '#8b5cf6', text: '#6d28d9', bg: '#f5f3ff' },
+  'TÉCNICAS E CORREDOR / COPEIRAS': { bar: '#10b981', text: '#047857', bg: '#ecfdf5' },
+  'ADMINISTRATIVO': { bar: '#f59e0b', text: '#b45309', bg: '#fffbeb' },
+  'SUPORTE': { bar: '#06b6d4', text: '#0e7490', bg: '#ecfeff' },
+};
+
+function getDeptTheme(deptName: string, index: number) {
+  const norm = deptName.trim().toUpperCase();
+  if (DEPT_THEMES[norm]) return DEPT_THEMES[norm];
+  const palette = [
+    { bar: '#0284c7', text: '#0369a1', bg: '#f0f9ff' },
+    { bar: '#6366f1', text: '#4338ca', bg: '#eef2ff' },
+    { bar: '#10b981', text: '#047857', bg: '#ecfdf5' },
+    { bar: '#8b5cf6', text: '#6d28d9', bg: '#f5f3ff' },
+    { bar: '#f59e0b', text: '#b45309', bg: '#fffbeb' },
+    { bar: '#06b6d4', text: '#0e7490', bg: '#ecfeff' },
+  ];
+  return palette[index % palette.length];
+}
 
 interface EvolutionDashboardProps {
   data: AppData;
@@ -69,6 +94,29 @@ export function EvolutionDashboard({ data, activeCycleId }: EvolutionDashboardPr
     });
   }, [sortedCycles, data.evaluations, data.responses]);
 
+  // Comparativo Direto entre Ciclos (Outubro vs. Novembro)
+  const cycleComparison = useMemo(() => {
+    if (cycleTrends.length < 2) return null;
+    const current = cycleTrends[cycleTrends.length - 1];
+    const previous = cycleTrends[cycleTrends.length - 2];
+
+    const makeComparison = (title: string, currVal: number | null, prevVal: number | null) => {
+      const diff = currVal !== null && prevVal !== null ? Number((currVal - prevVal).toFixed(2)) : null;
+      return { title, currVal, prevVal, diff };
+    };
+
+    return {
+      current,
+      previous,
+      metrics: [
+        makeComparison('Média Geral da Clínica', current.overallAvg, previous.overallAvg),
+        makeComparison('Avaliação de Líderes', current.leadershipAvg, previous.leadershipAvg),
+        makeComparison('Avaliação da Equipe', current.teamAvg, previous.teamAvg),
+        makeComparison('Autoavaliação', current.selfAvg, previous.selfAvg),
+      ],
+    };
+  }, [cycleTrends]);
+
   // Médias por setor no ciclo selecionado (ou no mais recente)
   const targetCycleId = activeCycleId || sortedCycles[sortedCycles.length - 1]?.id;
 
@@ -80,7 +128,6 @@ export function EvolutionDashboard({ data, activeCycleId }: EvolutionDashboardPr
 
     return departments.map(dept => {
       const empsInDept = new Set(data.employees.filter(e => e.department === dept).map(e => e.id));
-      // Respostas onde o avaliado pertence a este setor
       const deptResponses = cycleResponses.filter(r => empsInDept.has(r.subjectId));
 
       const scores = deptResponses
@@ -130,10 +177,9 @@ export function EvolutionDashboard({ data, activeCycleId }: EvolutionDashboardPr
   const svgWidth = 620;
   const svgHeight = 220;
   const paddingX = 60;
-  const paddingY = 30;
+  const paddingY = 32;
 
   const getY = (val: number) => {
-    // Escala 1.0 a 4.0
     const clamped = Math.max(1, Math.min(4, val));
     const range = 4 - 1;
     const ratio = (clamped - 1) / range;
@@ -163,28 +209,132 @@ export function EvolutionDashboard({ data, activeCycleId }: EvolutionDashboardPr
     });
   }, [cycleTrends, selectedPerspective]);
 
+  const validPoints = activeTrendPoints.filter(p => p.y !== null);
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      {/* Cabeçalho do Painel de Evolução */}
-      <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 14, padding: '24px', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 26, marginTop: 10 }}>
+
+      {/* BLOCO 1: Comparativo Direto entre Ciclos (Outubro vs. Novembro) */}
+      {cycleComparison && (
+        <div style={{
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+          borderRadius: 14,
+          padding: '24px 26px',
+          boxShadow: '0 4px 14px rgba(15,23,42,0.03)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14, marginBottom: 20 }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#0284c7', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <Sparkles size={16} /> Comparativo de Desempenho
+              </div>
+              <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0f172a', margin: '4px 0 2px' }}>
+                Comparação: {cycleComparison.previous.name} ➔ {cycleComparison.current.name}
+              </h2>
+              <p style={{ fontSize: 13, color: '#64748b', margin: 0 }}>
+                Evolução das notas por perspectiva na escala oficial da Cardiofitness (1 a 4).
+              </p>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#f8fafc', padding: '6px 14px', borderRadius: 20, border: '1px solid #e2e8f0', fontSize: 12, color: '#475569' }}>
+              <CalendarDays size={15} color="#0284c7" />
+              <span>Base oficial de <b>{data.responses.length}</b> respostas auditadas</span>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 16 }}>
+            {cycleComparison.metrics.map(metric => {
+              const hasCurr = metric.currVal !== null;
+              const hasPrev = metric.prevVal !== null;
+              const diff = metric.diff;
+              const isPositive = diff !== null && diff > 0;
+              const isNegative = diff !== null && diff < 0;
+              const isNeutral = diff !== null && diff === 0;
+
+              return (
+                <div
+                  key={metric.title}
+                  style={{
+                    background: '#f8fafc',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: 12,
+                    padding: '18px 20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    gap: 12,
+                    transition: 'transform 0.15s ease',
+                  }}
+                >
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#475569' }}>{metric.title}</span>
+
+                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+                    <strong style={{ fontSize: 28, fontWeight: 850, color: hasCurr ? '#0f172a' : '#94a3b8' }}>
+                      {hasCurr ? metric.currVal!.toFixed(2) : (hasPrev ? metric.prevVal!.toFixed(2) : '—')}
+                      <small style={{ fontSize: 14, fontWeight: 500, color: '#64748b', marginLeft: 4 }}>/ 4.0</small>
+                    </strong>
+
+                    {diff !== null ? (
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 3,
+                          fontSize: 12,
+                          fontWeight: 750,
+                          padding: '4px 9px',
+                          borderRadius: 20,
+                          background: isPositive ? '#ecfdf5' : isNegative ? '#fef2f2' : '#f1f5f9',
+                          color: isPositive ? '#047857' : isNegative ? '#b91c1c' : '#475569',
+                          border: `1px solid ${isPositive ? '#a7f3d0' : isNegative ? '#fecaca' : '#cbd5e1'}`,
+                        }}
+                      >
+                        {isPositive ? <ArrowUpRight size={14} /> : isNegative ? <ArrowDownRight size={14} /> : <Minus size={14} />}
+                        {isPositive ? `+${diff.toFixed(2)}` : diff.toFixed(2)}
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: 11, color: '#0284c7', background: '#e0f2fe', padding: '3px 8px', borderRadius: 12, fontWeight: 600 }}>
+                        {hasCurr ? 'Ciclo Atual' : 'Histórico Outubro'}
+                      </span>
+                    )}
+                  </div>
+
+                  <div style={{ fontSize: 11, color: '#64748b', borderTop: '1px solid #eef2f6', paddingTop: 8, display: 'flex', justifyContent: 'space-between' }}>
+                    <span>{cycleComparison.previous.name}: <b>{hasPrev ? metric.prevVal!.toFixed(2) : '—'}</b></span>
+                    <span>{cycleComparison.current.name}: <b>{hasCurr ? metric.currVal!.toFixed(2) : 'Em coleta'}</b></span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* BLOCO 2: Gráfico Histórico SVG com Filtro de Perspectiva */}
+      <div style={{
+        background: '#ffffff',
+        border: '1px solid #e2e8f0',
+        borderRadius: 14,
+        padding: '24px 26px',
+        boxShadow: '0 4px 14px rgba(15,23,42,0.03)',
+      }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#0573b9', fontWeight: 700, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              <TrendingUp size={18} /> Indicadores e Evolução Histórica
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#0284c7', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <TrendingUp size={16} /> Linha de Tendência Temporal
             </div>
-            <h2 style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', margin: '4px 0 6px' }}>
-              Painel de Evolução dos Ciclos de Avaliação
-            </h2>
+            <h3 style={{ fontSize: 20, fontWeight: 800, color: '#0f172a', margin: '4px 0 4px' }}>
+              Evolução Ciclo a Ciclo
+            </h3>
             <p style={{ fontSize: 13, color: '#64748b', margin: 0 }}>
-              Acompanhamento do desenvolvimento da clínica, comparativo de setores e evolução das médias ciclo a ciclo.
+              Curva de desempenho calculada a partir de todas as avaliações identificadas.
             </p>
           </div>
 
           {/* Filtro de Perspectiva */}
-          <div style={{ display: 'flex', gap: 6, background: '#f8fafc', padding: 4, borderRadius: 10, border: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', gap: 6, background: '#f1f5f9', padding: 4, borderRadius: 10, border: '1px solid #e2e8f0' }}>
             {[
               { id: 'all', label: 'Média Geral' },
-              { id: 'leadership', label: 'Líderes' },
+              { id: 'leadership', label: 'Liderança' },
               { id: 'team', label: 'Equipe' },
               { id: 'self', label: 'Autoavaliação' },
             ].map(btn => (
@@ -193,14 +343,15 @@ export function EvolutionDashboard({ data, activeCycleId }: EvolutionDashboardPr
                 type="button"
                 onClick={() => setSelectedPerspective(btn.id)}
                 style={{
-                  padding: '6px 14px',
+                  padding: '7px 16px',
                   borderRadius: 8,
                   fontSize: 12,
-                  fontWeight: selectedPerspective === btn.id ? 700 : 500,
+                  fontWeight: selectedPerspective === btn.id ? 750 : 550,
                   border: 'none',
                   cursor: 'pointer',
-                  background: selectedPerspective === btn.id ? '#0573b9' : 'transparent',
-                  color: selectedPerspective === btn.id ? '#fff' : '#64748b',
+                  background: selectedPerspective === btn.id ? '#0284c7' : 'transparent',
+                  color: selectedPerspective === btn.id ? '#ffffff' : '#475569',
+                  boxShadow: selectedPerspective === btn.id ? '0 2px 6px rgba(2,132,199,0.25)' : 'none',
                   transition: 'all 0.15s ease',
                 }}
               >
@@ -210,124 +361,154 @@ export function EvolutionDashboard({ data, activeCycleId }: EvolutionDashboardPr
           </div>
         </div>
 
-        {/* Gráfico SVG de Evolução Temporal */}
-        <div style={{ marginTop: 24, padding: '16px 0', borderTop: '1px solid #f1f5f9' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#334155', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <BarChart3 size={16} /> Evolução das Médias (Escala 1.0 a 4.0)
-            </span>
-            <span style={{ fontSize: 12, color: '#64748b' }}>
-              Baseado em <b>{data.responses.length}</b> respostas computadas
-            </span>
-          </div>
+        {/* Gráfico SVG com Gradiente Moderno */}
+        <div style={{ marginTop: 22, width: '100%', overflowX: 'auto' }}>
+          <svg
+            viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+            style={{ width: '100%', maxHeight: 220, overflow: 'visible', background: '#fbfcfd', borderRadius: 12, border: '1px solid #edf2f7' }}
+          >
+            <defs>
+              <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#0284c7" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="#0284c7" stopOpacity="0.0" />
+              </linearGradient>
+            </defs>
 
-          <div style={{ width: '100%', overflowX: 'auto' }}>
-            <svg
-              viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-              style={{ width: '100%', maxHeight: 220, overflow: 'visible', background: '#fafbfc', borderRadius: 10, border: '1px solid #edf2f7' }}
-            >
-              {/* Linhas de Grade e Valores da Escala */}
-              {[1, 2, 3, 4].map(score => {
-                const y = getY(score);
-                return (
-                  <g key={score}>
-                    <line x1={paddingX - 10} y1={y} x2={svgWidth - paddingX + 10} y2={y} stroke="#e2e8f0" strokeDasharray="3 3" />
-                    <text x={paddingX - 25} y={y + 4} fontSize="11" fill="#94a3b8" fontWeight="600" textAnchor="end">
-                      {score}.0
-                    </text>
-                  </g>
-                );
-              })}
+            {/* Linhas de Grade e Valores da Escala */}
+            {[1, 2, 3, 4].map(score => {
+              const y = getY(score);
+              return (
+                <g key={score}>
+                  <line x1={paddingX - 10} y1={y} x2={svgWidth - paddingX + 10} y2={y} stroke="#e2e8f0" strokeDasharray="3 3" />
+                  <text x={paddingX - 22} y={y + 4} fontSize="11" fill="#94a3b8" fontWeight="600" textAnchor="end">
+                    {score}.0
+                  </text>
+                </g>
+              );
+            })}
 
-              {/* Linha de Conexão dos Pontos */}
-              {activeTrendPoints.length > 1 && (
-                <path
-                  d={activeTrendPoints
-                    .filter(p => p.y !== null)
-                    .map((p, idx) => `${idx === 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
-                    .join(' ')}
-                  fill="none"
-                  stroke="#0573b9"
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              )}
+            {/* Área com preenchimento degradê moderno */}
+            {validPoints.length > 1 && (
+              <polygon
+                points={`
+                  ${validPoints[0].x},${svgHeight - paddingY}
+                  ${validPoints.map(p => `${p.x},${p.y}`).join(' ')}
+                  ${validPoints[validPoints.length - 1].x},${svgHeight - paddingY}
+                `}
+                fill="url(#areaGradient)"
+              />
+            )}
 
-              {/* Pontos e Rótulos */}
-              {activeTrendPoints.map((p, idx) => {
-                if (p.y === null || p.value === null) return null;
-                return (
-                  <g key={idx}>
-                    {/* Linha vertical até o eixo */}
-                    <line x1={p.x} y1={p.y} x2={p.x} y2={svgHeight - paddingY} stroke="#e2e8f0" strokeWidth="1" />
+            {/* Linha de Conexão dos Pontos */}
+            {validPoints.length > 1 && (
+              <path
+                d={validPoints.map((p, idx) => `${idx === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')}
+                fill="none"
+                stroke="#0284c7"
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            )}
 
-                    {/* Ponto */}
-                    <circle cx={p.x} cy={p.y} r="7" fill="#fff" stroke="#0573b9" strokeWidth="3" />
-                    <circle cx={p.x} cy={p.y} r="3" fill="#0573b9" />
+            {/* Pontos e Rótulos */}
+            {activeTrendPoints.map((p, idx) => {
+              if (p.y === null || p.value === null) return null;
+              return (
+                <g key={idx}>
+                  <line x1={p.x} y1={p.y} x2={p.x} y2={svgHeight - paddingY} stroke="#e2e8f0" strokeWidth="1" strokeDasharray="2 2" />
+                  <circle cx={p.x} cy={p.y} r="8" fill="#ffffff" stroke="#0284c7" strokeWidth="3" />
+                  <circle cx={p.x} cy={p.y} r="3.5" fill="#0284c7" />
 
-                    {/* Valor numérico acima do ponto */}
-                    <text x={p.x} y={p.y - 12} fontSize="12" fontWeight="800" fill="#0f172a" textAnchor="middle">
-                      {p.value.toFixed(2)}
-                    </text>
+                  {/* Valor numérico em badge sobre o ponto */}
+                  <rect x={p.x - 22} y={p.y - 30} width="44" height="20" rx="6" fill="#0f172a" />
+                  <text x={p.x} y={p.y - 16} fontSize="11" fontWeight="800" fill="#ffffff" textAnchor="middle">
+                    {p.value.toFixed(2)}
+                  </text>
 
-                    {/* Nome do ciclo no eixo X */}
-                    <text x={p.x} y={svgHeight - 10} fontSize="11" fill="#475467" fontWeight="600" textAnchor="middle">
-                      {p.cycleName}
-                    </text>
-                  </g>
-                );
-              })}
+                  {/* Nome do ciclo no eixo X */}
+                  <text x={p.x} y={svgHeight - 10} fontSize="11" fill="#334155" fontWeight="700" textAnchor="middle">
+                    {p.cycleName}
+                  </text>
+                </g>
+              );
+            })}
 
-              {!activeTrendPoints.some(p => p.value !== null) && (
-                <text x={svgWidth / 2} y={svgHeight / 2} textAnchor="middle" fill="#94a3b8" fontSize="13">
-                  Nenhum resultado registrado nos ciclos para esta perspectiva.
-                </text>
-              )}
-            </svg>
-          </div>
+            {!activeTrendPoints.some(p => p.value !== null) && (
+              <text x={svgWidth / 2} y={svgHeight / 2} textAnchor="middle" fill="#94a3b8" fontSize="13">
+                Aguardando respostas para calcular a média desta perspectiva.
+              </text>
+            )}
+          </svg>
         </div>
       </div>
 
-      {/* Grid com 2 Colunas: Desempenho por Setor & Distribuição de Notas */}
+      {/* BLOCO 3: Grid de Desempenho por Setor & Distribuição de Notas */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
-        {/* Coluna 1: Médias por Setor */}
-        <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 14, padding: '24px', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Layers size={18} color="#0573b9" /> Desempenho Médio por Setor
-            </h3>
-            <span style={{ fontSize: 12, color: '#64748b' }}>Escala de 1 a 4</span>
+
+        {/* COLUNA 1: Gráfico Horizontal por Setor da Clínica */}
+        <div style={{
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+          borderRadius: 14,
+          padding: '24px 26px',
+          boxShadow: '0 4px 14px rgba(15,23,42,0.03)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#0284c7', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <Layers size={16} /> Clima & Desempenho
+              </div>
+              <h3 style={{ fontSize: 18, fontWeight: 800, color: '#0f172a', margin: '4px 0 0' }}>
+                Média por Setor da Clínica
+              </h3>
+            </div>
+            <span style={{ fontSize: 11, color: '#64748b', background: '#f1f5f9', padding: '4px 10px', borderRadius: 12, fontWeight: 600 }}>
+              Escala 1.0 a 4.0
+            </span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {departmentMetrics.map(dept => {
+            {departmentMetrics.map((dept, index) => {
+              const theme = getDeptTheme(dept.department, index);
               const val = dept.average ?? 0;
               const pct = val ? Math.min(100, Math.max(0, ((val - 1) / 3) * 100)) : 0;
-              const color = val ? scoreColor(val) : '#cbd5e1';
 
               return (
-                <div key={dept.department}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
+                <div
+                  key={dept.department}
+                  style={{
+                    background: theme.bg,
+                    border: `1px solid ${theme.bar}25`,
+                    borderRadius: 12,
+                    padding: '14px 16px',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
                     <div>
-                      <b style={{ fontSize: 13, color: '#1e293b' }}>{dept.department}</b>
-                      <small style={{ fontSize: 11, color: '#64748b', marginLeft: 8 }}>
-                        {dept.responsesCount} respostas · {dept.headcount} pessoas
-                      </small>
+                      <b style={{ fontSize: 13, color: '#0f172a', letterSpacing: '0.02em' }}>
+                        {dept.department.toLocaleUpperCase('pt-BR')}
+                      </b>
+                      <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
+                        {dept.headcount} {dept.headcount === 1 ? 'colaborador' : 'colaboradores'} · {dept.responsesCount} avaliações
+                      </div>
                     </div>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: val ? '#0573b9' : '#94a3b8' }}>
-                      {dept.average !== null ? dept.average.toFixed(2) : '—'}
-                    </span>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: 16, fontWeight: 850, color: theme.text }}>
+                        {dept.average !== null ? dept.average.toFixed(2) : '—'}
+                      </span>
+                      <small style={{ fontSize: 11, color: '#64748b', marginLeft: 2 }}>/ 4.0</small>
+                    </div>
                   </div>
 
-                  {/* Barra de Progresso com Cor Semântica */}
-                  <div style={{ height: 10, width: '100%', background: '#f1f5f9', borderRadius: 6, overflow: 'hidden' }}>
+                  {/* Barra de Progresso com Cor Temática do Setor */}
+                  <div style={{ height: 10, width: '100%', background: '#ffffff', borderRadius: 8, overflow: 'hidden', border: `1px solid ${theme.bar}30` }}>
                     <div
                       style={{
                         height: '100%',
                         width: `${pct}%`,
-                        background: color,
-                        borderRadius: 6,
+                        background: theme.bar,
+                        borderRadius: 8,
                         transition: 'width 0.4s ease',
                       }}
                     />
@@ -338,29 +519,61 @@ export function EvolutionDashboard({ data, activeCycleId }: EvolutionDashboardPr
 
             {!departmentMetrics.length && (
               <p style={{ color: '#94a3b8', fontSize: 13, fontStyle: 'italic', textAlign: 'center', margin: '20px 0' }}>
-                Nenhuma resposta registrada neste ciclo ainda.
+                Aguardando avaliações computadas para este ciclo.
               </p>
             )}
           </div>
         </div>
 
-        {/* Coluna 2: Distribuição Geral das Notas da Clínica */}
-        <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 14, padding: '24px', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Award size={18} color="#0573b9" /> Distribuição Geral das Notas
-            </h3>
-            <span style={{ fontSize: 12, color: '#64748b' }}>
-              {scoreDistribution.total} avaliações
+        {/* COLUNA 2: Distribuição de Notas da Clínica (1 a 4) */}
+        <div style={{
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+          borderRadius: 14,
+          padding: '24px 26px',
+          boxShadow: '0 4px 14px rgba(15,23,42,0.03)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#0284c7', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <Award size={16} /> Distribuição Geral
+              </div>
+              <h3 style={{ fontSize: 18, fontWeight: 800, color: '#0f172a', margin: '4px 0 0' }}>
+                Proporção das Notas
+              </h3>
+            </div>
+            <span style={{ fontSize: 11, color: '#64748b', background: '#f1f5f9', padding: '4px 10px', borderRadius: 12, fontWeight: 600 }}>
+              {scoreDistribution.total} respostas
             </span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, textAlign: 'center', marginTop: 18 }}>
+          {/* Barra Segmentada 100% Contínua */}
+          {scoreDistribution.total > 0 && (
+            <div style={{ marginBottom: 18 }}>
+              <div style={{ height: 14, width: '100%', borderRadius: 8, overflow: 'hidden', display: 'flex', background: '#e2e8f0' }}>
+                {scoreDistribution.percentages[4] > 0 && (
+                  <div style={{ width: `${scoreDistribution.percentages[4]}%`, background: '#10b981' }} title={`Supera: ${scoreDistribution.percentages[4]}%`} />
+                )}
+                {scoreDistribution.percentages[3] > 0 && (
+                  <div style={{ width: `${scoreDistribution.percentages[3]}%`, background: '#0284c7' }} title={`Atende: ${scoreDistribution.percentages[3]}%`} />
+                )}
+                {scoreDistribution.percentages[2] > 0 && (
+                  <div style={{ width: `${scoreDistribution.percentages[2]}%`, background: '#f59e0b' }} title={`Em desenvolvimento: ${scoreDistribution.percentages[2]}%`} />
+                )}
+                {scoreDistribution.percentages[1] > 0 && (
+                  <div style={{ width: `${scoreDistribution.percentages[1]}%`, background: '#ef4444' }} title={`Precisa melhorar: ${scoreDistribution.percentages[1]}%`} />
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Cards Coloridos com as 4 Faixas */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
             {[
-              { val: 1, label: 'Precisa melhorar', color: '#f04438', bg: '#fef3f2' },
-              { val: 2, label: 'Em desenvolvimento', color: '#f79009', bg: '#fffaeb' },
-              { val: 3, label: 'Atende', color: '#12b76a', bg: '#ecfdf3' },
-              { val: 4, label: 'Supera', color: '#0573b9', bg: '#f0f7fd' },
+              { val: 4, label: 'Supera', color: '#10b981', bg: '#ecfdf5', border: '#a7f3d0' },
+              { val: 3, label: 'Atende', color: '#0284c7', bg: '#f0f9ff', border: '#bae6fd' },
+              { val: 2, label: 'Em desenvolvimento', color: '#f59e0b', bg: '#fffbeb', border: '#fde68a' },
+              { val: 1, label: 'Precisa melhorar', color: '#ef4444', bg: '#fef2f2', border: '#fecaca' },
             ].map(col => {
               const count = scoreDistribution.counts[col.val as 1 | 2 | 3 | 4];
               const pct = scoreDistribution.percentages[col.val as 1 | 2 | 3 | 4];
@@ -370,34 +583,35 @@ export function EvolutionDashboard({ data, activeCycleId }: EvolutionDashboardPr
                   key={col.val}
                   style={{
                     background: col.bg,
-                    border: `1px solid ${col.color}30`,
+                    border: `1px solid ${col.border}`,
                     borderRadius: 12,
-                    padding: '16px 8px',
+                    padding: '16px 14px',
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 6,
+                    gap: 4,
                   }}
                 >
-                  <span style={{ fontSize: 24, fontWeight: 900, color: col.color }}>{col.val}</span>
-                  <b style={{ fontSize: 16, color: '#0f172a' }}>{pct}%</b>
-                  <small style={{ fontSize: 11, color: '#475467', lineHeight: 1.2 }}>
-                    {count} {count === 1 ? 'nota' : 'notas'}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 13, fontWeight: 800, color: col.color }}>Nota {col.val}</span>
+                    <b style={{ fontSize: 18, color: '#0f172a', fontWeight: 850 }}>{pct}%</b>
+                  </div>
+                  <strong style={{ fontSize: 12, color: '#1e293b' }}>{col.label}</strong>
+                  <small style={{ fontSize: 11, color: '#64748b' }}>
+                    {count} {count === 1 ? 'ocorrência' : 'ocorrências'}
                   </small>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: col.color, marginTop: 4 }}>
-                    {col.label}
-                  </span>
                 </div>
               );
             })}
           </div>
 
-          <div style={{ marginTop: 22, padding: '12px 16px', background: '#f8fafc', borderRadius: 8, fontSize: 12, color: '#64748b', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <ShieldCheck size={16} color="#0573b9" />
-            <span>Dados consolidados de todos os ciclos cadastrados na Cardiofitness.</span>
+          <div style={{ marginTop: 20, padding: '12px 14px', background: '#f8fafc', borderRadius: 10, fontSize: 12, color: '#64748b', display: 'flex', alignItems: 'center', gap: 8, border: '1px solid #edf2f7' }}>
+            <CheckCircle2 size={16} color="#0284c7" />
+            <span>Métricas oficiais extraídas das avaliações do portal Cardiofitness.</span>
           </div>
         </div>
+
       </div>
+
     </div>
   );
 }

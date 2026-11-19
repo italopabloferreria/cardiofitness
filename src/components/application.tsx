@@ -22,7 +22,7 @@ import { KIND_LABELS, PROVIDED_FORMS, type AppData, type Cycle, type CycleInput,
 
 type View = 'dashboard' | 'evolution' | 'links' | 'employees' | 'employee' | 'evaluations' | 'pending' | 'result' | 'reports' | 'settings';
 type Editor = { type: 'quick-cycle' } | { type: 'employee'; item?: Employee } | { type: 'deactivate'; item: Employee } | { type: 'delete-employee'; item: Employee } | { type: 'cycle'; item?: Cycle; sourceCycleId?:string } | { type: 'evaluation'; item?: Evaluation; preset?: typeof PROVIDED_FORMS[number] } | { type: 'native-evaluation' } | null;
-const NAV = [{ id:'dashboard', label:'Dashboard', icon:LayoutDashboard }, { id:'evolution', label:'Evolução & Gráficos', icon:TrendingUp }, { id:'links', label:'Links de Avaliação', icon:ExternalLink }, { id:'employees', label:'Colaboradores', icon:UsersRound }, { id:'evaluations', label:'Avaliações', icon:ClipboardList }, { id:'pending', label:'Pendências', icon:UserRoundCheck }, { id:'reports', label:'Relatórios', icon:BarChart3 }, { id:'settings', label:'Configurações', icon:Settings2 }] as const;
+const NAV = [{ id:'dashboard', label:'Dashboard', icon:LayoutDashboard }, { id:'links', label:'Links de Avaliação', icon:ExternalLink }, { id:'employees', label:'Colaboradores', icon:UsersRound }, { id:'evaluations', label:'Avaliações', icon:ClipboardList }, { id:'pending', label:'Pendências', icon:UserRoundCheck }, { id:'reports', label:'Relatórios', icon:BarChart3 }, { id:'settings', label:'Configurações', icon:Settings2 }] as const;
 const titles: Record<View,string> = {dashboard:'Dashboard',evolution:'Evolução e Gráficos',links:'Links de Avaliação',employees:'Colaboradores',employee:'Detalhe do colaborador',evaluations:'Avaliações',pending:'Pendências',result:'Resultado da avaliação',reports:'Relatórios',settings:'Configurações'};
 const subtitles: Record<View,string> = {dashboard:'Uma visão clara das pessoas, das avaliações e de cada ciclo.',evolution:'Acompanhamento da evolução histórica de notas e comparativo de desempenho por setor.',links:'Links fixos de avaliação e quadro de equipes.',employees:'Estrutura de líderes e subordinados da Cardiofitness.',employee:'Resultados individuais e histórico ao longo dos ciclos.',evaluations:'Respostas e médias de cada avaliação do ciclo.',pending:'Veja quem ainda precisa responder às avaliações do ciclo.',result:'Notas e respostas de texto identificadas do formulário selecionado.',reports:'Selecione o recorte, confira a evolução histórica e exporte os resultados.',settings:'Organize ciclos, datas, participantes e os formulários de avaliação.'};
 const initials = (name:string) => name.split(' ').filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
@@ -1009,7 +1009,7 @@ function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,on
             <dl>
               <div><dt>Período</dt><dd>{formatDate(cycle.startDate)}<br/>{formatDate(cycle.endDate)}</dd></div>
               <div><dt>Participantes</dt><dd>{quantity(cycle.participants.length,'pessoa')}</dd></div>
-              <div><dt>Coleta</dt><dd>Google Forms (legado)</dd></div>
+              <div><dt>Coleta</dt><dd>Portal Web Cardiofitness</dd></div>
             </dl>
             <div className="mini-note"><ShieldCheck size={17}/>Acompanhamento exclusivo do RH</div>
           </div>
@@ -1142,7 +1142,7 @@ function QuickCycleEditor({data,onClose,onConfigure,onCreated}:{data:AppData;onC
       <div className="quick-cycle-summary"><div><small>Próximo período</small><b>{draft.input.name}</b><span>{formatDate(draft.input.startDate)} a {formatDate(draft.input.endDate)}</span></div><div><small>Colaboradores ativos</small><b>{draft.input.participants.length}</b><span>Vínculos atuais do cadastro</span></div><div><small>Formulários</small><b>{draft.forms.length}</b><span>Avaliações vinculadas</span></div></div>
       {!created&&draft.error&&<Notice message={draft.error}/>}
       {!created&&draft.warnings.map((warning,i)=><p className="quick-warning" key={i}><ShieldCheck size={16}/>{warning}</p>)}
-      {created&&<><h3>Links de avaliação</h3><CycleLinks forms={draft.forms} cycle={draft.input}/><p className="quick-help">Compartilhe os links dos Google Forms vinculados a este ciclo.</p></>}
+      {created&&<><h3>Links de avaliação</h3><CycleLinks forms={draft.forms} cycle={draft.input}/><p className="quick-help">Compartilhe os links do portal de avaliação vinculados a este ciclo.</p></>}
       </>}
       {error&&<Notice message={error}/>}
     </div>
