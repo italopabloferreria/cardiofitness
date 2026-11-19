@@ -3,10 +3,17 @@
 import { useEffect, useState, useCallback } from 'react';
 import type { Cycle, Employee, Evaluation, ResponseSubmissionInput } from './types';
 
+export interface SubmittedPair {
+  evaluationId: string;
+  respondentId: string;
+  subjectId: string;
+}
+
 export interface PublicFormData {
   cycle: Cycle | null;
   employees: Employee[];
   evaluations: Evaluation[];
+  submittedPairs: SubmittedPair[];
   loading: boolean;
   error: string | null;
   submitResponse: (input: ResponseSubmissionInput) => Promise<void>;
@@ -16,6 +23,7 @@ export function usePublicForm(): PublicFormData {
   const [cycle, setCycle] = useState<Cycle | null>(null);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
+  const [submittedPairs, setSubmittedPairs] = useState<SubmittedPair[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,6 +50,7 @@ export function usePublicForm(): PublicFormData {
           setCycle(json.cycle);
           setEmployees(json.employees);
           setEvaluations(json.evaluations);
+          setSubmittedPairs(Array.isArray(json.submittedPairs) ? json.submittedPairs : []);
           setError(null);
         }
       } catch (err) {
@@ -49,6 +58,7 @@ export function usePublicForm(): PublicFormData {
           setCycle(null);
           setEmployees([]);
           setEvaluations([]);
+          setSubmittedPairs([]);
           setError(err instanceof Error ? err.message : 'Não foi possível carregar o formulário.');
         }
       } finally {
@@ -74,12 +84,19 @@ export function usePublicForm(): PublicFormData {
       const body = await res.json().catch(() => ({}));
       throw new Error(body.error || 'Não foi possível registrar sua avaliação. Tente novamente.');
     }
+
+    setSubmittedPairs(prev => [...prev, {
+      evaluationId: input.evaluationId,
+      respondentId: input.respondentId,
+      subjectId: input.subjectId,
+    }]);
   }, []);
 
   return {
     cycle,
     employees,
     evaluations,
+    submittedPairs,
     loading,
     error,
     submitResponse,

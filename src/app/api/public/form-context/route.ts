@@ -35,15 +35,22 @@ export async function GET() {
       throw new ApiError(503, 'O questionário não está disponível no momento.');
     }
 
-    const [cyclesRes, empRes, evalRes] = await Promise.all([
+    const [cyclesRes, empRes, evalRes, respRes] = await Promise.all([
       client.from('cycles').select('id, name, start_date, end_date, participants').order('end_date', { ascending: false }),
       client.from('employees').select('id, name, form_name, department, is_leader, leader_id, active').eq('active', true).order('name'),
       client.from('evaluations').select('id, cycle_id, name, kind, mapping, expected_responses'),
+      client.from('evaluation_responses').select('evaluation_id, respondent_id, subject_id'),
     ]);
 
     if (empRes.error || !empRes.data || empRes.data.length === 0) {
       throw new ApiError(503, 'O questionário não está disponível no momento.');
     }
+
+    const submittedPairs = (respRes.data || []).map(r => ({
+      evaluationId: r.evaluation_id,
+      respondentId: r.respondent_id,
+      subjectId: r.subject_id,
+    }));
 
     const rawEmps = empRes.data;
     const hasRealUuids = rawEmps.some(e => !e.id.startsWith('00000000-'));
@@ -116,6 +123,7 @@ export async function GET() {
       cycle: activeCycle,
       employees,
       evaluations,
+      submittedPairs,
     });
   });
 }
