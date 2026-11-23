@@ -285,7 +285,7 @@ export function EvolutionDashboard({ data, activeCycleId }: EvolutionDashboardPr
                   <span style={{ fontSize: 12, fontWeight: 700, color: '#475569' }}>{metric.title}</span>
 
                   <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-                    <strong style={{ fontSize: 28, fontWeight: 850, color: hasCurr ? '#0f172a' : '#94a3b8' }}>
+                    <strong style={{ fontSize: 28, fontWeight: 850, color: hasCurr ? (metric.currVal! < 3 ? '#b91c1c' : '#047857') : '#94a3b8' }}>
                       {hasCurr ? metric.currVal!.toFixed(2) : (hasPrev ? metric.prevVal!.toFixed(2) : '—')}
                       <small style={{ fontSize: 14, fontWeight: 500, color: '#64748b', marginLeft: 4 }}>/ 4.0</small>
                     </strong>
@@ -718,12 +718,12 @@ export function EvolutionDashboard({ data, activeCycleId }: EvolutionDashboardPr
                     {hasScore ? (
                       <span style={{
                         background: '#ffffff',
-                        border: `1px solid ${theme.bar}40`,
+                        border: `1px solid ${dept.average! < 3 ? '#fca5a5' : '#86efac'}`,
                         borderRadius: 8,
                         padding: '2px 8px',
                         fontWeight: 850,
                         fontSize: 14,
-                        color: theme.text,
+                        color: dept.average! < 3 ? '#b91c1c' : '#047857',
                         whiteSpace: 'nowrap',
                       }}>
                         {dept.average!.toFixed(2)} <small style={{ fontSize: 10, color: '#64748b' }}>/ 4.0</small>
@@ -745,12 +745,12 @@ export function EvolutionDashboard({ data, activeCycleId }: EvolutionDashboardPr
 
                   {/* Barra de Progresso */}
                   {hasScore ? (
-                    <div style={{ height: 8, width: '100%', background: '#ffffff', borderRadius: 6, overflow: 'hidden', border: `1px solid ${theme.bar}25`, marginTop: 6 }}>
+                    <div style={{ height: 8, width: '100%', background: '#ffffff', borderRadius: 6, overflow: 'hidden', border: `1px solid ${dept.average! < 3 ? '#fca5a5' : '#86efac'}`, marginTop: 6 }}>
                       <div
                         style={{
                           height: '100%',
                           width: `${pct}%`,
-                          background: theme.bar,
+                          background: dept.average! < 3 ? '#ef4444' : '#10b981',
                           borderRadius: 6,
                           transition: 'width 0.4s ease',
                         }}

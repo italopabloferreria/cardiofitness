@@ -25,7 +25,7 @@ interface CycleComparisonProps {
 }
 
 const scoreColor = (val: number | null) =>
-  val === null ? '#94a3b8' : val < 2.5 ? '#b42318' : '#067647';
+  val === null ? '#94a3b8' : val < 3 ? '#b42318' : '#067647';
 
 function calcCycleScores(data: AppData, employeeId: string, cycleId: string) {
   const cycleEvalIds = new Set(data.evaluations.filter(e => e.cycleId === cycleId).map(e => e.id));

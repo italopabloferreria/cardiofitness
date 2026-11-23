@@ -61,6 +61,7 @@ export async function downloadReport(data: AppData, filters: Filters, format: 'p
   const pdf=await PDFDocument.create();pdf.setTitle('Cardiofitness - Relatório de avaliações');pdf.setAuthor('Cardiofitness');
   const font=await pdf.embedFont(StandardFonts.Helvetica),bold=await pdf.embedFont(StandardFonts.HelveticaBold);
   const ink=rgb(.09,.19,.39),green=rgb(.09,.19,.39),muted=rgb(.36,.40,.46),pale=rgb(.94,.96,1);
+  const redText=rgb(.72,.14,.1),greenText=rgb(.04,.46,.28);
   const width=841.89,height=595.28,margin=38;
   let page=pdf.addPage([width,height]),y=0,pageIndex=0;
   function draw(text:string,x:number,top:number,size=10,isBold=false,fill=ink){page.drawText(pdfText(text),{x,y:height-top-size,size,font:isBold?bold:font,color:fill});}
@@ -94,7 +95,11 @@ export async function downloadReport(data: AppData, filters: Filters, format: 'p
     const rowHeight=Math.max(...wrapped.map(lines=>lines.length))*13+24;
     if(y+rowHeight>height-53){page=pdf.addPage([width,height]);header();}
     if(index%2===0)page.drawRectangle({x:margin,y:height-y-rowHeight,width:width-margin*2,height:rowHeight,color:rgb(.97,.98,1)});
-    wrapped.forEach((lines,i)=>lines.forEach((text,j)=>draw(text,columns[i].x+5,y+7+j*13,9,i===0)));
+    wrapped.forEach((lines,i)=>lines.forEach((text,j)=>{
+      const avg = responseAverage(row);
+      const colColor = i === 4 ? (avg !== null && avg < 3 ? redText : greenText) : (i === 0 ? green : ink);
+      draw(text,columns[i].x+5,y+7+j*13,9,i===0||i===4,colColor);
+    }));
     draw(`Resposta em ${formatDate(row.submittedAt)}`,margin+5,y+rowHeight-13,8,false,muted);y+=rowHeight;
   });
   if(rows.length){
@@ -135,7 +140,7 @@ export async function downloadReport(data: AppData, filters: Filters, format: 'p
       draw(subjName,margin+8,y+6,11,true,green);
       const subtitleText=`Avaliado por: ${row.kind==='self'?'Própria pessoa (Autoavaliação)':respName}  |  ${KIND_LABELS[row.kind]}  |  ${formatDate(row.submittedAt)}`;
       draw(subtitleText,margin+8+bold.widthOfTextAtSize(pdfText(subjName),11)+16,y+7,8.5,false,muted);
-      draw(`MÉDIA: ${formatNumber(avg)} / 4`,width-margin-90,y+6,9.5,true,green);
+      draw(`MÉDIA: ${formatNumber(avg)} / 4`,width-margin-90,y+6,9.5,true,avg!==null&&avg<3?redText:greenText);
       y+=30;
 
       const questions=evaluation?.mapping?.scoreQuestions||[];
@@ -151,7 +156,7 @@ export async function downloadReport(data: AppData, filters: Filters, format: 'p
             if(y+13>height-48) detailPage();
             draw(line,margin+12,y,8.5,false,ink);
             if(lineIdx===0){
-              draw(scoreStr,width-margin-65,y,8.5,true,green);
+              draw(scoreStr,width-margin-65,y,8.5,true,score!==undefined&&score<3?redText:greenText);
             }
             y+=12;
           });

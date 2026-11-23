@@ -39,9 +39,9 @@ const employeeInput = (employee:Employee):EmployeeInput => ({name:employee.name,
 const cycleInput = (cycle:Cycle):CycleInput => ({name:cycle.name,startDate:cycle.startDate,endDate:cycle.endDate,participants:cycle.participants});
 const evaluationInput = (evaluation:Evaluation):EvaluationInput => ({cycleId:evaluation.cycleId,name:evaluation.name,kind:evaluation.kind,sourceType:evaluation.sourceType??(evaluation.googleFormId?'legacy':'native'),googleFormId:evaluation.googleFormId,googleFormUrl:evaluation.googleFormUrl,expectedResponses:evaluation.expectedResponses,mapping:evaluation.mapping,questionSections:evaluation.questionSections??{}});
 
-const scoreColor = (value:number|null) => value === null ? 'var(--muted)' : value < 2.5 ? '#b42318' : '#067647';
+const scoreColor = (value:number|null) => value === null ? 'var(--muted)' : value < 3 ? '#b42318' : '#067647';
 function Score({value}:{value:number|null}) { return <span style={{color:scoreColor(value)}}>{formatNumber(value)}</span>; }
-function ScoreLegend() { return <p className="score-legend"><span style={{color:scoreColor(1)}}>● Vermelho: abaixo de 2,50</span><span style={{color:scoreColor(4)}}>● Verde: a partir de 2,50</span></p>; }
+function ScoreLegend() { return <p className="score-legend"><span style={{color:scoreColor(1)}}>● Vermelho: abaixo de 3,00</span><span style={{color:scoreColor(4)}}>● Verde: a partir de 3,00</span></p>; }
 
 function Brand({light=false}:{light?:boolean}) { return <div className={`brand ${light?'brand-light':''}`}><div className="brand-logo"><img src="/brand/cardiofitness-logo.jpeg" alt="Cardiofitness — Cardiologia e Medicina Preventiva" width={718} height={106}/></div><span className="brand-product">AVALIAÇÕES</span></div>; }
 function Avatar({name,large=false}:{name:string;large?:boolean}) { return <span className={`avatar ${large?'avatar-large':''}`} aria-hidden="true">{initials(name)}</span>; }
