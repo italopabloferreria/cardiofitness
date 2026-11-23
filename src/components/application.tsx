@@ -177,21 +177,6 @@ export default function Application() {
           >
             {darkMode ? <Sun size={17} style={{ color: '#f59e0b' }} /> : <Moon size={17} />}
           </button>
-          {isSuperAdmin && (
-            <button
-              type="button"
-              className="button small"
-              style={{ background: '#fef3c7', borderColor: '#f59e0b', color: '#92400e', fontSize: '0.8rem', padding: '4px 10px', display: 'inline-flex', alignItems: 'center', gap: 6 }}
-              onClick={() => {
-                setIsSuperAdmin(false);
-                if (typeof window !== 'undefined') sessionStorage.removeItem('cardio_superadmin_auth');
-                setNotice({ text: 'Modo Super Admin desativado. Trava de segurança ativa.', success: true });
-              }}
-              title="Clique para desconectar o modo Super Admin e reativar a proteção de edições"
-            >
-              <LockKeyhole size={13} /> Sair do Super Admin
-            </button>
-          )}
           <Pill kind="green">RH Ativo</Pill>
           <div className="topbar-user">
             <Avatar name={app.user?.name || 'Recursos Humanos'} />
