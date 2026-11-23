@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { ArrowDownToLine, ArrowLeft, ArrowRight, Award, BarChart3, Bell, CalendarDays, Check, CheckCircle2, ChevronLeft, ChevronRight, ClipboardList, Copy, Database, ExternalLink, Eye, FileSpreadsheet, LayoutDashboard, LoaderCircle, LockKeyhole, LogOut, Menu, MessageCircle, Pencil, Plus, RefreshCw, Search, Settings2, ShieldCheck, UserRoundCheck, UsersRound, X, CircleOff, Trash2, TrendingUp } from 'lucide-react';
+import { ArrowDownToLine, ArrowLeft, ArrowRight, Award, BarChart3, Bell, CalendarDays, Check, CheckCircle2, ChevronLeft, ChevronRight, ClipboardList, Copy, Database, ExternalLink, Eye, FileSpreadsheet, LayoutDashboard, LoaderCircle, LockKeyhole, LogOut, Menu, MessageCircle, Moon, Pencil, Plus, RefreshCw, Search, Settings2, ShieldCheck, Sun, UserRoundCheck, UsersRound, X, CircleOff, Trash2, TrendingUp } from 'lucide-react';
 import { useApp } from '@/lib/store';
 import PasswordRecovery from './password-recovery';
 import RhAccess from './rh-access';
@@ -89,6 +89,26 @@ export default function Application() {
   });
   const [pendingEditor, setPendingEditor] = useState<Editor>(null);
   const [showSuperAdminModal, setShowSuperAdminModal] = useState<boolean>(false);
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('cardio_theme');
+      if (saved) return saved === 'dark';
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      if (darkMode) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('cardio_theme', 'dark');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('cardio_theme', 'light');
+      }
+    }
+  }, [darkMode]);
 
   function requestEditor(target: Editor) {
     if (!target) {
@@ -147,6 +167,16 @@ export default function Application() {
           <a href="/avaliar" target="_blank" rel="noopener noreferrer" className="button small topbar-portal-btn">
             <ClipboardList size={15} /> Portal público
           </a>
+          <button
+            type="button"
+            className="icon-button topbar-theme-btn"
+            title={darkMode ? 'Mudar para tema claro' : 'Mudar para modo noturno'}
+            aria-label={darkMode ? 'Mudar para tema claro' : 'Mudar para modo noturno'}
+            onClick={() => setDarkMode(!darkMode)}
+            style={{ width: 34, height: 34, borderRadius: 8, border: '1px solid var(--line)', background: darkMode ? '#1e293b' : '#fff' }}
+          >
+            {darkMode ? <Sun size={17} style={{ color: '#f59e0b' }} /> : <Moon size={17} />}
+          </button>
           {isSuperAdmin && (
             <button
               type="button"
