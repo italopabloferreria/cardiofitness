@@ -81,6 +81,36 @@ function AccessScreen() {
 
 export default function Application() {
   const app=useApp();const [view,setView]=useState<View>('dashboard'),[cycleId,setCycleId]=useState(''),[employeeId,setEmployeeId]=useState(''),[evaluationId,setEvaluationId]=useState(''),[editor,setEditor]=useState<Editor>(null),[mobile,setMobile]=useState(false),[notice,setNotice]=useState<{text:string;success:boolean}|null>(null),[syncing,setSyncing]=useState('');
+  const [isSuperAdmin, setIsSuperAdmin] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('cardio_superadmin_auth') === 'true';
+    }
+    return false;
+  });
+  const [pendingEditor, setPendingEditor] = useState<Editor>(null);
+  const [showSuperAdminModal, setShowSuperAdminModal] = useState<boolean>(false);
+
+  function requestEditor(target: Editor) {
+    if (!target) {
+      setEditor(null);
+      return;
+    }
+    if (isSuperAdmin) {
+      setEditor(target);
+    } else {
+      setPendingEditor(target);
+      setShowSuperAdminModal(true);
+    }
+  }
+
+  function handleSuperAdminSuccess() {
+    setIsSuperAdmin(true);
+    setShowSuperAdminModal(false);
+    if (pendingEditor) {
+      setEditor(pendingEditor);
+      setPendingEditor(null);
+    }
+  }
   const data=app.data;const cycles=[...data.cycles].sort((a,b)=>b.startDate.localeCompare(a.startDate));const selectedCycleId=data.cycles.some(cycle=>cycle.id===cycleId)?cycleId:defaultCycle(cycles)?.id||'';const selectedCycle=data.cycles.find(cycle=>cycle.id===selectedCycleId);const employee=person(data,employeeId);const evaluation=data.evaluations.find(evaluation=>evaluation.id===evaluationId);
   function navigate(next:View){setView(next);setMobile(false);setNotice(null);}
   function openEmployee(id:string){setEmployeeId(id);navigate('employee');}
@@ -117,6 +147,21 @@ export default function Application() {
           <a href="/avaliar" target="_blank" rel="noopener noreferrer" className="button small topbar-portal-btn">
             <ClipboardList size={15} /> Portal público
           </a>
+          {isSuperAdmin && (
+            <button
+              type="button"
+              className="button small"
+              style={{ background: '#fef3c7', borderColor: '#f59e0b', color: '#92400e', fontSize: '0.8rem', padding: '4px 10px', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+              onClick={() => {
+                setIsSuperAdmin(false);
+                if (typeof window !== 'undefined') sessionStorage.removeItem('cardio_superadmin_auth');
+                setNotice({ text: 'Modo Super Admin desativado. Trava de segurança ativa.', success: true });
+              }}
+              title="Clique para desconectar o modo Super Admin e reativar a proteção de edições"
+            >
+              <LockKeyhole size={13} /> Sair do Super Admin
+            </button>
+          )}
           <Pill kind="green">RH Ativo</Pill>
           <div className="topbar-user">
             <Avatar name={app.user?.name || 'Recursos Humanos'} />
@@ -153,7 +198,7 @@ export default function Application() {
           </div>
           <div className="page-actions">
             {view === 'employees' ? (
-              <button className="button primary" onClick={() => setEditor({ type: 'employee' })}>
+              <button className="button primary" onClick={() => requestEditor({ type: 'employee' })}>
                 <Plus size={18} /> Adicionar colaborador
               </button>
             ) : view === 'settings' || view === 'result' ? null : (
@@ -170,12 +215,12 @@ export default function Application() {
         </div>
         {notice && <Notice message={notice.text} success={notice.success} onClose={() => setNotice(null)} />}
         {app.error && <Notice message={app.error} />}
-      {view==='dashboard'&&<Dashboard data={data} cycle={selectedCycle} onQuickCycle={()=>setEditor({type:'quick-cycle'})} onConfigure={()=>navigate('settings')} onResults={openEvaluation} onOpenLinks={()=>navigate('dashboard')} onNavigate={navigate} onEditCycle={item=>setEditor({type:'cycle',item})}/>}
-      {view==='employees'&&<Employees data={data} cycle={selectedCycle} onOpen={openEmployee} onAdd={()=>setEditor({type:'employee'})} onEdit={item=>setEditor({type:'employee',item})} onDeactivate={item=>setEditor({type:'deactivate',item})} onDelete={item=>setEditor({type:'delete-employee',item})}/>}
-      {view==='employee'&&(employee?<EmployeeDetail data={data} employee={employee} cycleId={selectedCycleId} onEdit={()=>setEditor({type:'employee',item:employee})} onResults={openEvaluation}/>:<Empty title="Selecione um colaborador" action={<button className="button" onClick={()=>navigate('employees')}>Ver colaboradores</button>}/>)}
+      {view==='dashboard'&&<Dashboard data={data} cycle={selectedCycle} onQuickCycle={()=>requestEditor({type:'quick-cycle'})} onConfigure={()=>navigate('settings')} onResults={openEvaluation} onOpenLinks={()=>navigate('dashboard')} onNavigate={navigate} onEditCycle={item=>requestEditor({type:'cycle',item})}/>}
+      {view==='employees'&&<Employees data={data} cycle={selectedCycle} onOpen={openEmployee} onAdd={()=>requestEditor({type:'employee'})} onEdit={item=>requestEditor({type:'employee',item})} onDeactivate={item=>requestEditor({type:'deactivate',item})} onDelete={item=>requestEditor({type:'delete-employee',item})}/>}
+      {view==='employee'&&(employee?<EmployeeDetail data={data} employee={employee} cycleId={selectedCycleId} onEdit={()=>requestEditor({type:'employee',item:employee})} onResults={openEvaluation}/>:<Empty title="Selecione um colaborador" action={<button className="button" onClick={()=>navigate('employees')}>Ver colaboradores</button>}/>)}
       {view==='result'&&(evaluation?<Result data={data} evaluation={evaluation} onPerson={openEmployee}/>:<Empty title="Selecione uma avaliação"/>)}
       {view==='reports'&&<Reports data={data} cycleId={selectedCycleId} onError={text=>setNotice({text,success:false})} onPerson={openEmployee}/>}
-      {view==='settings'&&<Configuration data={data} cycleId={selectedCycleId} setCycleId={setCycleId} onEdit={setEditor} demo={app.mode==='demo'} googleConfigured={app.googleConfigured}/>}
+      {view==='settings'&&<Configuration data={data} cycleId={selectedCycleId} setCycleId={setCycleId} onEdit={requestEditor} demo={app.mode==='demo'} googleConfigured={app.googleConfigured}/>}
       <footer className="main-footer"><span>Cardiofitness · Avaliações de desempenho</span><span>Painel de Recursos Humanos · Respostas identificadas</span></footer></main></div>
       {editor?.type==='quick-cycle'&&<QuickCycleEditor data={data} onClose={()=>setEditor(null)} onConfigure={()=>{setEditor(null);navigate('settings');}} onCreated={id=>{setCycleId(id);setNotice({text:'Novo ciclo criado. Os links do portal já estão disponíveis para compartilhamento.',success:true});}}/>}
       {editor?.type==='employee'&&<EmployeeEditor data={data} employee={editor.item} onClose={()=>setEditor(null)} onSaved={name=>{setEditor(null);setNotice({text:`Cadastro de ${name} salvo.`,success:true});}}/>}
@@ -184,7 +229,130 @@ export default function Application() {
       {editor?.type==='cycle'&&<CycleEditor data={data} cycle={editor.item} sourceCycleId={editor.sourceCycleId} onClose={()=>setEditor(null)} onSaved={id=>{setEditor(null);setCycleId(id);setNotice({text:'Ciclo salvo.',success:true});}}/>}
       {editor?.type==='native-evaluation'&&<NativeEvaluationEditor data={data} cycleId={selectedCycleId} onClose={()=>setEditor(null)} onSaved={()=>{setEditor(null);setNotice({text:'Avaliação nativa criada e pronta para compartilhar.',success:true});}}/>}
       {editor?.type==='evaluation'&&<EvaluationEditor data={data} cycleId={selectedCycleId} evaluation={editor.item} preset={editor.preset} onClose={()=>setEditor(null)} onSaved={()=>{setEditor(null);setNotice({text:'Configuração do formulário salva.',success:true});}}/>}
+      {showSuperAdminModal && (
+        <SuperAdminGateModal
+          onClose={() => {
+            setShowSuperAdminModal(false);
+            setPendingEditor(null);
+          }}
+          onSuccess={handleSuperAdminSuccess}
+        />
+      )}
     </div>;
+}
+
+function SuperAdminGateModal({
+  onClose,
+  onSuccess,
+}: {
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [attempts, setAttempts] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = sessionStorage.getItem('cardio_superadmin_failed_attempts');
+      return saved ? parseInt(saved, 10) : 0;
+    }
+    return 0;
+  });
+
+  const isLocked = attempts >= 3;
+
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    if (isLocked) return;
+
+    if (password === 'May10th1978!') {
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('cardio_superadmin_failed_attempts');
+        sessionStorage.setItem('cardio_superadmin_auth', 'true');
+      }
+      onSuccess();
+    } else {
+      const nextAttempts = attempts + 1;
+      setAttempts(nextAttempts);
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('cardio_superadmin_failed_attempts', String(nextAttempts));
+      }
+      if (nextAttempts >= 3) {
+        setErrorMsg('Sistema bloqueado por segurança. Contate o responsável técnico.');
+      } else {
+        setErrorMsg('contate o responsável técnico, se a senha for errada 3 vezes o sistema será bloqueado por segurança');
+      }
+      setPassword('');
+    }
+  }
+
+  return (
+    <Modal
+      title="Acesso Restrito ao Administrador"
+      subtitle="Operação reservada para a gestão técnica contratada"
+      onClose={onClose}
+    >
+      <form onSubmit={handleSubmit} className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div
+          style={{
+            background: isLocked ? '#fef2f2' : '#f0f9ff',
+            border: isLocked ? '1px solid #fecaca' : '1px solid #bae6fd',
+            borderRadius: 8,
+            padding: '14px 16px',
+            color: isLocked ? '#991b1b' : '#0369a1',
+            fontSize: '0.9rem',
+            lineHeight: 1.5,
+          }}
+        >
+          {isLocked ? (
+            <b>Sistema bloqueado por segurança. Contate o responsável técnico.</b>
+          ) : (
+            <span>Contate o administrador contratado para que ele faça as devidas alterações conforme.</span>
+          )}
+        </div>
+
+        {errorMsg && (
+          <div className="notice notice-error" role="alert" style={{ margin: 0 }}>
+            <span>{errorMsg}</span>
+          </div>
+        )}
+
+        {!isLocked && (
+          <Field label="Senha Mestra do Super Admin">
+            <span className="password-control">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                required
+                autoFocus
+                value={password}
+                onChange={event => setPassword(event.target.value)}
+                placeholder="Digite a senha mestra"
+              />
+              <button
+                type="button"
+                aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                aria-pressed={showPassword}
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? 'Ocultar' : 'Mostrar'}
+              </button>
+            </span>
+          </Field>
+        )}
+
+        <div className="modal-actions" style={{ marginTop: 8 }}>
+          <button type="button" className="button" onClick={onClose}>
+            Cancelar
+          </button>
+          {!isLocked && (
+            <button type="submit" className="button primary">
+              <LockKeyhole size={16} /> Confirmar Senha
+            </button>
+          )}
+        </div>
+      </form>
+    </Modal>
+  );
 }
 
 function LeaderRosterAccordion({
