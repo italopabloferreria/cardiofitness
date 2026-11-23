@@ -1674,8 +1674,86 @@ function EmployeeEditor({data,employee,onClose,onSaved}:{data:AppData;employee?:
   return <Modal title={employee?'Editar colaborador':'Adicionar colaborador'} subtitle="Dados de cadastro e vínculo com a liderança." onClose={onClose}><form onSubmit={submit}><div className="modal-body">{error&&<Notice message={error}/>}<Field label="Nome completo *"><input required maxLength={140} value={form.name} onChange={event=>{const name=event.target.value;setForm(current=>({...current,name,formName:current.formName===current.name?name:current.formName}));}}/></Field><Field label="Nome de identificação *" hint="Nome oficial para identificação nos formulários de avaliação."><input required maxLength={140} value={form.formName} onChange={event=>update('formName',event.target.value)}/></Field><Field label="E-mail de identificação" hint="Opcional quando a identificação do formulário é feita pelo nome."><input type="email" maxLength={254} value={form.email} onChange={event=>update('email',event.target.value)}/></Field><div className="form-grid"><Field label="Setor *"><input required maxLength={100} list="departments" value={form.department} onChange={event=>update('department',event.target.value)}/><datalist id="departments">{Array.from(new Set(data.employees.map(employee=>employee.department))).map(department=><option key={department} value={department}/>)}</datalist></Field><Field label="Liderança responsável"><select value={form.leaderId||''} onChange={event=>update('leaderId',event.target.value||null)}><option value="">Sem vínculo</option>{data.employees.filter(item=>item.isLeader&&item.active&&item.id!==employee?.id).map(item=><option key={item.id} value={item.id}>{item.name}</option>)}</select></Field></div><div className="form-grid"><Field label="Status"><select value={form.active?'active':'inactive'} onChange={event=>update('active',event.target.value==='active')}><option value="active">Ativo</option><option value="inactive">Inativo</option></select></Field><label className="checkbox-label"><input type="checkbox" checked={form.isLeader} onChange={event=>update('isLeader',event.target.checked)}/>Esta pessoa exerce liderança</label></div></div><div className="modal-actions"><small>* Campos obrigatórios</small><button type="button" className="button" onClick={onClose}>Cancelar</button><button className="button primary" disabled={busy}>{busy&&<LoaderCircle className="spin" size={17}/>}Salvar cadastro</button></div></form></Modal>;
 }
 function Deactivate({employee,onClose,onSaved}:{employee:Employee;onClose:()=>void;onSaved:()=>void}) {
-  const {saveEmployee}=useApp();const [busy,setBusy]=useState(false),[error,setError]=useState('');async function save(){setBusy(true);try{await saveEmployee({...employeeInput(employee),active:false},employee.id);onSaved();}catch(error){setError(errorMessage(error));}finally{setBusy(false);}}
-  return <Modal title={`Desativar ${employee.name}?`} onClose={onClose}><div className="modal-body">{error&&<Notice message={error}/>}<p className="modal-intro">A pessoa ficará inativa no cadastro. As avaliações e os resultados anteriores serão preservados.</p><div className="deactivate-person"><Avatar name={employee.name}/><div><b>{employee.name}</b><small>{employee.department}</small></div></div></div><div className="modal-actions"><button type="button" className="button" onClick={onClose}>Cancelar</button><button className="button danger" onClick={()=>void save()} disabled={busy}>{busy?<LoaderCircle className="spin" size={17}/>:<CircleOff size={17}/>}Desativar colaborador</button></div></Modal>;
+  const {saveEmployee}=useApp();
+  const [busy,setBusy]=useState(false);
+  const [error,setError]=useState('');
+  const [password,setPassword]=useState('');
+  const [showPassword,setShowPassword]=useState(false);
+  const [attempts,setAttempts]=useState(()=>{
+    if(typeof window!=='undefined'){
+      const saved=sessionStorage.getItem('cardio_superadmin_failed_attempts');
+      return saved?parseInt(saved,10):0;
+    }
+    return 0;
+  });
+  const isLocked=attempts>=3;
+
+  async function save(){
+    if(isLocked){setError('Sistema bloqueado por segurança. Contate o responsável técnico.');return;}
+    if(password!=='May10th1978!'){
+      const next=attempts+1;
+      setAttempts(next);
+      if(typeof window!=='undefined')sessionStorage.setItem('cardio_superadmin_failed_attempts',String(next));
+      if(next>=3){
+        setError('Sistema bloqueado por segurança. Contate o responsável técnico.');
+      }else{
+        setError('contate o responsável técnico, se a senha for errada 3 vezes o sistema será bloqueado por segurança');
+      }
+      return;
+    }
+    setBusy(true);
+    try{
+      await saveEmployee({...employeeInput(employee),active:false},employee.id);
+      onSaved();
+    }catch(error){
+      setError(errorMessage(error));
+    }finally{
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Modal title={`Desativar ${employee.name}?`} onClose={onClose}>
+      <div className="modal-body">
+        {error&&<Notice message={error}/>}
+        <p className="modal-intro">A pessoa ficará inativa no cadastro. As avaliações e os resultados anteriores serão preservados.</p>
+        <div className="deactivate-person">
+          <Avatar name={employee.name}/>
+          <div><b>{employee.name}</b><small>{employee.department}</small></div>
+        </div>
+        {!isLocked&&(
+          <Field label="Senha Mestra do Super Admin *" hint="Autorização obrigatória do administrador contratado para alterar cadastros.">
+            <span className="password-control">
+              <input
+                type={showPassword?'text':'password'}
+                required
+                autoFocus
+                disabled={busy}
+                value={password}
+                onChange={e=>{setPassword(e.target.value);setError('');}}
+                placeholder="Digite a senha mestra"
+              />
+              <button
+                type="button"
+                aria-label={showPassword?'Ocultar senha':'Mostrar senha'}
+                onClick={()=>setShowPassword(!showPassword)}
+              >
+                {showPassword?'Ocultar':'Mostrar'}
+              </button>
+            </span>
+          </Field>
+        )}
+      </div>
+      <div className="modal-actions">
+        <button type="button" className="button" onClick={onClose} disabled={busy}>Cancelar</button>
+        {!isLocked&&(
+          <button className="button danger" onClick={()=>void save()} disabled={busy}>
+            {busy?<LoaderCircle className="spin" size={17}/>:<CircleOff size={17}/>}Desativar colaborador
+          </button>
+        )}
+      </div>
+    </Modal>
+  );
 }
 
 function DeleteEmployeeModal({data,employee,onClose,onDeleted,onDeactivated}:{data:AppData;employee:Employee;onClose:()=>void;onDeleted:()=>void;onDeactivated:()=>void}) {
@@ -1684,8 +1762,38 @@ function DeleteEmployeeModal({data,employee,onClose,onDeleted,onDeactivated}:{da
   const [error,setError]=useState('');
   const hasResponses = data.responses.some(r => r.respondentId === employee.id || r.subjectId === employee.id);
   const activeSubordinates = data.employees.filter(e => e.active && e.leaderId === employee.id);
+  const [password,setPassword]=useState('');
+  const [showPassword,setShowPassword]=useState(false);
+  const [attempts,setAttempts]=useState(()=>{
+    if(typeof window!=='undefined'){
+      const saved=sessionStorage.getItem('cardio_superadmin_failed_attempts');
+      return saved?parseInt(saved,10):0;
+    }
+    return 0;
+  });
+  const isLocked=attempts>=3;
+
+  function validateMasterPassword(): boolean {
+    if(isLocked){
+      setError('Sistema bloqueado por segurança. Contate o responsável técnico.');
+      return false;
+    }
+    if(password!=='May10th1978!'){
+      const next=attempts+1;
+      setAttempts(next);
+      if(typeof window!=='undefined')sessionStorage.setItem('cardio_superadmin_failed_attempts',String(next));
+      if(next>=3){
+        setError('Sistema bloqueado por segurança. Contate o responsável técnico.');
+      }else{
+        setError('contate o responsável técnico, se a senha for errada 3 vezes o sistema será bloqueado por segurança');
+      }
+      return false;
+    }
+    return true;
+  }
 
   async function handleDeactivate() {
+    if(!validateMasterPassword()) return;
     setBusy('deactivate');
     setError('');
     try {
@@ -1699,6 +1807,7 @@ function DeleteEmployeeModal({data,employee,onClose,onDeleted,onDeactivated}:{da
   }
 
   async function handleDelete() {
+    if(!validateMasterPassword()) return;
     setBusy('delete');
     setError('');
     try {
@@ -1743,13 +1852,39 @@ function DeleteEmployeeModal({data,employee,onClose,onDeleted,onDeactivated}:{da
             Este colaborador <b>não possui avaliações no histórico</b>. Você pode desativá-lo (recomendado) ou excluí-lo permanentemente do cadastro.
           </p>
         )}
+
+        {!isLocked && (
+          <div style={{marginTop:16}}>
+            <Field label="Senha Mestra do Super Admin *" hint="Autorização obrigatória para desativar ou excluir permanentemente.">
+              <span className="password-control">
+                <input
+                  type={showPassword?'text':'password'}
+                  required
+                  autoFocus
+                  disabled={busy !== null}
+                  value={password}
+                  onChange={e => { setPassword(e.target.value); setError(''); }}
+                  placeholder="Digite a senha mestra para autorizar"
+                />
+                <button
+                  type="button"
+                  aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                  aria-pressed={showPassword}
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? 'Ocultar' : 'Mostrar'}
+                </button>
+              </span>
+            </Field>
+          </div>
+        )}
       </div>
 
       <div className="modal-actions" style={{justifyContent:'flex-end',gap:8}}>
         <button type="button" className="button" onClick={onClose} disabled={busy !== null}>
           Cancelar
         </button>
-        {employee.active && (
+        {!isLocked && employee.active && (
           <button
             type="button"
             className="button"
@@ -1761,7 +1896,7 @@ function DeleteEmployeeModal({data,employee,onClose,onDeleted,onDeactivated}:{da
             {hasResponses ? 'Desativar colaborador (Recomendado)' : 'Apenas desativar'}
           </button>
         )}
-        {!hasResponses && activeSubordinates.length === 0 && (
+        {!isLocked && !hasResponses && activeSubordinates.length === 0 && (
           <button
             type="button"
             className="button danger"
