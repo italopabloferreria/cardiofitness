@@ -97,21 +97,79 @@ export async function downloadReport(data: AppData, filters: Filters, format: 'p
     wrapped.forEach((lines,i)=>lines.forEach((text,j)=>draw(text,columns[i].x+5,y+7+j*13,9,i===0)));
     draw(`Resposta em ${formatDate(row.submittedAt)}`,margin+5,y+rowHeight-13,8,false,muted);y+=rowHeight;
   });
-  const feedbackRows=rows.filter(row=>row.textAnswers?.some(answer=>answer.answer.trim()));
-  if(feedbackRows.length){
-    function textPage(){page=pdf.addPage([width,height]);pageIndex++;draw('Cardiofitness | Respostas de texto',margin,28,18,true);y=62;}
-    function paragraph(value:string,isBold=false){
-      for(const paragraph of value.split(/\r?\n/)) for(const line of wrap(paragraph,width-margin*2,10,isBold)){
-        if(y+15>height-48) textPage();draw(line,margin,y,10,isBold);y+=15;
-      }
-      y+=8;
+  if(rows.length){
+    function detailPage(){
+      page=pdf.addPage([width,height]);
+      pageIndex++;
+      page.drawRectangle({x:0,y:height-52,width,height:52,color:green});
+      draw('Cardiofitness',margin,17,18,true,rgb(1,1,1));
+      draw('ANÁLISE DETALHADA: NOTAS POR CRITÉRIO E FEEDBACKS',width-390,22,10,true,rgb(1,1,1));
+      y=72;
     }
-    textPage();
-    for(const row of feedbackRows){
+    function drawLine(text:string,isBold=false,indent=0,color=ink,size=9){
+      if(y+14>height-48) detailPage();
+      draw(text,margin+indent,y,size,isBold,color);
+      y+=13;
+    }
+    function writeParagraph(text:string,maxWidth=width-margin*2-28,isBold=false,indent=18,color=ink,size=8.5){
+      for(const rawLine of text.split(/\r?\n/)){
+        for(const line of wrap(rawLine,maxWidth,size,isBold)){
+          if(y+13>height-48) detailPage();
+          draw(line,margin+indent,y,size,isBold,color);
+          y+=12;
+        }
+      }
+    }
+
+    detailPage();
+
+    for(const row of rows){
       const evaluation=evaluations.get(row.evaluationId)!;
-      paragraph(`${evaluation.name} | ${KIND_LABELS[row.kind]}`,true);
-      paragraph(`Respondente: ${name(row.respondentId)} | Pessoa avaliada: ${name(row.subjectId)} | ${formatDate(row.submittedAt)}`);
-      for(const answer of row.textAnswers??[]){if(!answer.answer.trim())continue;paragraph(answer.question,true);paragraph(answer.answer);}
+      const respName=name(row.respondentId);
+      const subjName=name(row.subjectId);
+      const avg=responseAverage(row);
+
+      if(y+55>height-48) detailPage();
+
+      page.drawRectangle({x:margin,y:height-y-24,width:width-margin*2,height:24,color:pale});
+      draw(subjName,margin+8,y+6,11,true,green);
+      const subtitleText=`Avaliado por: ${row.kind==='self'?'Própria pessoa (Autoavaliação)':respName}  |  ${KIND_LABELS[row.kind]}  |  ${formatDate(row.submittedAt)}`;
+      draw(subtitleText,margin+8+bold.widthOfTextAtSize(pdfText(subjName),11)+16,y+7,8.5,false,muted);
+      draw(`MÉDIA: ${formatNumber(avg)} / 4`,width-margin-90,y+6,9.5,true,green);
+      y+=30;
+
+      const questions=evaluation?.mapping?.scoreQuestions||[];
+      if(questions.length){
+        drawLine('Notas por critério avaliado (Escala 1 a 4):',true,6,green,8);
+        y+=2;
+        for(const q of questions){
+          const score=row.scores[q.id];
+          const scoreStr=score!==undefined?`${score.toFixed(1)} / 4`:'—';
+          const qText=`• ${q.title}`;
+          const qLines=wrap(qText,width-margin*2-80,8.5,false);
+          qLines.forEach((line,lineIdx)=>{
+            if(y+13>height-48) detailPage();
+            draw(line,margin+12,y,8.5,false,ink);
+            if(lineIdx===0){
+              draw(scoreStr,width-margin-65,y,8.5,true,green);
+            }
+            y+=12;
+          });
+        }
+      }
+
+      const validTexts=(row.textAnswers||[]).filter(a=>a.answer&&a.answer.trim());
+      if(validTexts.length>0){
+        y+=2;
+        drawLine('Feedbacks e comentários registrados:',true,6,green,8);
+        y+=2;
+        for(const ans of validTexts){
+          drawLine(`${ans.question||'Observações'}:`,true,12,muted,8);
+          writeParagraph(ans.answer,width-margin*2-24,false,14,ink,8.5);
+          y+=2;
+        }
+      }
+
       y+=12;
     }
   }
