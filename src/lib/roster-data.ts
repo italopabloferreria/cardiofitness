@@ -339,6 +339,17 @@ export const OFFICIAL_STAFF: Employee[] = [
     active: true,
     accessToken: 'paulo-miguel',
   },
+  {
+    id: uid(4000, 7),
+    name: 'Kezia Ribeiro Soares Cardoso',
+    email: '',
+    formName: 'Kezia Ribeiro Soares Cardoso',
+    department: 'Central e Resultados',
+    leaderId: gabrielId,
+    isLeader: false,
+    active: true,
+    accessToken: 'kezia-cardoso',
+  },
 
   // --- Recepção e Triagem (8 no total: Líder Welisson + 7 liderados) ---
   {
@@ -373,17 +384,6 @@ export const OFFICIAL_STAFF: Employee[] = [
     isLeader: false,
     active: true,
     accessToken: 'julia-santos',
-  },
-  {
-    id: uid(5000, 4),
-    name: 'Kezia Ribeiro Soares Cardoso',
-    email: '',
-    formName: 'Kezia Ribeiro Soares Cardoso',
-    department: 'Recepção e Triagem',
-    leaderId: welissonId,
-    isLeader: false,
-    active: true,
-    accessToken: 'kezia-cardoso',
   },
   {
     id: uid(5000, 5),

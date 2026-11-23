@@ -39,18 +39,27 @@ export async function GET() {
       client.from('cycles').select('id, name, start_date, end_date, participants').order('end_date', { ascending: false }),
       client.from('employees').select('id, name, form_name, department, is_leader, leader_id, active').eq('active', true).order('name'),
       client.from('evaluations').select('id, cycle_id, name, kind, mapping, expected_responses'),
-      client.from('evaluation_responses').select('evaluation_id, respondent_id, subject_id'),
+      client.from('evaluation_responses').select('id, evaluation_id, respondent_id, subject_id'),
     ]);
 
     if (empRes.error || !empRes.data || empRes.data.length === 0) {
       throw new ApiError(503, 'O questionário não está disponível no momento.');
     }
 
-    const submittedPairs = (respRes.data || []).map(r => ({
-      evaluationId: r.evaluation_id,
-      respondentId: r.respondent_id,
-      subjectId: r.subject_id,
-    }));
+    // IDs de respostas de teste ou submissões errôneas da Central em 23/11 a serem desconsideradas
+    const RESET_RESPONSE_IDS = new Set([
+      'd20c4644-fc07-4b8d-b4f7-2a764587083d', // Hellen (submetido por engano pela Rute em 23/11)
+      '774ee4c2-2811-4e47-a9fb-e2d9be509b7e', // Joelson (submetido por engano pela Rute em 23/11)
+      '2f78a019-7d5c-42a6-86aa-ac0584f20608', // Rute (submetido por engano em 23/11)
+    ]);
+
+    const submittedPairs = (respRes.data || [])
+      .filter(r => !RESET_RESPONSE_IDS.has(r.id))
+      .map(r => ({
+        evaluationId: r.evaluation_id,
+        respondentId: r.respondent_id,
+        subjectId: r.subject_id,
+      }));
 
     const rawEmps = empRes.data;
     const hasRealUuids = rawEmps.some(e => !e.id.startsWith('00000000-'));
@@ -66,11 +75,21 @@ export async function GET() {
       return true;
     });
 
+    const gabrielEmp = uniqueRaw.find(e =>
+      e.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes('gabriel') &&
+      (e.is_leader || (e.department || '').toLowerCase().includes('central'))
+    );
+
     const employees: Employee[] = uniqueRaw.map(e => {
       const isItalo = e.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes('italo');
+      const isKezia = e.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes('kezia');
       const name = (isItalo ? 'ÍTALO PABLO FERREIRA' : e.name).toLocaleUpperCase('pt-BR');
       const formName = (isItalo ? 'ÍTALO PABLO FERREIRA' : (e.form_name || e.name)).toLocaleUpperCase('pt-BR');
-      const department = (isItalo ? 'SUPORTE' : normalizeDepartment(e.department)).toLocaleUpperCase('pt-BR');
+      const department = (
+        isItalo ? 'SUPORTE' :
+        isKezia ? 'CENTRAL E RESULTADOS' :
+        normalizeDepartment(e.department)
+      ).toLocaleUpperCase('pt-BR');
       return {
         id: e.id,
         name,
@@ -78,7 +97,7 @@ export async function GET() {
         formName,
         department,
         isLeader: isItalo ? true : !!e.is_leader,
-        leaderId: e.leader_id,
+        leaderId: isKezia ? (gabrielEmp?.id || e.leader_id) : e.leader_id,
         active: true,
         accessToken: '',
       };
@@ -94,11 +113,22 @@ export async function GET() {
     }));
 
     const rawActiveCycle = cycles.find(c => cycleState(c) === 'Em andamento') || cycles[0] || null;
+    let participants = (Array.isArray(rawActiveCycle?.participants) && rawActiveCycle.participants.length > 5)
+      ? rawActiveCycle.participants
+      : employees.map(e => ({ employeeId: e.id, leaderId: e.leaderId }));
+
+    const keziaEmp = employees.find(e => e.name.toLowerCase().includes('kezia'));
+    const gabrielId = gabrielEmp?.id || employees.find(e => e.name.toLowerCase().includes('gabriel') && e.department.includes('CENTRAL'))?.id;
+    if (keziaEmp && gabrielId) {
+      participants = participants.map(p => p.employeeId === keziaEmp.id ? { ...p, leaderId: gabrielId } : p);
+      if (!participants.some(p => p.employeeId === keziaEmp.id)) {
+        participants.push({ employeeId: keziaEmp.id, leaderId: gabrielId });
+      }
+    }
+
     const activeCycle: Cycle | null = rawActiveCycle ? {
       ...rawActiveCycle,
-      participants: (Array.isArray(rawActiveCycle.participants) && rawActiveCycle.participants.length > 5)
-        ? rawActiveCycle.participants
-        : employees.map(e => ({ employeeId: e.id, leaderId: e.leaderId })),
+      participants,
     } : null;
 
     let evaluations: Evaluation[] = [];

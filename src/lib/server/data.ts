@@ -65,12 +65,22 @@ export async function getAppData(provided?: SupabaseClient): Promise<AppData> {
     if (!seen.has(key)) {
       seen.add(key);
       const isItalo = key.includes('italo');
+      const isKezia = key.includes('kezia');
       const name = (isItalo ? 'ÍTALO PABLO FERREIRA' : rawName).toLocaleUpperCase('pt-BR');
       const formName = (isItalo ? 'ÍTALO PABLO FERREIRA' : (((r.form_name as string) || rawName))).toLocaleUpperCase('pt-BR');
-      const department = (isItalo ? 'SUPORTE' : normalizeDepartment(rawDept)).toLocaleUpperCase('pt-BR');
+      const department = (isItalo ? 'SUPORTE' : isKezia ? 'CENTRAL E RESULTADOS' : normalizeDepartment(rawDept)).toLocaleUpperCase('pt-BR');
       uniqueEmps.push({ ...r, name, form_name: formName, department, is_leader: isItalo ? true : !!r.is_leader });
     }
   }
+
+  const gabrielEmp = uniqueEmps.find(r => ((r.name as string) || '').toLowerCase().includes('gabriel') && ((r.department as string) || '').includes('CENTRAL'));
+  const finalEmps = uniqueEmps.map(r => {
+    const isKezia = ((r.name as string) || '').toLowerCase().includes('kezia');
+    if (isKezia && gabrielEmp) {
+      return { ...r, leader_id: gabrielEmp.id };
+    }
+    return r;
+  });
 
   // Purga de ciclos de teste e futuros
   const cleanCycles = cycles.filter(c => {
@@ -92,18 +102,33 @@ export async function getAppData(provided?: SupabaseClient): Promise<AppData> {
   });
   const evalIds = new Set(cleanEvaluations.map(e => e.id as string));
 
-  // Purga de respostas de teste e órfãs
-  const validEmpIds = new Set(uniqueEmps.map(e => e.id as string));
+  // Purga de respostas de teste, órfãs ou submissões errôneas da Central em 23/11
+  const RESET_RESPONSE_IDS = new Set([
+    'd20c4644-fc07-4b8d-b4f7-2a764587083d', // Hellen (submetido por engano pela Rute em 23/11)
+    '774ee4c2-2811-4e47-a9fb-e2d9be509b7e', // Joelson (submetido por engano pela Rute em 23/11)
+    '2f78a019-7d5c-42a6-86aa-ac0584f20608', // Rute (submetido por engano em 23/11)
+  ]);
+
+  const validEmpIds = new Set(finalEmps.map(e => e.id as string));
   const cleanResponses = responses.filter(r => {
     const gId = (r.google_response_id as string) || '';
     const id = (r.id as string) || '';
-    if (gId.includes('test') || id === '6990f3b4-2f15-41d8-ba77-d3c14dc73090') return false;
+    if (gId.includes('test') || id === '6990f3b4-2f15-41d8-ba77-d3c14dc73090' || RESET_RESPONSE_IDS.has(id)) return false;
     return evalIds.has(r.evaluation_id as string) && validEmpIds.has(r.respondent_id as string) && validEmpIds.has(r.subject_id as string);
   });
 
   return {
-    employees: uniqueEmps.map(employeeFromRow),
-    cycles: cleanCycles.map(cycleFromRow),
+    employees: finalEmps.map(employeeFromRow),
+    cycles: cleanCycles.map(c => {
+      const cycle = cycleFromRow(c);
+      if (Array.isArray(cycle.participants) && gabrielEmp) {
+        const keziaId = finalEmps.find(e => ((e.name as string) || '').includes('KEZIA'))?.id as string | undefined;
+        if (keziaId) {
+          cycle.participants = cycle.participants.map(p => p.employeeId === keziaId ? { ...p, leaderId: gabrielEmp.id as string } : p);
+        }
+      }
+      return cycle;
+    }),
     evaluations: cleanEvaluations.map(evaluationFromRow),
     responses: cleanResponses.map(responseFromRow),
   };

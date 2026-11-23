@@ -57,7 +57,7 @@ export function PublicEvaluationForm({ forcedKind }: PublicEvaluationFormProps =
   const respondentOptions = useMemo(() => {
     if (!evaluation) return participants;
     if (evaluation.kind === 'leadership') {
-      return participants.filter(item => !!activeCycle?.participants.find(link => link.employeeId === item.id)?.leaderId && !item.isLeader);
+      return participants.filter(item => !!(activeCycle?.participants.find(link => link.employeeId === item.id)?.leaderId || item.leaderId) && !item.isLeader);
     }
     if (evaluation.kind === 'leader_to_employee') {
       return cyclePeople.filter(item => leaderIds.has(item.id));
@@ -89,7 +89,7 @@ export function PublicEvaluationForm({ forcedKind }: PublicEvaluationFormProps =
   // Líder direto do colaborador selecionado
   const leaderId = useMemo(() => {
     if (!activeCycle || !respondent) return undefined;
-    return activeCycle.participants.find(item => item.employeeId === respondent.id)?.leaderId;
+    return activeCycle.participants.find(item => item.employeeId === respondent.id)?.leaderId || respondent.leaderId;
   }, [activeCycle, respondent]);
 
   const leader = useMemo(() => {

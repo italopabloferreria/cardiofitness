@@ -91,7 +91,7 @@ export async function POST(request: Request) {
       submitted_at: newResponse.submittedAt,
       scores: newResponse.scores,
       text_answers: newResponse.textAnswers,
-    });
+    }, { onConflict: 'evaluation_id,respondent_id,subject_id' });
 
     if (insertError) {
       if (insertError.code === '23505') throw new ApiError(409, 'Esta avaliação já foi registrada.');
