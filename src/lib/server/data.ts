@@ -59,17 +59,16 @@ export async function getAppData(provided?: SupabaseClient): Promise<AppData> {
     const rawName = (r.name as string) || '';
     const key = rawName.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
     const rawDept = ((r.department as string) || '').trim();
-    if (key.includes('teste') || key.includes('test') || rawDept.toLowerCase().includes('teste') || rawDept.toLowerCase().includes('test')) {
+    if (key.includes('teste') || key.includes('test') || key.includes('italo') || rawDept.toLowerCase().includes('teste') || rawDept.toLowerCase().includes('test')) {
       continue;
     }
     if (!seen.has(key)) {
       seen.add(key);
-      const isItalo = key.includes('italo');
       const isKezia = key.includes('kezia');
-      const name = (isItalo ? 'ÍTALO PABLO FERREIRA' : rawName).toLocaleUpperCase('pt-BR');
-      const formName = (isItalo ? 'ÍTALO PABLO FERREIRA' : (((r.form_name as string) || rawName))).toLocaleUpperCase('pt-BR');
-      const department = (isItalo ? 'SUPORTE' : isKezia ? 'CENTRAL E RESULTADOS' : normalizeDepartment(rawDept)).toLocaleUpperCase('pt-BR');
-      uniqueEmps.push({ ...r, name, form_name: formName, department, is_leader: isItalo ? true : !!r.is_leader });
+      const name = rawName.toLocaleUpperCase('pt-BR');
+      const formName = (((r.form_name as string) || rawName)).toLocaleUpperCase('pt-BR');
+      const department = (isKezia ? 'CENTRAL E RESULTADOS' : normalizeDepartment(rawDept)).toLocaleUpperCase('pt-BR');
+      uniqueEmps.push({ ...r, name, form_name: formName, department, is_leader: !!r.is_leader });
     }
   }
 

@@ -70,6 +70,7 @@ export async function GET() {
     const seenNames = new Set<string>();
     const uniqueRaw = filteredRaw.filter(e => {
       const key = e.name.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+      if (key.includes('italo')) return false;
       if (seenNames.has(key)) return false;
       seenNames.add(key);
       return true;
@@ -81,12 +82,10 @@ export async function GET() {
     );
 
     const employees: Employee[] = uniqueRaw.map(e => {
-      const isItalo = e.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes('italo');
       const isKezia = e.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes('kezia');
-      const name = (isItalo ? 'ÍTALO PABLO FERREIRA' : e.name).toLocaleUpperCase('pt-BR');
-      const formName = (isItalo ? 'ÍTALO PABLO FERREIRA' : (e.form_name || e.name)).toLocaleUpperCase('pt-BR');
+      const name = e.name.toLocaleUpperCase('pt-BR');
+      const formName = (e.form_name || e.name).toLocaleUpperCase('pt-BR');
       const department = (
-        isItalo ? 'SUPORTE' :
         isKezia ? 'CENTRAL E RESULTADOS' :
         normalizeDepartment(e.department)
       ).toLocaleUpperCase('pt-BR');
@@ -96,7 +95,7 @@ export async function GET() {
         email: '',
         formName,
         department,
-        isLeader: isItalo ? true : !!e.is_leader,
+        isLeader: !!e.is_leader,
         leaderId: isKezia ? (gabrielEmp?.id || e.leader_id) : e.leader_id,
         active: true,
         accessToken: '',

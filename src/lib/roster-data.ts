@@ -72,17 +72,6 @@ export const OFFICIAL_LEADERS: Employee[] = [
     active: true,
     accessToken: 'maria-alzirene',
   },
-  {
-    id: uid(1000, 6),
-    name: 'Ítalo Pablo Ferreira',
-    email: 'italopablo01@gmail.com',
-    formName: 'Ítalo Pablo Ferreira',
-    department: 'Suporte',
-    leaderId: null,
-    isLeader: true,
-    active: true,
-    accessToken: 'italo-pablo',
-  },
 ];
 
 const lidiaId = OFFICIAL_LEADERS[0].id;

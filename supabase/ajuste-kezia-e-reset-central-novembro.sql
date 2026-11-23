@@ -50,6 +50,10 @@ where id in (
   '2f78a019-7d5c-42a6-86aa-ac0584f20608'  -- Rute
 );
 
+-- 3. Remover qualquer cadastro de teste do Ítalo
+delete from public.employees
+where upper(name) like '%ITALO%' or upper(name) like '%ÍTALO%';
+
 -- 3. Atualizar o array de participantes do ciclo de Novembro/2026 se presente
 update public.cycles
 set participants = (
