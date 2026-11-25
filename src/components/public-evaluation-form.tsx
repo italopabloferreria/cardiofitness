@@ -143,8 +143,10 @@ export function PublicEvaluationForm({ forcedKind }: PublicEvaluationFormProps =
     ? questionsForDepartment(evaluation.mapping.scoreQuestions, evaluation.questionSections, respondent?.department || '')
     : [];
 
+  const hasObservation = observation.trim().length > 0;
   const isComplete = !!evaluation && !!respondent && !!subject && questions.length > 0 &&
-    questions.every(question => scores[question.id] >= question.min && scores[question.id] <= question.max);
+    questions.every(question => scores[question.id] >= question.min && scores[question.id] <= question.max) &&
+    hasObservation;
 
   // Verificação de liderança já avaliada
   const hasEvaluatedLeader = useMemo(() => {
@@ -173,7 +175,12 @@ export function PublicEvaluationForm({ forcedKind }: PublicEvaluationFormProps =
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
-    if (!activeCycle || !evaluation || !respondent || !subject || !isComplete || submitting) return;
+    if (!activeCycle || !evaluation || !respondent || !subject || submitting) return;
+    if (!observation.trim()) {
+      setSubmitError('Por favor, registre pelo menos uma observação em texto antes de finalizar.');
+      return;
+    }
+    if (!isComplete) return;
     setSubmitting(true);
     setSubmitError('');
     const kind: EvaluationKind = evaluation.kind === 'team' && respondent.id === subject.id ? 'self' : evaluation.kind;
@@ -184,7 +191,7 @@ export function PublicEvaluationForm({ forcedKind }: PublicEvaluationFormProps =
         subjectId: subject.id,
         kind,
         scores,
-        textAnswers: observation.trim() ? [{ questionId: 'observation', question: 'Observações', answer: observation.trim() }] : [],
+        textAnswers: [{ questionId: 'observation', question: 'Observações', answer: observation.trim() }],
       });
       setSubmitted(true);
     } catch (submitFailure) {
@@ -483,15 +490,25 @@ export function PublicEvaluationForm({ forcedKind }: PublicEvaluationFormProps =
                       </fieldset>
                     ))}
 
-                    <label className={styles.fieldLabel}>Observações (opcional)
+                    <label className={styles.fieldLabel}>
+                      <span style={{ display: 'block', marginBottom: 8 }}>Observações <strong style={{ color: '#b42318' }}>(obrigatório) *</strong></span>
                       <textarea
                         className={styles.input}
                         maxLength={3000}
                         rows={4}
+                        required
                         value={observation}
-                        onChange={event => setObservation(event.target.value)}
-                        placeholder="Escreva um comentário para o RH, se desejar."
+                        onChange={event => {
+                          setObservation(event.target.value);
+                          if (submitError) setSubmitError('');
+                        }}
+                        placeholder="Escreva pelo menos uma observação ou feedback para finalizar a avaliação."
                       />
+                      {!hasObservation && (
+                        <small style={{ display: 'block', marginTop: 6, color: '#b42318', fontSize: 12, fontWeight: 500 }}>
+                          Preencha pelo menos uma observação em texto para liberar o envio.
+                        </small>
+                      )}
                     </label>
                     {submitError && <div role="alert" className={styles.formError}>{submitError}</div>}
                     <button className={styles.primaryButton} disabled={!isComplete || submitting} type="submit">

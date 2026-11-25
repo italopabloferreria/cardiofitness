@@ -10,6 +10,7 @@ import { EvolutionDashboard } from './evolution-dashboard';
 import { FormRoster } from './form-roster';
 import { bimonthlyEnd, cycleState, defaultCycle, formatDate, formatNumber, formatPercent, getEvaluationStats, mean, questionGroups, responseAverage } from '@/lib/analytics';
 import { downloadReport } from '@/lib/export';
+import { downloadPending } from '@/lib/export-pending';
 import { getParticipation } from '@/lib/participation';
 import { nativeEvaluationMapping } from '@/lib/native/evaluation-mapping';
 import { isNovember2026Cycle, november2026FormStatus, NOVEMBER_2026_END } from '@/lib/november-campaign';
@@ -18,16 +19,17 @@ import { resolveFormId, resolveFormLink } from '@/lib/form-link';
 import { getPermanentEvaluationUrl } from '@/lib/roster-data';
 import { KIND_LABELS, PROVIDED_FORMS, type AppData, type Cycle, type CycleInput, type Employee, type EmployeeInput, type Evaluation, type EvaluationInput, type EvaluationKind, type EvaluationResponse, type FormMetadata } from '@/lib/types';
 
-type View = 'dashboard' | 'employees' | 'employee' | 'result' | 'reports' | 'settings';
+type View = 'dashboard' | 'employees' | 'employee' | 'pending' | 'result' | 'reports' | 'settings';
 type Editor = { type: 'quick-cycle' } | { type: 'employee'; item?: Employee } | { type: 'deactivate'; item: Employee } | { type: 'delete-employee'; item: Employee } | { type: 'cycle'; item?: Cycle; sourceCycleId?:string } | { type: 'evaluation'; item?: Evaluation; preset?: typeof PROVIDED_FORMS[number] } | { type: 'native-evaluation' } | null;
 const NAV = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'employees', label: 'Colaboradores', icon: UsersRound },
+  { id: 'pending', label: 'Pendências', icon: UserRoundCheck },
   { id: 'reports', label: 'Relatórios', icon: BarChart3 },
   { id: 'settings', label: 'Configurações', icon: Settings2 }
 ] as const;
-const titles: Record<View,string> = {dashboard:'Dashboard',employees:'Colaboradores',employee:'Detalhe do colaborador',result:'Resultado da avaliação',reports:'Relatórios',settings:'Configurações'};
-const subtitles: Record<View,string> = {dashboard:'Uma visão clara das pessoas, das avaliações e de cada ciclo.',employees:'Estrutura de líderes e subordinados da Cardiofitness.',employee:'Resultados individuais e histórico ao longo dos ciclos.',result:'Notas e respostas de texto identificadas do formulário selecionado.',reports:'Selecione o recorte, confira a evolução histórica e exporte os resultados.',settings:'Organize ciclos, datas, participantes e os formulários de avaliação.'};
+const titles: Record<View,string> = {dashboard:'Dashboard',employees:'Colaboradores',employee:'Detalhe do colaborador',pending:'Pendências',result:'Resultado da avaliação',reports:'Relatórios',settings:'Configurações'};
+const subtitles: Record<View,string> = {dashboard:'Uma visão clara das pessoas, das avaliações e de cada ciclo.',employees:'Estrutura de líderes e subordinados da Cardiofitness.',employee:'Resultados individuais e histórico ao longo dos ciclos.',pending:'Veja quem ainda não respondeu ou possui avaliações pendentes no ciclo.',result:'Notas e respostas de texto identificadas do formulário selecionado.',reports:'Selecione o recorte, confira a evolução histórica e exporte os resultados.',settings:'Organize ciclos, datas, participantes e os formulários de avaliação.'};
 const initials = (name:string) => name.split(' ').filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
 const person = (data:AppData,id:string) => data.employees.find(employee=>employee.id===id);
 const cycleEvaluations = (data:AppData,cycleId:string) => data.evaluations.filter(evaluation=>evaluation.cycleId===cycleId);
@@ -233,6 +235,7 @@ export default function Application() {
       {view==='dashboard'&&<Dashboard data={data} cycle={selectedCycle} onQuickCycle={()=>requestEditor({type:'quick-cycle'})} onConfigure={()=>navigate('settings')} onResults={openEvaluation} onOpenLinks={()=>navigate('dashboard')} onNavigate={navigate} onEditCycle={item=>requestEditor({type:'cycle',item})}/>}
       {view==='employees'&&<Employees data={data} cycle={selectedCycle} onOpen={openEmployee} onAdd={()=>requestEditor({type:'employee'})} onEdit={item=>requestEditor({type:'employee',item})} onDeactivate={item=>requestEditor({type:'deactivate',item})} onDelete={item=>requestEditor({type:'delete-employee',item})}/>}
       {view==='employee'&&(employee?<EmployeeDetail data={data} employee={employee} cycleId={selectedCycleId} onEdit={()=>requestEditor({type:'employee',item:employee})} onResults={openEvaluation}/>:<Empty title="Selecione um colaborador" action={<button className="button" onClick={()=>navigate('employees')}>Ver colaboradores</button>}/>)}
+      {view==='pending'&&<PendingReport key={selectedCycleId} data={data} cycleId={selectedCycleId} onPerson={openEmployee} onConfigure={()=>navigate('settings')}/>}
       {view==='result'&&(evaluation?<Result data={data} evaluation={evaluation} onPerson={openEmployee}/>:<Empty title="Selecione uma avaliação"/>)}
       {view==='reports'&&<Reports data={data} cycleId={selectedCycleId} onError={text=>setNotice({text,success:false})} onPerson={openEmployee}/>}
       {view==='settings'&&<Configuration data={data} cycleId={selectedCycleId} setCycleId={setCycleId} onEdit={requestEditor} demo={app.mode==='demo'} googleConfigured={app.googleConfigured}/>}
@@ -902,7 +905,14 @@ function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,on
   const [copiedLink, setCopiedLink] = useState<'lead'|'team'|null>(null);
 
   if(!cycle)return <Panel><Empty title="Vamos organizar o primeiro ciclo" action={<button className="button primary" onClick={onConfigure}><Plus size={18}/>Configurar o ciclo</button>}>Cadastre os colaboradores, selecione os participantes e vincule os formulários de avaliação.</Empty></Panel>;
-  const evaluations=cycleEvaluations(data,cycle.id),responses=cycleResponses(data,cycle.id),expected=expectedTotal(evaluations);
+  const evaluations=cycleEvaluations(data,cycle.id),responses=cycleResponses(data,cycle.id);
+  const novActive = isNovember2026Cycle(cycle);
+  const scopedRows = getParticipation(data, cycle.id).filter(row => !novActive || row.evaluation.kind === 'leadership');
+  const configuredRows = scopedRows.filter(row => row.status !== 'unconfigured');
+  const participationExpected = configuredRows.length ? configuredRows.reduce((sum, row) => sum + row.expected, 0) : null;
+  const participationCompleted = configuredRows.length ? configuredRows.reduce((sum, row) => sum + row.completed, 0) : responses.length;
+  const expected = expectedTotal(evaluations) ?? participationExpected;
+  const completedCount = expectedTotal(evaluations) !== null ? responses.length : participationCompleted;
   const leaderIds=new Set(cycle.participants.map(item=>item.leaderId).filter(Boolean));
   const activeEmployees = data.employees.filter(employee=>employee.active);
   const cycleStatus = cycleState(cycle);
@@ -1046,14 +1056,14 @@ function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,on
         />
         <Stat
           label="Conclusão do ciclo"
-          value={expected ? formatPercent(responses.length, expected) : (responses.length > 0 ? '100%' : '0%')}
-          note={expected ? `${quantity(Math.max(0, expected - responses.length), 'resposta pendente', 'respostas pendentes')}` : 'Ciclo em andamento'}
+          value={expected ? formatPercent(completedCount, expected) : (responses.length > 0 ? '100%' : '0%')}
+          note={expected ? `${quantity(Math.max(0, expected - completedCount), 'resposta pendente', 'respostas pendentes')}` : 'Ciclo em andamento'}
           icon={<CheckCircle2 size={19}/>}
           action={
             <button
               type="button"
               className="button small"
-              onClick={() => onNavigate('reports')}
+              onClick={() => onNavigate('pending')}
               style={{
                 width: '100%',
                 justifyContent: 'center',
@@ -1066,7 +1076,7 @@ function Dashboard({data,cycle,onQuickCycle,onConfigure,onResults,onOpenLinks,on
                 cursor: 'pointer',
               }}
             >
-              <TrendingUp size={14} /> Acompanhar
+              <UserRoundCheck size={14} /> Ver pendências
             </button>
           }
         />
@@ -1226,6 +1236,166 @@ function HistoryChart({data,employeeId,kinds}:{data:AppData;employeeId:string;ki
   const cycles=[...data.cycles].sort((a,b)=>a.startDate.localeCompare(b.startDate));if(!kinds.length)return <Empty title="Histórico ainda vazio">As médias por ciclo aparecerão aqui.</Empty>;
   const x=(index:number)=>48+(cycles.length===1?200:index/(cycles.length-1)*440),y=(value:number)=>192-(value-1)/3*154;
   return <svg className="history-chart" viewBox="0 0 540 240" role="img" aria-label="Histórico de médias por ciclo, na escala de 1 a 4">{[1,2,3,4].map(value=><g key={value}><line x1="42" y1={y(value)} x2="514" y2={y(value)} stroke="#E7EBF0"/><text x="24" y={y(value)+4}>{value}</text></g>)}{cycles.map((cycle,index)=><text key={cycle.id} x={x(index)} y="223" textAnchor="middle">{cycle.startDate.slice(5,7)}/{cycle.startDate.slice(2,4)}–{cycle.endDate.slice(5,7)}/{cycle.endDate.slice(2,4)}</text>)}{kinds.map((kind,index)=>{const values=cycles.map(cycle=>mean(cycleResponses(data,cycle.id).filter(response=>response.subjectId===employeeId&&response.kind===kind).map(responseAverage).filter((n):n is number=>n!==null)));const color=['#163064','#009BD2','#527AAB','#00A7C7'][index];return <g key={kind}>{values.map((value,i)=>value!==null&&<g key={i}>{i>0&&values[i-1]!==null&&<line x1={x(i-1)} y1={y(values[i-1]!)} x2={x(i)} y2={y(value)} stroke={color} strokeWidth="2.5"/>}<circle cx={x(i)} cy={y(value)} r="5" stroke={color} strokeWidth="2" fill="white"/><title>{KIND_LABELS[kind]} · {cycles[i].name}: {formatNumber(value)}</title></g>)}</g>;})}</svg>;
+}
+
+function PendingReport({data,cycleId,onPerson,onConfigure}:{data:AppData;cycleId:string;onPerson:(id:string)=>void;onConfigure:()=>void}) {
+  const cycle=data.cycles.find(c=>c.id===cycleId);
+  const evaluations=cycleEvaluations(data,cycleId);
+  const defaultEvalId=isNovember2026Cycle(cycle)?(evaluations.find(e=>e.kind==='leadership')?.id||''):'';
+  const [evaluationId,setEvaluationId]=useState<string>(defaultEvalId);
+  const [department,setDepartment]=useState('');
+  const [status,setStatus]=useState('pending');
+  const [query,setQuery]=useState('');
+  const [page,setPage]=useState(1);
+  const [exporting,setExporting]=useState<'pdf'|'xlsx'|null>(null);
+  const [exportError,setExportError]=useState('');
+
+  const selectedEvaluation=evaluations.some(e=>e.id===evaluationId)?evaluationId:'';
+  const scoped=getParticipation(data,cycleId,selectedEvaluation||undefined);
+  const departments=[...new Set(scoped.map(row=>row.employee.department))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  const selectedDepartment=departments.includes(department)?department:'';
+  const normalizedQuery=query.trim().toLocaleLowerCase('pt-BR');
+  const filtered=scoped.filter(row=>
+    (!selectedDepartment||row.employee.department===selectedDepartment)&&
+    (!normalizedQuery||row.employee.name.toLocaleLowerCase('pt-BR').includes(normalizedQuery))&&
+    (status==='all'||(status==='pending'?(row.status==='not_started'||row.status==='partial'):row.status===status))
+  );
+  const effectivePage=Math.min(page,Math.max(1,Math.ceil(filtered.length/10)));
+  const pendingCount=scoped.filter(row=>row.status==='not_started'||row.status==='partial').length;
+  const completedCount=scoped.filter(row=>row.status==='completed').length;
+  const unconfiguredCount=scoped.filter(row=>row.status==='unconfigured').length;
+  const statusLabels:Record<'not_started'|'partial'|'completed'|'unconfigured',string>={not_started:'Não iniciou',partial:'Parcial',completed:'Concluiu',unconfigured:'A conferir'};
+
+  return (
+    <>
+      <div className="stat-grid three">
+        <Stat label="Com pendências" value={pendingCount} note="Não iniciaram ou falta concluir" icon={<UserRoundCheck size={19}/>}/>
+        <Stat label="Concluídos" value={completedCount} note="Enviaram todas as respostas previstas" icon={<CheckCircle2 size={19}/>}/>
+        <Stat label="Total acompanhado" value={scoped.length} note={cycle?.name||'Ciclo selecionado'} icon={<UsersRound size={19}/>}/>
+      </div>
+      {unconfiguredCount>0&&(
+        <div className="notice notice-error" role="status">
+          {quantity(unconfiguredCount,'participação a conferir','participações a conferir')}: confira as perguntas numéricas, o total esperado e os vínculos do ciclo. Selecione “A conferir” para consultar.
+        </div>
+      )}
+      {exportError&&<Notice message={exportError} onClose={()=>setExportError('')}/>}
+      <Panel
+        title="Quem ainda não respondeu"
+        subtitle="Lista atualizada de colaboradores pendentes e concluídos no ciclo. Clique na pendência para ver quem falta avaliar."
+        action={
+          <div className="report-export" style={{paddingTop:0}}>
+            {(['pdf','xlsx'] as const).map(format=>(
+              <button
+                key={format}
+                type="button"
+                className="button small"
+                disabled={!filtered.length||!!exporting}
+                onClick={async()=>{
+                  setExporting(format);
+                  setExportError('');
+                  try{
+                    await downloadPending(filtered,cycle?.name||'Ciclo',format);
+                  }catch(error){
+                    setExportError(errorMessage(error));
+                  }finally{
+                    setExporting(null);
+                  }
+                }}
+              >
+                {exporting===format?'Exportando…':format==='pdf'?'Pendências PDF':'Pendências Excel'}
+              </button>
+            ))}
+          </div>
+        }
+      >
+        <div className="table-filters pending-filters">
+          <label className="search-field">
+            <Search size={18}/>
+            <span className="sr-only">Buscar participante</span>
+            <input
+              placeholder="Buscar colaborador"
+              value={query}
+              onChange={event=>{setQuery(event.target.value);setPage(1);}}
+            />
+          </label>
+          <select aria-label="Filtrar por formulário" value={selectedEvaluation} onChange={event=>{setEvaluationId(event.target.value);setPage(1);}}>
+            <option value="">Todos os formulários</option>
+            {evaluations.map(item=><option key={item.id} value={item.id}>{item.name}</option>)}
+          </select>
+          <select aria-label="Filtrar por setor" value={selectedDepartment} onChange={event=>{setDepartment(event.target.value);setPage(1);}}>
+            <option value="">Todos os setores</option>
+            {departments.map(item=><option key={item} value={item}>{item}</option>)}
+          </select>
+          <select aria-label="Filtrar por participação" value={status} onChange={event=>{setStatus(event.target.value);setPage(1);}}>
+            <option value="pending">Com pendências (não respondeu)</option>
+            <option value="not_started">Não iniciou</option>
+            <option value="partial">Parcial</option>
+            <option value="completed">Concluiu</option>
+            <option value="unconfigured">A conferir</option>
+            <option value="all">Todos os status</option>
+          </select>
+        </div>
+        <div className="table-scroll">
+          <table className="pending-table">
+            <thead>
+              <tr>
+                <th>Participante</th>
+                <th>Setor</th>
+                <th>Formulário</th>
+                <th>Respondidas / esperadas</th>
+                <th>Status e pendências</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.slice((effectivePage-1)*10,effectivePage*10).map(row=>(
+                <tr key={`${row.employee.id}-${row.evaluation.id}`}>
+                  <td>
+                    <button type="button" className="text-button" onClick={()=>onPerson(row.employee.id)}>
+                      {row.employee.name}
+                    </button>
+                  </td>
+                  <td>{row.employee.department}</td>
+                  <td>{row.evaluation.name}</td>
+                  <td className="strong">{row.status==='unconfigured'?'—':`${row.completed} / ${row.expected}`}</td>
+                  <td>
+                    <Pill kind={row.status==='completed'?'green':row.status==='unconfigured'?'muted':'amber'}>
+                      {statusLabels[row.status]}
+                    </Pill>
+                    {row.pendingSubjects.length>0&&row.status!=='unconfigured'&&(
+                      <details className="pending-subjects">
+                        <summary>{quantity(row.pendingSubjects.length,'avaliação pendente','avaliações pendentes')}</summary>
+                        <ul>
+                          {row.pendingSubjects.map(subject=>(
+                            <li key={subject.id}>{subject.name}{subject.id===row.employee.id?' (autoavaliação)':''}</li>
+                          ))}
+                        </ul>
+                      </details>
+                    )}
+                    {row.status==='unconfigured'&&(
+                      <small className="pending-configuration">Confira a sincronização, o total esperado, o mapeamento e os vínculos do ciclo.</small>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {!filtered.length&&(
+          <Empty
+            title={!evaluations.length?'Nenhum formulário vinculado ao ciclo':'Nenhuma pendência neste filtro'}
+            action={!evaluations.length?<button type="button" className="button primary" onClick={onConfigure}>Configurar avaliações</button>:undefined}
+          >
+            {!evaluations.length
+              ?'Vincule os formulários e confira os participantes nas configurações.'
+              :status==='pending'
+                ?'Todos os colaboradores neste recorte já concluíram suas avaliações!'
+                :'Selecione outro status ou ajuste os filtros para consultar as participações.'}
+          </Empty>
+        )}
+        <Pager page={effectivePage} total={filtered.length} setPage={setPage} size={10}/>
+      </Panel>
+    </>
+  );
 }
 
 function Result({data,evaluation,onPerson}:{data:AppData;evaluation:Evaluation;onPerson:(id:string)=>void}) {

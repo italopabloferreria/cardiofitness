@@ -47,6 +47,7 @@ describe('portal público de avaliações', () => {
         respondentId: '00000000-0000-4000-8000-000000000002',
         subjectId: '00000000-0000-4000-8000-000000000003',
         kind: 'team', scores: { q1: 4 },
+        textAnswers: [{ questionId: 'observation', question: 'Observações', answer: 'Bom trabalho em equipe.' }],
       }),
     }));
 
@@ -55,6 +56,26 @@ describe('portal público de avaliações', () => {
     expect(mocks.savePersistedResponse).not.toHaveBeenCalled();
     expect(mocks.createPublicClient).toHaveBeenCalledOnce();
     expect(mocks.createClient).not.toHaveBeenCalled();
+  });
+
+  it('recusa envio sem observação em texto preenchida', async () => {
+    vi.stubEnv('APP_DEMO_MODE', 'true');
+    const response = await POST(new Request('http://localhost/api/evaluations/submit', {
+      method: 'POST',
+      headers: { origin: 'http://localhost', 'content-type': 'application/json' },
+      body: JSON.stringify({
+        evaluationId: '00000000-0000-4000-8000-000000000001',
+        respondentId: '00000000-0000-4000-8000-000000000002',
+        subjectId: '00000000-0000-4000-8000-000000000003',
+        kind: 'team',
+        scores: { q1: 4 },
+        textAnswers: [{ questionId: 'observation', question: 'Observações', answer: '   ' }],
+      }),
+    }));
+
+    expect(response.status).toBe(400);
+    expect(mocks.savePersistedResponse).not.toHaveBeenCalled();
+    expect(mocks.createPublicClient).not.toHaveBeenCalled();
   });
 
   it('mantém o envio em modo demo somente no armazenamento local', async () => {
@@ -66,6 +87,7 @@ describe('portal público de avaliações', () => {
       subjectId: '00000000-0000-4000-8000-000000000003',
       kind: 'team',
       scores: { q1: 4 },
+      textAnswers: [{ questionId: 'observation', question: 'Observações', answer: 'Excelente apoio.' }],
     };
 
     const response = await POST(new Request('http://localhost/api/evaluations/submit', {

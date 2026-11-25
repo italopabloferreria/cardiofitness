@@ -126,6 +126,9 @@ export async function getAppData(provided?: SupabaseClient): Promise<AppData> {
     return evalIds.has(r.evaluation_id as string) && validEmpIds.has(r.respondent_id as string) && validEmpIds.has(r.subject_id as string);
   });
 
+  const nativeEvalIds = new Set(cleanResponses.filter(r => ((r.google_response_id as string) || '').startsWith('native-')).map(r => r.evaluation_id as string));
+  const cycleStartById = new Map(cleanCycles.map(c => [c.id as string, (c.start_date as string) || '']));
+
   return {
     employees: finalEmps.map(employeeFromRow),
     cycles: cleanCycles.map(c => {
@@ -142,7 +145,14 @@ export async function getAppData(provided?: SupabaseClient): Promise<AppData> {
       }
       return cycle;
     }),
-    evaluations: cleanEvaluations.map(evaluationFromRow),
+    evaluations: cleanEvaluations.map(r => {
+      const ev = evaluationFromRow(r);
+      // Banco remoto ainda sem coluna source_type: avaliacoes com respostas nativas ou ciclos >= 2026-11 sem sync legado sao nativas.
+      if (r.source_type == null && (nativeEvalIds.has(ev.id) || ((cycleStartById.get(ev.cycleId) || '') >= '2026-11-01' && !ev.lastSyncedAt))) {
+        return { ...ev, sourceType: 'native' as const };
+      }
+      return ev;
+    }),
     responses: cleanResponses.map(responseFromRow),
   };
 }

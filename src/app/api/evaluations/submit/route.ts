@@ -13,8 +13,8 @@ const submitSchema = z.object({
   textAnswers: z.array(z.object({
     questionId: z.string().min(1).max(100),
     question: z.string().min(1).max(500),
-    answer: z.string().max(3000),
-  }).strict()).max(20).optional().default([]),
+    answer: z.string().trim().min(1, 'Registre pelo menos uma observação no feedback.').max(3000),
+  }).strict()).min(1, 'Registre pelo menos uma observação antes de finalizar.').max(20),
 }).strict();
 
 export const dynamic = 'force-dynamic';
