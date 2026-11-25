@@ -116,17 +116,6 @@ export const OFFICIAL_STAFF: Employee[] = [
     accessToken: 'rayane-cardoso',
   },
   {
-    id: uid(2000, 4),
-    name: 'Rayra',
-    email: '',
-    formName: 'Rayra',
-    department: 'Faturamento',
-    leaderId: lidiaId,
-    isLeader: false,
-    active: true,
-    accessToken: 'rayra',
-  },
-  {
     id: uid(2000, 5),
     name: 'Yasmin Alves da Silva',
     email: '',
@@ -406,6 +395,17 @@ export const OFFICIAL_STAFF: Employee[] = [
     isLeader: false,
     active: true,
     accessToken: 'maria-luiza',
+  },
+  {
+    id: uid(5000, 8),
+    name: 'Rayra',
+    email: '',
+    formName: 'Rayra',
+    department: 'Recepção e Triagem',
+    leaderId: welissonId,
+    isLeader: false,
+    active: true,
+    accessToken: 'rayra',
   },
 
   // --- Administrativo (Líder Maria Alzirene + 1 liderada Ana) ---

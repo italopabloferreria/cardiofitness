@@ -52,11 +52,46 @@ export async function POST(request: Request) {
         p_text_answers: input.textAnswers,
       });
       if (!error && data) {
-        if (data.duplicate) throw new ApiError(409, 'Esta avaliação já foi registrada.');
+        if (data.duplicate) {
+          // Permite atualização de respostas existentes / retificações (ex: Hellen, Joelson, Rute)
+          const { error: updateError } = await client
+            .from('evaluation_responses')
+            .update({
+              submitted_at: new Date().toISOString(),
+              scores: input.scores,
+              text_answers: input.textAnswers,
+            })
+            .match({
+              evaluation_id: input.evaluationId,
+              respondent_id: input.respondentId,
+              subject_id: input.subjectId,
+            });
+          if (!updateError) {
+            return json({ accepted: true }, 201);
+          }
+          throw new ApiError(409, 'Esta avaliação já foi registrada.');
+        }
         if (data.accepted === true) return json({ accepted: true }, 201);
       }
-      if (error && (error.code === '23505' || error.code === '23514')) {
-        if (error.code === '23505') throw new ApiError(409, 'Esta avaliação já foi registrada.');
+      if (error && error.code === '23505') {
+        const { error: updateError } = await client
+          .from('evaluation_responses')
+          .update({
+            submitted_at: new Date().toISOString(),
+            scores: input.scores,
+            text_answers: input.textAnswers,
+          })
+          .match({
+            evaluation_id: input.evaluationId,
+            respondent_id: input.respondentId,
+            subject_id: input.subjectId,
+          });
+        if (!updateError) {
+          return json({ accepted: true }, 201);
+        }
+        throw new ApiError(409, 'Esta avaliação já foi registrada.');
+      }
+      if (error && error.code === '23514') {
         throw new ApiError(409, 'Confira o ciclo, as pessoas escolhidas e as notas antes de enviar.');
       }
     } catch (rpcErr) {

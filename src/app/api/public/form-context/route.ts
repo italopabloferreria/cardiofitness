@@ -81,12 +81,19 @@ export async function GET() {
       (e.is_leader || (e.department || '').toLowerCase().includes('central'))
     );
 
+    const welissonEmp = uniqueRaw.find(e =>
+      e.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes('welisson') &&
+      (e.is_leader || (e.department || '').toLowerCase().includes('recepcao'))
+    );
+
     const employees: Employee[] = uniqueRaw.map(e => {
       const isKezia = e.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes('kezia');
+      const isRayra = e.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes('rayra');
       const name = e.name.toLocaleUpperCase('pt-BR');
       const formName = (e.form_name || e.name).toLocaleUpperCase('pt-BR');
       const department = (
         isKezia ? 'CENTRAL E RESULTADOS' :
+        isRayra ? 'RECEPÇÃO E TRIAGEM' :
         normalizeDepartment(e.department)
       ).toLocaleUpperCase('pt-BR');
       return {
@@ -96,7 +103,7 @@ export async function GET() {
         formName,
         department,
         isLeader: !!e.is_leader,
-        leaderId: isKezia ? (gabrielEmp?.id || e.leader_id) : e.leader_id,
+        leaderId: isKezia ? (gabrielEmp?.id || e.leader_id) : isRayra ? (welissonEmp?.id || e.leader_id) : e.leader_id,
         active: true,
         accessToken: '',
       };
@@ -122,6 +129,15 @@ export async function GET() {
       participants = participants.map(p => p.employeeId === keziaEmp.id ? { ...p, leaderId: gabrielId } : p);
       if (!participants.some(p => p.employeeId === keziaEmp.id)) {
         participants.push({ employeeId: keziaEmp.id, leaderId: gabrielId });
+      }
+    }
+
+    const rayraEmp = employees.find(e => e.name.toLowerCase().includes('rayra'));
+    const welissonId = welissonEmp?.id || employees.find(e => e.name.toLowerCase().includes('welisson'))?.id;
+    if (rayraEmp && welissonId) {
+      participants = participants.map(p => p.employeeId === rayraEmp.id ? { ...p, leaderId: welissonId } : p);
+      if (!participants.some(p => p.employeeId === rayraEmp.id)) {
+        participants.push({ employeeId: rayraEmp.id, leaderId: welissonId });
       }
     }
 

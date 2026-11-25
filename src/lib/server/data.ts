@@ -65,18 +65,28 @@ export async function getAppData(provided?: SupabaseClient): Promise<AppData> {
     if (!seen.has(key)) {
       seen.add(key);
       const isKezia = key.includes('kezia');
+      const isRayra = key.includes('rayra');
       const name = rawName.toLocaleUpperCase('pt-BR');
       const formName = (((r.form_name as string) || rawName)).toLocaleUpperCase('pt-BR');
-      const department = (isKezia ? 'CENTRAL E RESULTADOS' : normalizeDepartment(rawDept)).toLocaleUpperCase('pt-BR');
+      const department = (
+        isKezia ? 'CENTRAL E RESULTADOS' :
+        isRayra ? 'RECEPÇÃO E TRIAGEM' :
+        normalizeDepartment(rawDept)
+      ).toLocaleUpperCase('pt-BR');
       uniqueEmps.push({ ...r, name, form_name: formName, department, is_leader: !!r.is_leader });
     }
   }
 
   const gabrielEmp = uniqueEmps.find(r => ((r.name as string) || '').toLowerCase().includes('gabriel') && ((r.department as string) || '').includes('CENTRAL'));
+  const welissonEmp = uniqueEmps.find(r => ((r.name as string) || '').toLowerCase().includes('welisson') && ((r.department as string) || '').includes('RECEPCAO'));
   const finalEmps = uniqueEmps.map(r => {
     const isKezia = ((r.name as string) || '').toLowerCase().includes('kezia');
+    const isRayra = ((r.name as string) || '').toLowerCase().includes('rayra');
     if (isKezia && gabrielEmp) {
       return { ...r, leader_id: gabrielEmp.id };
+    }
+    if (isRayra && welissonEmp) {
+      return { ...r, leader_id: welissonEmp.id };
     }
     return r;
   });
@@ -120,10 +130,14 @@ export async function getAppData(provided?: SupabaseClient): Promise<AppData> {
     employees: finalEmps.map(employeeFromRow),
     cycles: cleanCycles.map(c => {
       const cycle = cycleFromRow(c);
-      if (Array.isArray(cycle.participants) && gabrielEmp) {
+      if (Array.isArray(cycle.participants)) {
         const keziaId = finalEmps.find(e => ((e.name as string) || '').includes('KEZIA'))?.id as string | undefined;
-        if (keziaId) {
+        if (keziaId && gabrielEmp) {
           cycle.participants = cycle.participants.map(p => p.employeeId === keziaId ? { ...p, leaderId: gabrielEmp.id as string } : p);
+        }
+        const rayraId = finalEmps.find(e => ((e.name as string) || '').includes('RAYRA'))?.id as string | undefined;
+        if (rayraId && welissonEmp) {
+          cycle.participants = cycle.participants.map(p => p.employeeId === rayraId ? { ...p, leaderId: welissonEmp.id as string } : p);
         }
       }
       return cycle;
